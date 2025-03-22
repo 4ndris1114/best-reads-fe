@@ -8,13 +8,26 @@ import {jwtDecode} from 'jwt-decode';
 export const useUserStore = defineStore('userStore', {
   state: () => ({
     loggedInUser: null as IUser | null,
-    token: "" || null as string | null,
+    token: sessionStorage.getItem('jwtToken') || null as string | null,
     isAuthenticated: false, 
 
     userService: new UserService() as UserService,
   }),
 
   actions: {
+    async initAuth() {
+      if (this.token) {
+        try {
+          const decoded = jwtDecode<{ userId: string }>(this.token);
+          this.loggedInUser = await this.getUserById(decoded.userId);
+          this.isAuthenticated = true;
+        } catch (error) {
+          console.error("Failed to restore session:", error);
+          this.clearAuthData();
+        }
+      }
+    },
+    
     async login(email: string, password: string) {
       try {
         const token = await this.userService.login(email, password);
