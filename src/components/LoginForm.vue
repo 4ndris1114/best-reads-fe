@@ -102,16 +102,22 @@
         <!-- Toast Notification -->
         <div v-if="showToast" class="fixed top-4 right-4 bg-white shadow-lg rounded-lg p-4 flex items-center space-x-3"
             :class="toastType === 'error' ? 'border-l-4 border-red-500' : 'border-l-4 border-green-500'">
-            <i
-                :class="toastType === 'error' ? 'fas fa-exclamation-circle text-red-500' : 'fas fa-check-circle text-green-500'"></i>
+            <fa :icon="toastType === 'error' ? 'exclamation-circle' : 'check-circle'" 
+                :class="toastType === 'error' ? 'text-red-500' : 'text-green-500'"></fa>
             <p class="text-sm text-gray-600">{{ toastMessage }}</p>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useUserStore } from '@/stores/userStore';
+
+onMounted(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('isRegistering', 'false');
+    window.history.replaceState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
+});
 
 // stores
 const userStore = useUserStore();
@@ -127,6 +133,9 @@ const passwordError = ref('');
 const showToast = ref(false);
 const toastMessage = ref('');
 const toastType = ref<'success' | 'error'>('success');
+
+// emits
+const emit = defineEmits(['signup']);
 
 const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -171,10 +180,11 @@ const togglePassword = () => {
 };
 
 const handleForgotPassword = () => {
-    showNotification('Password reset link has been sent to your email.', 'success');
+    showNotification("Not implemented yet! (hehe)", 'error');
 };
 
 const handleSignUp = () => {
+    emit('signup');
     showNotification('Redirecting to sign up page...', 'success');
 };
 </script>
