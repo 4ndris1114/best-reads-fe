@@ -3,6 +3,8 @@ import instance from './httpClient'
 
 export class UserService {
     async login(email: String, password: String) {
+        const response = await instance.post('/auth/login', { email, password });
+        return response.data;
     }
     
     async register(){
