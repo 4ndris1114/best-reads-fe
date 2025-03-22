@@ -45,6 +45,7 @@
                                 <fa :icon="showPassword ? 'eye-slash' : 'eye'" class="text-gray-400"></fa>
                             </button>
                         </div>
+                        <p v-if="passwordError" class="mt-1 text-xs text-red-500">{{ passwordError }}</p>
                     </div>
 
                     <!-- Remember Me - how can we do this? -->
@@ -122,6 +123,7 @@ const rememberMe = ref(false);
 const showPassword = ref(false);
 const isLoading = ref(false);
 const emailError = ref('');
+const passwordError = ref('');
 const showToast = ref(false);
 const toastMessage = ref('');
 const toastType = ref<'success' | 'error'>('success');
@@ -150,9 +152,14 @@ const handleLogin = async () => {
     isLoading.value = true;
 
     try {
-        userStore.login(email.value, password.value);
+        await userStore.login(email.value, password.value);
         showNotification('Successfully logged in!', 'success');
     } catch (error) {
+        if (error.response.data === "Email not found") {
+            emailError.value = error.response.data;
+        } else if (error.response.data === "Incorrect password") {
+            passwordError.value = error.response.data;
+        }
         showNotification('Login failed. Please try again.', 'error');
     } finally {
         isLoading.value = false;
