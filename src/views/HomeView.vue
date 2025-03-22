@@ -18,6 +18,8 @@ const books = computed(() => bookStore.books)
 <template>
   <div class="min-h-screen bg-gray-50">
     <Navbar />
+    <div class="p-4">
     <BookListView />
+  </div>
   </div>
 </template>
