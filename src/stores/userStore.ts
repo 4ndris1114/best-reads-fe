@@ -26,7 +26,12 @@ export const useUserStore = defineStore('userStore', {
       }
     },
 
-    async register() {
+    async register(username: string, email: string, password: string) {
+      try {
+        await this.userService.register(username, email, password);
+      } catch (e) {
+        throw e;
+      }
     },
 
     async logout() {

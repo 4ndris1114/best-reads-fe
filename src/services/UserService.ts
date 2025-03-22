@@ -12,7 +12,14 @@ export class UserService {
         }
     }
     
-    async register(){
+    async register(username: String, email: String, password: String) {
+        try {
+            const response = await instance.post('/auth/register', { username, email, password });
+            return response.data;
+        } catch (error) {
+            console.error('Error during register:', error);
+            throw error;
+        }
     }
     
     async logout() {
