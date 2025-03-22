@@ -1,4 +1,4 @@
-import { IUser } from '@/interfaces/IUser';
+import type { IUser } from '@/types/interfaces/IUser';
 import { UserService } from '@/services/UserService';
 
 import router from '@/router'  // Import router to perform navigation
@@ -7,9 +7,9 @@ import {jwtDecode} from 'jwt-decode'
 
 export const useUserStore = defineStore('userStore', {
   state: () => ({
-    loggedInUser: null, //todo: as IUser !!
+    loggedInUser: null as IUser | null,
     token: "" || null as string | null,
-    isAuthenticated: false, //todo 
+    isAuthenticated: false, 
 
     userService: new UserService() as UserService,
   }),
@@ -18,7 +18,7 @@ export const useUserStore = defineStore('userStore', {
     async login(email: string, password: string) {
       try {
         const token = await this.userService.login(email, password);
-        this.assignToken(token.token);
+        this.assignToken(token);
 
         router.push('/');
       } catch (e: any) {
@@ -37,7 +37,7 @@ export const useUserStore = defineStore('userStore', {
       this.persistTokenInSessionStorage(token);
       this.token = token;
       this.isAuthenticated = true;
-      this.loggedInUser = jwtDecode(token) as IUser;
+      // this.loggedInUser = jwtDecode(token) as IUser;
     },
 
     persistTokenInSessionStorage(token: string) {

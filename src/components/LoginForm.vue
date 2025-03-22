@@ -110,7 +110,12 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
+import { useUserStore } from '@/stores/userStore';
 
+// stores
+const userStore = useUserStore();
+
+// state
 const email = ref('');
 const password = ref('');
 const rememberMe = ref(false);
@@ -145,7 +150,7 @@ const handleLogin = async () => {
     isLoading.value = true;
 
     try {
-        //TODO : API call to login
+        userStore.login(email.value, password.value);
         showNotification('Successfully logged in!', 'success');
     } catch (error) {
         showNotification('Login failed. Please try again.', 'error');
