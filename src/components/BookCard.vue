@@ -1,7 +1,7 @@
 <template>
-  <div class="p-4 bg-white shadow-md rounded-lg overflow-hidden border-2 border-red-900 p-4 w-3xs">
-    <img v-if="book.coverImage" style="background-image: url('https://picsum.photos/200/200');" class="w-30 h-48 object-cover rounded-md">
-    <!-- <img v-if="book.coverImage" :src="book.coverImage" :alt="book.title" class="w-full h-48 object-cover rounded-md"> -->
+  <div class=" bg-white shadow-md rounded-lg overflow-hidden border-2 border-red-900 p-4 w-3xs">
+ <img v-if="book.coverImage" :src="book.coverImage" :alt="book.title" class="w-full h-48 object-cover rounded-md">
+ <img v-else style="background-image: url('https://picsum.photos/200/200');" class="w-30 mx-auto h-48 object-cover rounded-md">
     <div class="mt-4">
       <h2 class="text-2xl font-semibold text-red-900">{{ book.title }}</h2>
       <p class="text-gray-600">Author: {{ book.author }}</p>
