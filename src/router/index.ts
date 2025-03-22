@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import { useUserStore } from '../stores/userStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,6 +9,14 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      beforeEnter: async (to, from, next) => {
+        const userStore = useUserStore()
+        if (!userStore.isAuthenticated) {
+          next({ name: 'auth' })
+        } else {
+          next()
+        }
+      },
     },
     {
       path: '/discover',
@@ -20,12 +29,23 @@ const router = createRouter({
       component: () => import('../views/BookshelfView.vue'),
       props: true, // Allows route parameters to be passed as props
     },
+    {
+      path: '/login',
+      name: 'auth',
+      component: () => import('../views/AuthView.vue'),
+      beforeEnter: async (to, from, next) => {
+        const userStore = useUserStore()
+        if (userStore.isAuthenticated) {
+          next({ name: 'home' })
+        } else {
+          next()
+        }
+      },
+    },
+    // Uncomment and add more routes if necessary
     // {
     //   path: '/about',
     //   name: 'about',
-    //   // route level code-splitting
-    //   // this generates a separate chunk (About.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
     //   component: () => import('../views/AboutView.vue'),
     // },
   ],
