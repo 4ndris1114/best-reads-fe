@@ -1,4 +1,4 @@
-//TODO: Add missing imports (interfaces, types)
+import { IUser } from '@/interfaces/IUser';
 import { UserService } from '@/services/UserService';
 
 import router from '@/router'  // Import router to perform navigation
@@ -16,6 +16,15 @@ export const useUserStore = defineStore('userStore', {
 
   actions: {
     async login(email: string, password: string) {
+      try {
+        const token = await this.userService.login(email, password);
+        this.assignToken(token.token);
+
+        router.push('/');
+      } catch (e: any) {
+          console.error(e);
+          throw e;
+      }
     },
 
     async register() {
@@ -25,12 +34,21 @@ export const useUserStore = defineStore('userStore', {
     },
 
     assignToken(token: string) {
+      this.persistTokenInSessionStorage(token);
+      this.token = token;
+      this.isAuthenticated = true;
+      this.loggedInUser = jwtDecode(token) as IUser;
     },
 
     persistTokenInSessionStorage(token: string) {
+      sessionStorage.setItem('jwtToken', token);
     },
 
     clearAuthData() {
+      sessionStorage.removeItem('jwtToken');
+      this.token = null;
+      this.isAuthenticated = false;
+      this.loggedInUser = null;
     }
   },
 });
