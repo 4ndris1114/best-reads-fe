@@ -152,6 +152,8 @@ const showNotification = (message: string, type: 'success' | 'error') => {
 };
 
 const handleLogin = async () => {
+    emailError.value = '';
+    passwordError.value = '';
     if (!validateEmail(email.value)) {
         emailError.value = 'Please enter a valid email address';
         return;
