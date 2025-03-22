@@ -15,9 +15,10 @@ library.add(fas)
 const app = createApp(App).component('fa', FontAwesomeIcon)
 
 app.use(createPinia())
-app.use(router)
 
 const userStore = useUserStore();
-userStore.initAuth();
+await userStore.initAuth();
+
+app.use(router)
 
 app.mount('#app')
