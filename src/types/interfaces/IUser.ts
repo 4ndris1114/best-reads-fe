@@ -1,14 +1,17 @@
+import type { IBookshelf } from "./IBookShelf";
+import type { IReadingProgress } from "./IReadingProgress";
+import type { IReadingStats } from "./IReadingstats";
+
 export interface IUser {
-    _id?: string;
+    id: string;
     username: string;
     email: string;
-    password: string;
     profilePicture: string;
     bio: string;
-    bookshelves?: IBookshelf[];
-    readingProgress?: ReadingProgress[];
+    bookshelves: IBookshelf[];
+    readingProgress: IReadingProgress[];
     followers: string[];
     following: string[];
-    readingStats: ReadingStats;
+    readingStats: IReadingStats;
     createdAt: Date;
 }
