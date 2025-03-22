@@ -190,6 +190,11 @@ const handleRegister = async () => {
         showNotification('Successfully registered!', 'success');
         emit('signin');
     } catch (error) {
+        if (error.response.data === "Email already exists") {
+            emailError.value = error.response.data;
+        } else if (error.response.data === "Username already exists") {
+            usernameError.value = error.response.data;
+        }
         showNotification('Registration failed. Please try again.', 'error');
     } finally {
         isLoading.value = false;
