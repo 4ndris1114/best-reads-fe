@@ -14,6 +14,11 @@ const router = createRouter({
       name: 'discover',
       component: () => import('../views/BookListView.vue'),
     },
+    {
+      path: '/bookshelves/:id',
+      name: 'bookshelves',
+      component: () => import('../views/BookshelfView.vue'),
+    },
     // {
     //   path: '/about',
     //   name: 'about',
