@@ -6,7 +6,7 @@
 
            <!-- Navigation -->
           <nav class="flex items-center gap-6 ml-8"><router-link to="/" class="text-white-700 hover:text-slate-800 font-medium">Home</router-link>
-            <router-link :to="`/bookshelves/${defaultBookshelfId}`" class="text-white-700 hover:text-slate-800 font-medium">My Bookshelves</router-link>
+            <router-link :to="`/bookshelves`" class="text-white-700 hover:text-slate-800 font-medium">My Bookshelves</router-link>
           </nav>
 
             <!-- Search bar -->

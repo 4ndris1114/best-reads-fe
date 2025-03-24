@@ -1,18 +1,34 @@
 <template>
 <div class="bookshelf-container flex flex-col p-4 bookshelf">
           <div class="shelf justify-center flex items-center p-2 border-b-4 border-[#ccc]">
-            <div v-for="book in shelf" :key="book.isbn" class="book flex items-center justify-center text-white text-xs font-bold transform rotate-180 p-1 m-1 rounded-sm cursor-pointer"
+            <div v-for="book in books" :key="book.id" class="book flex items-center justify-center text-white text-xs font-bold transform rotate-180 p-1 m-1 rounded-sm cursor-pointer"
                 :style="{ width: getBookWidth(book.title), backgroundColor: getRandomColor() }"
-                @click="openModal(book)">
+                @click="emits('openModal',book)">
               <span class="book-title">{{ book.title }}</span>
             </div>
           </div>
         </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import type { IBookshelf } from '@/types/interfaces/IBookshelf';
 import type { IBook } from '@/types/interfaces/IBook';
+import {useBookStore} from '../stores/bookStore';
+
+const bookStore = useBookStore();
+const books = ref<IBook[]>([]);
+onMounted( async () => {
+  props.shelf.books.forEach(async (bookId: string) => {
+    const book = bookStore.books.find((b:IBook) => b.id === bookId);
+    if (!book) {
+      const maybeBook = await bookStore.getBookById(bookId);
+      if (maybeBook) {
+        books.value.push(maybeBook);
+        bookStore.books.push(maybeBook);
+      }
+    }
+  })
+})
 
 const props = defineProps({
   shelf: {
@@ -37,5 +53,21 @@ const getRandomColor = () => {
 
 </script>
 
-<style>
+<style scoped>
+.book {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  text-align: center;
+  font-weight: bold;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  padding: 5px;
+  margin: 2px;
+  border-radius: 3px;
+  cursor: pointer;
+}
 </style>

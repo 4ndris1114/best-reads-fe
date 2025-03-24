@@ -24,10 +24,9 @@ const router = createRouter({
       component: () => import('../views/BookListView.vue'),
     },
     {
-      path: '/bookshelves/:id',
+      path: '/bookshelves',
       name: 'bookshelves',
-      component: () => import('../views/BookshelfView.vue'),
-      props: true, // Allows route parameters to be passed as props
+      component: () => import('../views/BookshelfView.vue')
     },
     {
       path: '/login',
