@@ -1,44 +1,38 @@
 <template>
-  <Navbar/>
-  <div class="bookshelf-container bg-slate-900 flex flex-col items-center justify-center p-4 bookshelf h-[80vh]">
-  <div class="bookshelf-container  p-4 h-[calc(100%-4rem)]">
-    <div v-if="loading" class="text-center text-gray-600">Loading books...</div>
-    <div v-else-if="error" class="text-center text-red-500">{{ error }}</div>
+  <div>
+    <Navbar/>
+    <div class="bookshelf-container bg-slate-900 flex flex-col items-center justify-center p-4 bookshelf h-screen">
+    <div class="bookshelf-container p-4 h-[calc(100%-4rem)]">
+      <div v-if="loading" class="text-center text-gray-600">Loading books...</div>
+      <div v-else-if="error" class="text-center text-red-500">{{ error }}</div>
 
-    <div v-else>
-      <div class="mt-20 shelf-label text-center mb-8">
-      <!-- Bookshelf Title -->
-      <!-- Left Arrow Button -->
-      <button class="text-white bg-gray-600 p-2 rounded-lg hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900">
-              <fa icon="chevron-left" />
-            </button>
+      <div v-else>
+        <div class="mt-20 shelf-label text-center mb-8">
+        <!-- Bookshelf Title -->
+        <!-- Left Arrow Button -->
+        <button class="text-white bg-gray-600 p-2 rounded-lg hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900">
+                <fa icon="chevron-left" />
+              </button>
 
-        <span class="text-3xl font-extrabold text-[#9F6932] bg-[#1D1617] py-2 px-4 rounded-lg border-4 border-[#522623]">
-          {{ $route.params.id }} <!--display id of bookshelf -->
-        </span>
-         <!-- Right Arrow Button -->
-         <button class="text-white bg-gray-600 p-2 rounded-lg hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900">
-              <fa icon="chevron-right" />
-            </button>
-            <!-- Button to add a new bookshelf -->
-    <div class="flex justify-end">
-      <button class="text-white bg-gray-600 p-2 mr-5 rounded-lg hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900" @click="addBookshelf('New Bookshelf')">Add New Bookshelf</button>
+          <span class="text-3xl font-extrabold text-[#9F6932] bg-[#1D1617] py-2 px-4 rounded-lg border-4 border-[#522623]">
+            {{ $route.params.id }} <!--display id of bookshelf -->
+          </span>
+          <!-- Right Arrow Button -->
+          <button class="text-white bg-gray-600 p-2 rounded-lg hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900">
+                <fa icon="chevron-right" />
+              </button>
+              <!-- Button to add a new bookshelf -->
+      <div class="flex justify-end">
+        <button class="text-white bg-gray-600 p-2 mr-5 rounded-lg hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900" @click="addBookshelf('New Bookshelf')">Add New Bookshelf</button>
+      </div>
     </div>
-  </div>
-      </div>
-
-      <div class="bookshelf-container flex flex-col p-4 bookshelf">
-        <div v-for="(shelf, index) in shelves" :key="index" class="shelf justify-center flex items-center p-2 border-b-4 border-[#ccc]">
-          <div v-for="book in shelf" :key="book.isbn" class="book flex items-center justify-center text-white text-xs font-bold transform rotate-180 p-1 m-1 rounded-sm cursor-pointer"
-               :style="{ width: getBookWidth(book.title), backgroundColor: getRandomColor() }"
-               @click="openModal(book)">
-            <span class="book-title">{{ book.title }}</span>
-          </div>
         </div>
-      </div>
 
-      <!-- Modal Component -->
-      <Modal :book="selectedBook" :isVisible="isModalVisible" @closeModal="closeModal" />
+
+
+        <!-- Modal Component -->
+        <BookModal :book="selectedBook" :isVisible="isModalVisible" @closeModal="closeModal" />
+      </div>
     </div>
   </div>
 </template>
@@ -46,35 +40,22 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import Navbar from '../components/Navbar.vue';
-import Modal from '../components/BookModal.vue';
+import BookModal from '@/components/BookModal.vue';
 import { BookService } from '../services/BookService';
+import Bookshelf from '@/components/Bookshelf.vue';
+import type { IBook } from '@/types/interfaces/IBook';
+import { useBookStore } from '../stores/bookStore';
 
-interface Rating {
-  rating: number;
-}
-
-interface Book {
-  title: string;
-  author: string;
-  isbn: string;
-  publishedDate: string;
-  coverImage?: string;
-  genres: string[];
-  ratings: Rating[];
-  averageRating: number;
-}
-
-const books = ref<Book[]>([]);
+const books = ref<IBook[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
-const selectedBook = ref<Book | null>(null);
+const selectedBook = ref<IBook | null>(null);
+const bookStore = useBookStore();
 const isModalVisible = ref(false);
-const bookColors = ['#2A374D', '#444A41', '#9F6932', '#522623'];
 
 const fetchBooks = async () => {
   try {
-    const bookService = new BookService();
-    books.value = await bookService.getAll();
+    books.value = await bookStore.getAllBooks();
   } catch (err) {
     error.value = 'Failed to load books.';
   } finally {
@@ -85,11 +66,7 @@ const fetchBooks = async () => {
 onMounted(fetchBooks);
 
 // Function to determine book width based on title length
-const getBookWidth = (title: string) => {
-  const charCount = title.length;
-  const width = Math.min(10 + charCount * 2, 100); // Max width of 100px
-  return `${width}px`;
-};
+
 
 const bookshelves = ref([
   {
@@ -129,9 +106,7 @@ const shelves = computed(() => {
 });
 
 // Function to randomize book colors
-const getRandomColor = () => {
-  return bookColors[Math.floor(Math.random() * bookColors.length)];
-};
+
 
 // Open modal on book click
 const openModal = (book: Book) => {

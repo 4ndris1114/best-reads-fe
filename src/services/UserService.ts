@@ -11,7 +11,7 @@ export class UserService {
             throw error;
         }
     }
-    
+
     async register(username: String, email: String, password: String) {
         try {
             const response = await instance.post('/auth/register', { username, email, password });
@@ -21,7 +21,7 @@ export class UserService {
             throw error;
         }
     }
-    
+
     async logout() {
         //endpoint for logout or just clear token + loggedInUser info ?
     }
@@ -49,6 +49,6 @@ export class UserService {
         following: user.following,
         readingStats: user.readingStats,
         createdAt: user.createdAt,
-      };
+      } as IUser;
     }
 }
