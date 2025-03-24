@@ -4,11 +4,10 @@
       <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="text-2xl font-bold text-white-600">BestReads</div>
 
-            <!-- Navigation -->
-            <nav class="flex items-center gap-6 ml-8">
-                <a href="#" class="text-white-700 hover:text-slate-800 font-medium">Home</a>
-                <a href="#" class="text-white-700 hover:text-slate-800 font-medium">My Bookshelves</a>
-            </nav>
+           <!-- Navigation -->
+          <nav class="flex items-center gap-6 ml-8"><router-link to="/" class="text-white-700 hover:text-slate-800 font-medium">Home</router-link>
+            <router-link :to="`/bookshelves/${defaultBookshelfId}`" class="text-white-700 hover:text-slate-800 font-medium">My Bookshelves</router-link>
+          </nav>
 
             <!-- Search bar -->
             <div class="flex-1 max-w-2xl mx-8 relative">
@@ -32,6 +31,11 @@
     </header>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from "vue";
+
+const searchQuery = ref("");
+const defaultBookshelfId = "1"; // Change this dynamically if needed
+</script>
 
 <style scoped></style>
