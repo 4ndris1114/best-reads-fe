@@ -2,31 +2,60 @@
     <!-- Search container -->
     <div class="flex-1 max-w-2xl mx-8 relative">
         <!-- Search bar -->
-        <fa icon="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
-        <input @click="toggleRecommendations" type="text" v-model="searchQuery" placeholder="Search books, authors, or genres..."
-            class="w-full px-4 py-2 pl-10 border-none bg-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <fa icon="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-black text-sm" />
+        <input @click="toggleRecommendations" type="text" v-model="searchQuery"
+            placeholder="Search books, authors, or genres..."
+            class="w-full px-4 py-2 pl-10 border-none bg-gray-100 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+        <fa v-if="isRecommendationsOpen" icon="arrow-down" class="absolute right-3 top-3 text-gray-400 text-sm" />
         
         <!-- Search recommendations -->
-        <div v-on-click-outside="toggleRecommendations" v-if="searchResults.length > 0 && isRecommendationsOpen" >
-        <ul
-            class="absolute w-full mt-2 bg-white shadow-lg rounded-lg overflow-hidden z-50">
-            <li v-for="result in searchResults" :key="result.id" 
-                class="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 cursor-pointer">
-                {{ result.title }}
-            </li>
-        </ul>
-    </div>
+        <div v-on-click-outside="toggleRecommendations" v-if="searchResults.length > 0 && isRecommendationsOpen"
+            class="absolute w-full mt-1 bg-white shadow-lg rounded-lg overflow-y-auto max-h-[69vh] z-50">
+            <ul>
+                <li v-for="book in searchResults" :key="book.id"
+                    class="flex items-center gap-4 px-4 py-3 hover:bg-gray-100 cursor-pointer">
+
+                    <img :src="imageCache.get(book.coverImage) ?? book.coverImage" :alt="book.title"
+                        class="w-12 h-16 object-cover rounded-md"
+                        loading="lazy">
+
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-sm text-gray-900">{{ book.title }}</h3>
+                        <p class="text-xs text-gray-600">by {{ book.author }}</p>
+
+                        <div class="flex items-center gap-1 mt-1">
+                            <fa icon="star" v-for="n in Math.floor(book.averageRating)" :key="n"
+                                class="text-yellow-400 text-xs" />
+                            <span class="text-xs text-gray-500">({{ book.averageRating }})</span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { useBookStore } from '@/stores/bookStore';
 import type { IBook } from '@/types/interfaces/IBook';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, shallowRef, watchEffect } from 'vue';
 import { vOnClickOutside } from '@vueuse/components'
+
 onMounted(async () => {
     bookStore.getAllBooks();
 })
+
+//caching
+const imageCache = shallowRef(new Map<string, string>());
+
+const preloadImage = (url: string) => {
+    if (!imageCache.value.has(url)) {
+        const img = new Image();
+        img.src = url;
+        img.onload = () => imageCache.value.set(url, img.src); // Cache image URL
+    }
+};
 
 //stores
 const bookStore = useBookStore();
@@ -38,18 +67,21 @@ const searchResults = computed<IBook[]>(() => {
     if (!searchQuery.value) {
         return books.value;
     }
-    return books.value.filter(book => 
-        book.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        book.author.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        book.genres.some(genre => genre.toLowerCase().includes(searchQuery.value.toLowerCase()))
-    );
+    return books.value.filter(book =>
+        book.title.toLowerCase().includes(searchQuery.value.toLowerCase().trim()) ||
+        book.author.toLowerCase().includes(searchQuery.value.toLowerCase().trim()) ||
+        book.genres.some(genre => genre.toLowerCase().includes(searchQuery.value.toLowerCase().trim()))
+    )
 });
 
 const toggleRecommendations = () => {
     isRecommendationsOpen.value = !isRecommendationsOpen.value;
 };
+
+// Start preloading whenever search results change
+watchEffect(() => {
+    searchResults.value.forEach(book => preloadImage(book.coverImage));
+});
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
