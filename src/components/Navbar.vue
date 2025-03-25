@@ -18,6 +18,10 @@
 
             <!-- User actions -->
             <div class="flex items-center gap-6">
+              <button class="relative !rounded-button cursor-pointer">
+                    <fa icon="message" class="scale-140" />
+                    <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
                 <button class="relative !rounded-button cursor-pointer">
                     <fa icon="bell" class="scale-140" />
                     <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
