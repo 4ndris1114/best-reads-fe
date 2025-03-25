@@ -49,13 +49,30 @@ onMounted(async () => {
 //caching
 const imageCache = shallowRef(new Map<string, string>());
 
-const preloadImage = (url: string) => {
-    if (!imageCache.value.has(url)) {
+const resizeImage = (url: string, width = 100, height = 150, quality = 0.7) => {
+    return new Promise<string>((resolve) => {
         const img = new Image();
+        img.crossOrigin = "Anonymous";
         img.src = url;
-        img.onload = () => imageCache.value.set(url, img.src); // Cache image URL
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d")!;
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL("image/jpeg", quality));
+        };
+    });
+};
+
+const preloadImage = async (url: string) => {
+    if (!imageCache.value.has(url)) {
+        const compressedImage = await resizeImage(url, 100, 150, 0.6);
+        imageCache.value.set(url, compressedImage);
+        imageCache.value = new Map(imageCache.value); // Trigger reactivity
     }
 };
+
 
 //stores
 const bookStore = useBookStore();
