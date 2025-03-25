@@ -11,6 +11,11 @@ export const useBookStore = defineStore('bookStore', {
 
         service: new BookService() as BookService
     }),
+    getters: {
+        getBooks: (state) => state.books,
+        getSelectedBook: (state) => state.selectedBook,
+        isLoading: (state) => state.loading
+    },
     actions: {
         async getAllBooks() {
             try {
