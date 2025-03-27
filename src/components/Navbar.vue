@@ -9,12 +9,7 @@
             <router-link :to="`/bookshelves`" class="text-white-700 hover:text-slate-800 font-medium">My Bookshelves</router-link>
           </nav>
 
-            <!-- Search bar -->
-            <div class="flex-1 max-w-2xl mx-8 relative">
-                <fa icon="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-white-400 text-sm" />
-                <input type="text" v-model="searchQuery" placeholder="Search books, authors, or genres..."
-                    class="w-full px-4 py-2 pl-10 border-none bg-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
+            <Searchbar />
 
             <!-- User actions -->
             <div class="flex items-center gap-6">
@@ -36,10 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-
-const searchQuery = ref("");
-const defaultBookshelfId = "1"; // Change this dynamically if needed
+import Searchbar from './Searchbar.vue';
 </script>
 
 <style scoped></style>
