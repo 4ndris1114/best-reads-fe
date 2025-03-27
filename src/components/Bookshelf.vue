@@ -17,18 +17,23 @@ import {useBookStore} from '../stores/bookStore';
 
 const bookStore = useBookStore();
 const books = ref<IBook[]>([]);
-onMounted( async () => {
-  props.shelf.books.forEach(async (bookId: string) => {
-    const book = bookStore.books.find((b:IBook) => b.id === bookId);
+  onMounted(async () => {
+  // Fetch all books and update reactivity
+  const bookPromises = props.shelf.books.map(async (bookId: string) => {
+    let book = bookStore.books.find((b: IBook) => b.id === bookId);
     if (!book) {
-      const maybeBook = await bookStore.getBookById(bookId);
-      if (maybeBook) {
-        books.value.push(maybeBook);
-        bookStore.books.push(maybeBook);
+      try {
+        book = await bookStore.getBookById(bookId);
+        if (book) bookStore.books.push(book);
+      } catch (error) {
+        console.error(`Error fetching book ${bookId}`, error);
       }
     }
-  })
-})
+    return book;
+  });
+
+  books.value = (await Promise.all(bookPromises)).filter((b) => b !== null) as IBook[];
+});
 
 const props = defineProps({
   shelf: {
