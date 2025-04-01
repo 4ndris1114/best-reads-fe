@@ -58,7 +58,7 @@ import type { IBook } from '@/types/interfaces/IBook';
 import { useBookStore } from '../stores/bookStore';
 import { useShelfStore } from '@/stores/shelfStore';
 import { useUserStore } from '../stores/userStore';
-import type { IBookshelf } from '@/types/interfaces/IBookShelf';
+import type { IBookshelf } from '@/types/interfaces/IBookshelf';
 
 const loading = computed(() => shelfStore.loading);
 const error = ref<string | null>(null);

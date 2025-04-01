@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { ShelfService } from '@/services/ShelfService.ts';
-import type { IBookshelf } from '@/types/interfaces/IBookShelf';
+import type { IBookshelf } from '@/types/interfaces/IBookshelf';
 
 export const useShelfStore = defineStore('shelfStore', {
   state: () => ({
