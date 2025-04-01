@@ -50,6 +50,6 @@ export class UserService {
         following: user.following,
         readingStats: user.readingStats,
         createdAt: user.createdAt,
-      };
+      } as IUser;
     }
 }

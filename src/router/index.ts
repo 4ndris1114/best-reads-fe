@@ -19,6 +19,16 @@ const router = createRouter({
       },
     },
     {
+      path: '/discover',
+      name: 'discover',
+      component: () => import('../views/BookListView.vue'),
+    },
+    {
+      path: '/bookshelves',
+      name: 'bookshelves',
+      component: () => import('../views/BookshelfView.vue')
+    },
+    {
       path: '/login',
       name: 'auth',
       component: () => import('../views/AuthView.vue'),
@@ -30,9 +40,14 @@ const router = createRouter({
           next()
         }
       },
-    }
+    },
+    // Uncomment and add more routes if necessary
+    // {
+    //   path: '/about',
+    //   name: 'about',
+    //   component: () => import('../views/AboutView.vue'),
+    // },
   ],
 })
 
 export default router
-
