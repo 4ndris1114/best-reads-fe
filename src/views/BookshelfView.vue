@@ -44,7 +44,7 @@
           @openModal="openModal" />
 
         <!-- Modals -->
-        <BookModal :book="selectedBook" :isVisible="isModalVisible" @closeModal="closeModal" />
+        <BookModal v-on-click-outside :book="selectedBook" :isVisible="isModalVisible" @closeModal="closeModal" />
         <NewBookshelfModal :isShelfVisible="isShelfVisible" @closeShelfModal="closeShelfModal" @bookshelfCreated="addBookshelf"/>
       </div>
     </div>
@@ -61,7 +61,8 @@ import type { IBook } from '@/types/interfaces/IBook';
 import { useBookStore } from '@/stores/bookStore';
 import { useShelfStore } from '@/stores/shelfStore';
 import { useUserStore } from '@/stores/userStore';
-import type { IBookshelf } from '@/types/interfaces/IBookShelf';
+import { vOnClickOutside } from '@vueuse/components'
+import type { IBookshelf } from '@/types/interfaces/IBookshelf';
 
 const loading = computed(() => shelfStore.loading);
 const error = ref<string | null>(null);
@@ -70,9 +71,10 @@ const bookStore = useBookStore();
 const isModalVisible = ref(false);
 const isShelfVisible = ref(false);
 const shelfStore = useShelfStore();
+import axios from 'axios';
 const userStore = useUserStore();
-const bookshelves = computed(() => userStore.loggedInUser!.bookshelves);
-const selectedBookshelf = ref<IBookshelf | null>(bookshelves.value[0]);
+const bookshelves = computed(() => shelfStore.bookshelves ? shelfStore.bookshelves : []);
+const selectedBookshelf = ref<IBookshelf | null>(bookshelves.value.length > 0 ? bookshelves.value[0] : null);
 
 const swipeToNextBookshelf = (increment: number) => {
   const currentIndex = bookshelves.value.findIndex((bookshelf) => bookshelf.id === selectedBookshelf.value?.id);
@@ -83,22 +85,52 @@ const swipeToNextBookshelf = (increment: number) => {
   selectedBookshelf.value = bookshelves.value[nextIndex];
 }
 
-const addBookshelf = (name: string) => {
-  const newBookshelf = {
-    id: Math.random().toString(36).substring(7), // Generate a random ID
-    name: name,
-    books: [],
-  };
-  userStore.loggedInUser!.bookshelves.push(newBookshelf);
-  selectedBookshelf.value = newBookshelf;
-  console.log(userStore.loggedInUser!.bookshelves);
-  closeShelfModal(); // Close modal after adding
-}
+const addBookshelf = async (name: string) => {
+  if (!userStore.loggedInUser) return;
+
+  try {
+    const response = await axios.post(`/api/bookshelf/${userStore.loggedInUser.id}`, {
+      name: name,
+      books: [],
+    });
+
+    // Add the newly created bookshelf to the store
+    userStore.loggedInUser.bookshelves.push(response.data);
+    selectedBookshelf.value = response.data;
+
+    closeShelfModal(); // Close modal after adding
+  } catch (error: any) {
+    console.error("Failed to create bookshelf:", error.response?.data || error.message);
+  }
+};
 
 const openModal = (book: IBook) => {
   selectedBook.value = book;
   isModalVisible.value = true;
 };
+
+const addBookToBookshelf = async (bookId: string) => {
+  console.log("Book ID type:", typeof bookId, "Value:", bookId);
+
+  if (!userStore.loggedInUser || !selectedBookshelf.value) return;
+
+  try {
+    await axios.post(
+      `/api/bookshelf/${userStore.loggedInUser.id}/${selectedBookshelf.value.id}/books`,
+      bookId, // Ensure it's a string
+      {
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+
+    selectedBookshelf.value.books.push({ id: bookId });
+
+    console.log(`Book ${bookId} added to bookshelf ${selectedBookshelf.value.name}`);
+  } catch (error: any) {
+    console.error("Failed to add book:", error.response?.data || error.message);
+  }
+};
+
 
 const closeModal = () => {
   isModalVisible.value = false;
