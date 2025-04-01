@@ -8,7 +8,7 @@
             class="w-full px-4 py-2 pl-10 border-none bg-gray-100 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
 
         <fa v-if="isRecommendationsOpen" icon="arrow-down" class="absolute right-3 top-3 text-gray-400 text-sm" />
-        
+
         <!-- Search recommendations -->
         <div v-on-click-outside="toggleRecommendations" v-if="searchResults.length > 0 && isRecommendationsOpen"
             class="absolute w-full mt-1 bg-white shadow-lg rounded-lg overflow-y-auto max-h-[69vh] z-50">
