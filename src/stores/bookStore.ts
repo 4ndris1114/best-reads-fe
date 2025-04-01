@@ -6,7 +6,7 @@ import type { IBook } from '@/types/interfaces/IBook';
 export const useBookStore = defineStore('bookStore', {
     state: () => ({
         books: [] as IBook[],
-        selectedBook: {} as IBook | null,
+        selectedBook: {} as IBook,
         loading: false,
 
         service: new BookService() as BookService
