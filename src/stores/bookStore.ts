@@ -6,7 +6,7 @@ import type { IBook } from '@/types/interfaces/IBook';
 export const useBookStore = defineStore('bookStore', {
     state: () => ({
         books: [] as IBook[],
-        selectedBook: null,
+        selectedBook: {} as IBook | null,
         loading: false,
 
         service: new BookService() as BookService
@@ -37,7 +37,18 @@ export const useBookStore = defineStore('bookStore', {
           } finally {
             this.loading = false;
           }
+        },
+        async selectBook(bookId: string) {
+          const bookToBeSelected = this.books.find(book => book.id === bookId);
+          if (!bookToBeSelected) {
+            try {
+              this.selectedBook = await this.service.getBookById(bookId);
+            } catch (error) {
+                console.error('Cannot select book, failed to fetch:', error);
+            }
+          } else {
+            this.selectedBook = bookToBeSelected;
+          }
         }
     }
-
 });
