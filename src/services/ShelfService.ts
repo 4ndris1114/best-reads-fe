@@ -30,4 +30,32 @@ export class ShelfService {
       throw error;
     }
   }
+
+  async addBookToBookshelf(userId: string, bookshelfId: string, bookId: string): Promise<void> {
+    try {
+      await instance.post(`/bookshelf/${userId}/${bookshelfId}/books/${bookId}`);
+    } catch (error) {
+      console.error('Error adding book to bookshelf:', error);
+      throw error;
+    }
+  }
+
+  async deleteBookshelf(userId: string, bookshelfId: string): Promise<void> {
+    try {
+      await instance.delete(`/bookshelf/${userId}/${bookshelfId}`);
+    } catch (error) {
+      console.error('Error deleting bookshelf:', error);
+      throw error;
+    }
+  }
+
+  async renameBookshelf(userId: string, bookshelfId: string, newName: string): Promise<IBookshelf> {
+    try {
+      const response = await instance.put(`/bookshelf/${userId}/${bookshelfId}`, { name: newName });
+      return mapToIBookshelf(response.data);
+    } catch (error) {
+      console.error('Error renaming bookshelf:', error);
+      throw error;
+    }
+  }
 }

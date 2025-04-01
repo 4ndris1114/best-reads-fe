@@ -1,6 +1,6 @@
 <template>
   <div v-if="isShelfVisible"
-       class="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50"
+       class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
        @click.self="closeModal"> <!-- Close modal when clicking outside -->
     <div class="bg-white p-8 rounded-lg w-96 relative"> <!-- Increased modal size -->
       <!-- Close Button Positioned Top Right -->
@@ -61,7 +61,6 @@ const createBookshelf = async () => {
   isLoading.value = true;
   try {
    await shelfStore.createBookshelf(userStore.loggedInUser.id, newBookshelfName.value);
-
     emit('bookshelfCreated');
     newBookshelfName.value = '';
     closeModal();
@@ -74,16 +73,4 @@ const createBookshelf = async () => {
 </script>
 
 <style scoped>
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
 </style>

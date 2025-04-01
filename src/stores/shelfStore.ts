@@ -31,6 +31,38 @@ export const useShelfStore = defineStore('shelfStore', {
       } catch (error) {
         console.error('Error creating bookshelf:', error);
       }
+    },
+
+    async addBookToBookshelf(userId: string, bookshelfId: string, bookId: string) {
+      try {
+        const response = await this.service.addBookToBookshelf(userId, bookshelfId, bookId);
+        console.log('Book', bookId, 'successfully added to bookshelf:', response);
+      } catch (error) {
+        console.error('Error adding book to bookshelf:', error);
+      }
+    },
+
+    async deleteBookshelf(userId: string, bookshelfId: string) {
+      try {
+        await this.service.deleteBookshelf(userId, bookshelfId);
+        this.bookshelves = this.bookshelves.filter(bookshelf => bookshelf.id !== bookshelfId);
+      } catch (error) {
+        console.error('Error deleting bookshelf:', error);
+      }
+    },
+
+    async renameBookshelf(userId: string, bookshelfId: string, newName: string) {
+      try {
+        const updatedBookshelf = await this.service.renameBookshelf(userId, bookshelfId, newName);
+        this.bookshelves = this.bookshelves.map(bookshelf => {
+          if (bookshelf.id === bookshelfId) {
+            return updatedBookshelf;
+          }
+          return bookshelf;
+        });
+      } catch (error) {
+        console.error('Error renaming bookshelf:', error);
+      }
     }
   }
 })
