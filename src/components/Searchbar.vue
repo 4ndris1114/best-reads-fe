@@ -87,6 +87,7 @@ const searchResults = computed<IBook[]>(() => {
     return books.value.filter(book =>
         book.title.toLowerCase().includes(searchQuery.value.toLowerCase().trim()) ||
         book.author.toLowerCase().includes(searchQuery.value.toLowerCase().trim()) ||
+        book.isbn.trim().includes(searchQuery.value.toLowerCase().trim().split("-").join("")) ||
         book.genres.some(genre => genre.toLowerCase().includes(searchQuery.value.toLowerCase().trim()))
     )
 });
