@@ -165,7 +165,7 @@ const handleLogin = async () => {
     try {
         await userStore.login(email.value, password.value);
         showNotification('Successfully logged in!', 'success');
-    } catch (error) {
+    } catch (error: any) {
         if (error.response.data === "Email not found") {
             emailError.value = error.response.data;
         } else if (error.response.data === "Incorrect password") {

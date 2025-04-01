@@ -1,4 +1,4 @@
-import type { IBookshelf } from "./IBookShelf";
+import type { IBookshelf } from "./IBookshelf";
 import type { IReadingProgress } from "./IReadingProgress";
 import type { IReadingStats } from "./IReadingstats";
 

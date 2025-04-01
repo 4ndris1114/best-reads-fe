@@ -1,5 +1,7 @@
 import httpClient from "@/services/httpClient";
 //todo: add missing imports for interfaces, types
+import type { IBook } from "@/types/interfaces/IBook";
+import { mapToIBook } from "@/utils/mappers";
 
 export class BookService {
     async getAll() {
@@ -8,8 +10,7 @@ export class BookService {
         while (attempts < maxAttempts) {
             try {
                 const response = await httpClient.get('/Book');
-                console.log(response);
-                
+
                 return response.data;
             } catch (error: any) {
                 if (error.response?.status !== 408 || attempts >= maxAttempts - 1) {
@@ -21,5 +22,17 @@ export class BookService {
             }
         }
         return []; // Return an empty array if all attempts fail
+    }
+    async getBookById(bookId: string) {
+        try {
+            const response = await httpClient.get(`/Book/${bookId}`);
+            if (!response.data) {
+                throw new Error('Book not found');
+            }
+            return mapToIBook(response.data);
+        } catch (error) {
+            console.error('Error fetching book:', error);
+            throw error;
+        }
     }
 }

@@ -19,6 +19,16 @@ const router = createRouter({
       },
     },
     {
+      path: '/discover',
+      name: 'discover',
+      component: () => import('../views/BookListView.vue'),
+    },
+    {
+      path: '/bookshelves',
+      name: 'bookshelves',
+      component: () => import('../views/BookshelfView.vue')
+    },
+    {
       path: '/login',
       name: 'auth',
       component: () => import('../views/AuthView.vue'),
@@ -30,13 +40,11 @@ const router = createRouter({
           next()
         }
       },
-    }
+    },
+    // Uncomment and add more routes if necessary
     // {
     //   path: '/about',
     //   name: 'about',
-    //   // route level code-splitting
-    //   // this generates a separate chunk (About.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
     //   component: () => import('../views/AboutView.vue'),
     // },
   ],
