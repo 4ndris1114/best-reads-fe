@@ -45,7 +45,7 @@
 
         <!-- Modals -->
         <BookModal v-on-click-outside :book="selectedBook" :isVisible="isModalVisible" @closeModal="closeModal" />
-        <NewBookshelfModal :isShelfVisible="isShelfVisible" @closeShelfModal="closeShelfModal" @bookshelfCreated="addBookshelf"/>
+        <NewBookshelfModal :isShelfVisible="isShelfVisible" @closeShelfModal="closeShelfModal" @bookshelfCreated="showNewBookshelf"/>
       </div>
     </div>
   </div>
@@ -71,7 +71,6 @@ const bookStore = useBookStore();
 const isModalVisible = ref(false);
 const isShelfVisible = ref(false);
 const shelfStore = useShelfStore();
-import axios from 'axios';
 const userStore = useUserStore();
 const bookshelves = computed(() => shelfStore.bookshelves ? shelfStore.bookshelves : []);
 const selectedBookshelf = ref<IBookshelf | null>(bookshelves.value.length > 0 ? bookshelves.value[0] : null);
@@ -85,24 +84,9 @@ const swipeToNextBookshelf = (increment: number) => {
   selectedBookshelf.value = bookshelves.value[nextIndex];
 }
 
-const addBookshelf = async (name: string) => {
-  if (!userStore.loggedInUser) return;
-
-  try {
-    const response = await axios.post(`/api/bookshelf/${userStore.loggedInUser.id}`, {
-      name: name,
-      books: [],
-    });
-
-    // Add the newly created bookshelf to the store
-    userStore.loggedInUser.bookshelves.push(response.data);
-    selectedBookshelf.value = response.data;
-
-    closeShelfModal(); // Close modal after adding
-  } catch (error: any) {
-    console.error("Failed to create bookshelf:", error.response?.data || error.message);
-  }
-};
+const showNewBookshelf = () =>{
+  selectedBookshelf.value = bookshelves.value[bookshelves.value.length - 1];
+}
 
 const openModal = (book: IBook) => {
   selectedBook.value = book;

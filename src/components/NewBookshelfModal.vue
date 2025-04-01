@@ -61,9 +61,9 @@ const createBookshelf = async () => {
 
   isLoading.value = true;
   try {
-   shelfStore.createBookshelf(userStore.loggedInUser.id, newBookshelfName.value);
+   await shelfStore.createBookshelf(userStore.loggedInUser.id, newBookshelfName.value);
 
-    // emit('bookshelfCreated', response.data);
+    emit('bookshelfCreated');
     newBookshelfName.value = '';
     closeModal();
   } catch (error) {
