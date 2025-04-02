@@ -44,14 +44,25 @@
                 <p class="text-2xl text-gray-500">{{ book.author }}</p>
 
                 <!-- Replace later -->
-                <p class="pt-[3vh] text-justify">{{ bookDescription.length > 500 ? bookDescription.substring(0, 500).trim() + "..." : bookDescription }} <a v-if="bookDescription.length > 500" href="#" class="pl-2 text-highlight underline">Show more</a></p>
-                <p class="text-sm text-gray-500"></p>
+                <p v-if="!isShowingMore" class="pt-[3vh] text-justify">{{ bookDescription.length > 500 ? bookDescription.substring(0, 500).trim() + "..." : bookDescription }} 
+                    <a v-if="bookDescription.length > 500" href="#" class="pl-2 text-highlight underline"
+                    @click="isShowingMore = true">Show more</a>
+                </p>
+                <p v-else class="pt-[3vh] text-justify">{{ bookDescription }}
+                    <a href="#" class="pl-2 text-highlight underline"
+                    @click="isShowingMore = false">Show less</a>
+                    <br />
+                    <div v-if="book.publishedDate" class="pt-[3vh] text-sm text-gray-500">Published: {{ book.publishedDate.toString().split('T')[0] }}</div>
+                </p>
+                <!-- Genres -->
                 <div class="text-sm text-gray-500 list-disc list-inside flex flex-row space-x-2 mt-6">
                     <div 
                     v-for="genre in book.genres" 
                     :key="genre"
                     class="bg-primary w-fit p-2 rounded-full text-white">{{ genre }}</div>
                 </div>
+                <!-- Reviews -->
+
             </div>
             <div class="border-l-3 border-black min-h-screen w-[25vw]">
                 <h1 class="text-3xl">Readers also liked</h1>
@@ -83,6 +94,7 @@ onMounted(() => {
 const bookIdFromRoute = ref<string | null>(null);
 const book = computed(() => bookStore.selectedBook);
 const hoveredStar = ref(0);
+const isShowingMore = ref(false);
 
 const error = ref<string>("");
 
