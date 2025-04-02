@@ -1,10 +1,10 @@
 <template>
-<div class="bookshelf-container flex flex-col p-4 bookshelf">
-          <div class="shelf justify-center flex items-center p-2 border-b-4 border-[#ccc]">
-            <div v-for="book in books" :key="book.id" class="book flex items-center justify-center text-white text-xs font-bold transform rotate-180 p-1 m-1 rounded-sm cursor-pointer"
+<div class="bookshelf-container mt-20 flex flex-col p-4 bookshelf">
+          <div class="shelf justify-center flex flex-wrap items-center p-1 border-b-7 text-white border-[#ccc]">
+            <div v-for="book in books" :key="book.id" class="book flex items-center justify-center text-s font-bold transform rotate-180 p-1 m-1 rounded-sm cursor-pointer"
                 :style="{ width: getBookWidth(book.title), backgroundColor: getRandomColor() }"
                 @click="emits('openModal',book)">
-              <span class="book-title">{{ book.title }}</span>
+              <span class="book-title" >{{ book.title }}</span>
             </div>
           </div>
         </div>
@@ -49,7 +49,7 @@ const bookColors = ['#2A374D', '#444A41', '#9F6932', '#522623'];
 
 const getBookWidth = (title: string) => {
   const charCount = title.length;
-  const width = Math.min(10 + charCount * 2, 100); // Max width of 100px
+  const width = Math.min(12.5 + charCount * 2.5, 125); // Max width of 125px
   return `${width}px`;
 };
 const getRandomColor = () => {
@@ -60,19 +60,16 @@ const getRandomColor = () => {
 
 <style scoped>
 .book {
-  height: 120px;
+  height: 140px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-size: 12px;
   text-align: center;
   font-weight: bold;
   writing-mode: vertical-rl;
-  transform: rotate(180deg);
   padding: 5px;
   margin: 2px;
-  border-radius: 3px;
+  border-radius: 0 0 5px 5px;
   cursor: pointer;
 }
 </style>

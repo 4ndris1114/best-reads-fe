@@ -1,37 +1,60 @@
 <template>
   <div>
     <Navbar />
-    <div class="bookshelf-container bg-slate-900 flex flex-col items-center justify-center p-4 bookshelf h-screen">
+    <div class="bookshelf-container bg-[rgb(38,38,48)] flex flex-col items-center justify-center p-4 bookshelf h-screen">
       <div class="bookshelf-container p-4 h-[calc(100%-4rem)]">
         <div v-if="loading" class="text-center text-gray-600">Loading bookshelves...</div>
         <div v-else-if="error" class="text-center text-red-500">{{ error }}</div>
 
         <div v-else-if="selectedBookshelf">
-          <div class="mt-20 shelf-label flex items-center justify-between w-full">
-            <div class="flex items-center justify-center flex-1 gap-4">
-              <!-- Left Arrow Button -->
-              <button @click="swipeToNextBookshelf(-1)"
-                class="text-white bg-gray-600 p-2 rounded-lg hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900">
-                <fa icon="chevron-left" />
-              </button>
+          <div class="mt-20 shelf-label flex items-center justify-between w-full relative">
+            <!-- Bookshelf Title + Dropdown -->
+            <button @click="toggleDropdown"
+                    class="flex items-center gap-2 bg-[#9F6932] py-2 px-4 rounded-3xl border-4 border-[#522623] text-3xl font-extrabold text-black-900 hover:bg-[#af7c3a] transition w-[250px]">
+              {{ selectedBookshelf.name }}
+              <fa :icon="dropdownOpen ? 'chevron-up' : 'chevron-down'" class="ml-auto" />
+            </button>
 
-              <span class="text-3xl font-extrabold text-[#9F6932] bg-[#1D1617] py-2 px-4 rounded-lg border-4 border-[#522623]">
-                {{ selectedBookshelf.name }}
-              </span>
-
-              <!-- Right Arrow Button -->
-              <button @click="swipeToNextBookshelf(1)"
-                class="text-white bg-gray-600 p-2 rounded-lg hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900">
-                <fa icon="chevron-right" />
-              </button>
+            <!-- Dropdown List -->
+            <div v-if="dropdownOpen"
+                 class="absolute left-0 mt-2 bg-white border border-black rounded-lg shadow-md w-[250px] z-50">
+              <ul class="text-black text-lg">
+                <li v-for="shelf in bookshelves" :key="shelf.id"
+                    @click="selectBookshelf(shelf)"
+                    class="px-4 py-2 hover:bg-gray-200 cursor-pointer">
+                  {{ shelf.name }}
+                </li>
+                <li @click="openShelfModal"
+                    class="px-4 py-2 text-green-700 font-semibold hover:bg-gray-200 cursor-pointer">
+                  + Create New Bookshelf
+                </li>
+              </ul>
             </div>
 
-            <!-- Add New Bookshelf Button -->
-            <button
-              class="text-white bg-green-800 ml-4 p-2 rounded-lg hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900"
-              @click="openShelfModal">
-              Add New Bookshelf
+            <!-- Settings Button -->
+            <button @click="toggleSettings"
+                    class="absolute right-6 top-6 bg-gray-700 text-white p-2 rounded-lg hover:bg-gray-600">
+              <fa icon="cog" />
             </button>
+
+            <!-- Settings Dropdown -->
+            <div v-if="settingsOpen"
+                 class="absolute right-6 top-16 bg-white border border-black rounded-lg shadow-md w-[200px] z-50">
+              <ul class="text-black text-lg">
+                <li @click="renameBookshelf"
+                    class="px-4 py-2 hover:bg-gray-200 cursor-pointer">
+                  ✏️ Rename Bookshelf
+                </li>
+                <li @click="deleteBookshelf"
+                    class="px-4 py-2 text-red-600 font-semibold hover:bg-gray-200 cursor-pointer">
+                  🗑️ Delete Bookshelf
+                </li>
+                <li @click="addBookToBookshelf"
+                    class="px-4 py-2 text-blue-700 font-semibold hover:bg-gray-200 cursor-pointer">
+                  📖 Add Book
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
@@ -39,20 +62,37 @@
           <div class="text-center text-gray-600">No bookshelves found. Please add a bookshelf.</div>
         </div>
 
-        <!-- Bookshelf Component -->
-        <Bookshelf v-if="selectedBookshelf" :key="selectedBookshelf.id" :shelf="selectedBookshelf"
-          @openModal="openModal" />
+        <div class="flex justify-center items-center mt-4 gap-4">
+          <!-- Left Arrow -->
+          <button @click="swipeToNextBookshelf(-1)"
+                  class="text-white bg-gray-600 p-2 rounded-lg hover:bg-gray-500">
+            <fa icon="chevron-left" />
+          </button>
+
+          <!-- Bookshelf Component -->
+          <div class="flex justify-center items-center w-2/3">
+            <Bookshelf v-if="selectedBookshelf" :key="selectedBookshelf.id" :shelf="selectedBookshelf"
+                       @openModal="openModal" />
+          </div>
+
+          <!-- Right Arrow -->
+          <button @click="swipeToNextBookshelf(1)"
+                  class="text-white bg-gray-600 p-2 rounded-lg hover:bg-gray-500">
+            <fa icon="chevron-right" />
+          </button>
+        </div>
 
         <!-- Modals -->
-        <BookModal v-on-click-outside :book="selectedBook" :isVisible="isModalVisible" @closeModal="closeModal" />
-        <NewBookshelfModal :isShelfVisible="isShelfVisible" @closeShelfModal="closeShelfModal" @bookshelfCreated="showNewBookshelf"/>
+        <BookModal :book="selectedBook" :isVisible="isModalVisible" @closeModal="closeModal" />
+        <NewBookshelfModal :isShelfVisible="isShelfVisible" @closeShelfModal="closeShelfModal"
+                           @bookshelfCreated="showNewBookshelf" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import Navbar from '@/components/Navbar.vue';
 import BookModal from '@/components/BookModal.vue';
 import NewBookshelfModal from '@/components/NewBookshelfModal.vue';
@@ -61,7 +101,6 @@ import type { IBook } from '@/types/interfaces/IBook';
 import { useBookStore } from '@/stores/bookStore';
 import { useShelfStore } from '@/stores/shelfStore';
 import { useUserStore } from '@/stores/userStore';
-import { vOnClickOutside } from '@vueuse/components'
 import type { IBookshelf } from '@/types/interfaces/IBookshelf';
 
 const loading = computed(() => shelfStore.loading);
@@ -70,51 +109,56 @@ const selectedBook = ref<IBook | null>(null);
 const bookStore = useBookStore();
 const isModalVisible = ref(false);
 const isShelfVisible = ref(false);
+const dropdownOpen = ref(false);
+const settingsOpen = ref(false);
 const shelfStore = useShelfStore();
 const userStore = useUserStore();
-const bookshelves = computed(() => shelfStore.bookshelves ? shelfStore.bookshelves : []);
+const bookshelves = computed(() => shelfStore.bookshelves || []);
 const selectedBookshelf = ref<IBookshelf | null>(bookshelves.value.length > 0 ? bookshelves.value[0] : null);
 
 const swipeToNextBookshelf = (increment: number) => {
-  const currentIndex = bookshelves.value.findIndex((bookshelf) => bookshelf.id === selectedBookshelf.value?.id);
+  const currentIndex = bookshelves.value.findIndex((shelf) => shelf.id === selectedBookshelf.value?.id);
   let nextIndex = (currentIndex + increment) % bookshelves.value.length;
-  if (nextIndex < 0) {
-    nextIndex = bookshelves.value.length - 1; // Wrap around
-  }
+  if (nextIndex < 0) nextIndex = bookshelves.value.length - 1;
   selectedBookshelf.value = bookshelves.value[nextIndex];
-}
+};
 
-const showNewBookshelf = () =>{
+const selectBookshelf = (shelf: IBookshelf) => {
+  selectedBookshelf.value = shelf;
+  dropdownOpen.value = false;
+};
+
+const toggleDropdown = () => {
+  dropdownOpen.value = !dropdownOpen.value;
+};
+
+const toggleSettings = () => {
+  settingsOpen.value = !settingsOpen.value;
+};
+
+const renameBookshelf = () => {
+  console.log("Rename bookshelf...");
+  settingsOpen.value = false;
+};
+
+const deleteBookshelf = () => {
+  console.log("Delete bookshelf...");
+  settingsOpen.value = false;
+};
+
+const addBookToBookshelf = () => {
+  console.log("Add book to bookshelf...");
+  settingsOpen.value = false;
+};
+
+const showNewBookshelf = () => {
   selectedBookshelf.value = bookshelves.value[bookshelves.value.length - 1];
-}
+};
 
 const openModal = (book: IBook) => {
   selectedBook.value = book;
   isModalVisible.value = true;
 };
-
-const addBookToBookshelf = async (bookId: string) => {
-  console.log("Book ID type:", typeof bookId, "Value:", bookId);
-
-  if (!userStore.loggedInUser || !selectedBookshelf.value) return;
-
-  try {
-    await axios.post(
-      `/api/bookshelf/${userStore.loggedInUser.id}/${selectedBookshelf.value.id}/books`,
-      bookId, // Ensure it's a string
-      {
-        headers: { "Content-Type": "application/json" }
-      }
-    );
-
-    selectedBookshelf.value.books.push({ id: bookId });
-
-    console.log(`Book ${bookId} added to bookshelf ${selectedBookshelf.value.name}`);
-  } catch (error: any) {
-    console.error("Failed to add book:", error.response?.data || error.message);
-  }
-};
-
 
 const closeModal = () => {
   isModalVisible.value = false;
@@ -122,17 +166,28 @@ const closeModal = () => {
 
 const openShelfModal = () => {
   isShelfVisible.value = true;
+  dropdownOpen.value = false;
 };
 
 const closeShelfModal = () => {
   isShelfVisible.value = false;
 };
+
+// Close dropdowns on click outside
+const closeDropdowns = (e: MouseEvent) => {
+  if (dropdownOpen.value && !e.target.closest('.shelf-label')) {
+    dropdownOpen.value = false;
+  }
+  if (settingsOpen.value && !e.target.closest('.shelf-label')) {
+    settingsOpen.value = false;
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('click', closeDropdowns);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('click', closeDropdowns);
+});
 </script>
-<style scoped>
-
-
-.shelf-label {
-  font-family: 'Garamond', serif;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
-}
-</style>
