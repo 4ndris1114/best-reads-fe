@@ -6,10 +6,10 @@
         </div>
         <div v-else class="flex flex-row">
             <!-- Book cover, button, rating -->
-            <div class="flex flex-col space-y-6 items-center w-[25vw]">
-                <img :src="book.coverImage" alt="Book cover" class="w-64 h-86" />
+            <div class="flex flex-col space-y-6 items-center w-[25vw] pt-[6vh] ml-[5vw]">
+                <img :src="book.coverImage" alt="Book cover" class="w-72 h-96" />
                 <!-- Want to read button -->
-                <button class="bg-highlight text-white px-12 py-2 rounded-full focous-none shadow-lg cursor-pointer w-5/6" @click="">
+                <button class="bg-highlight text-white px-12 py-2 rounded-full focous-none shadow-lg cursor-pointer min-w-3/5" @click="">
                     <!-- Conditional? What if its at already want to read? -->
                     Want to Read 
                 </button>
@@ -27,15 +27,31 @@
                 <span class="text-lg -mt-2">Rate this book</span>
             </div>
             <!-- Book details -->
-            <div class="flex flex-col space-y-4 w-[65vw]">
-                <h1 class="text-4xl text-highlight font-bold">{{ book.title }}</h1>
-                <p class="text-sm text-gray-500">{{ book.author }}</p>
+            <div class="flex flex-col space-y-2 w-[65vw] pt-[5.5vh] pl-[1vw] p-[10vw]">
+                <div class="flex flex-row items-center space-x-[3vw] relative">
+                    <h1 class="text-4xl text-highlight font-bold max-w-[25vw]">{{ book.title }}</h1>
+                    <div v-if="book.averageRating" class="absolute top-2 right-0 flex space-x-5">
+                        <fa 
+                        v-for="n in 5"
+                        :key="n"
+                        :icon="['fas', 'star']" 
+                        class="lg:scale-200 md:scale-150 cursor-pointer transition-colors duration-200"
+                        :class="n <= Math.floor(book.averageRating) ? 'text-yellow-500' : 'text-slate-300'"
+                        />
+                        <span class="text-lg -mt-3">({{ book.averageRating }})</span>
+                    </div>
+                </div>
+                <p class="text-2xl text-gray-500">{{ book.author }}</p>
+
                 <!-- Replace later -->
-                <p>{{ bookDescription.length > 500 ? bookDescription.substring(0, 500).trim() + "..." : bookDescription }}</p>
+                <p class="pt-[3vh] text-justify">{{ bookDescription.length > 500 ? bookDescription.substring(0, 500).trim() + "..." : bookDescription }} <a v-if="bookDescription.length > 500" href="#" class="pl-2 text-highlight underline">Show more</a></p>
                 <p class="text-sm text-gray-500"></p>
-                <ul class="text-sm text-gray-500 list-disc list-inside">
-                    <li v-for="genre in book.genres" :key="genre">{{ genre }}</li>
-                </ul>
+                <div class="text-sm text-gray-500 list-disc list-inside flex flex-row space-x-2 mt-6">
+                    <div 
+                    v-for="genre in book.genres" 
+                    :key="genre"
+                    class="bg-primary w-fit p-2 rounded-full text-white">{{ genre }}</div>
+                </div>
             </div>
             <div class="border-l-3 border-black min-h-screen w-[25vw]">
                 <h1 class="text-3xl">Readers also liked</h1>
@@ -54,7 +70,7 @@ const bookStore = useBookStore();
 const route = useRoute();
 
 // REPLCE LATER
-const bookDescription = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It"
+const bookDescription = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It but also the leap into electronic typesetting, but also the leap into electronic typesetting, but also the leap into electronic typesetting, but also the leap into electronic typesetting, but also the leap into electronic typesetting,"
 // -------
 
 onMounted(() => {
