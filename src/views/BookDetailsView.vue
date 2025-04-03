@@ -62,7 +62,10 @@
                     class="bg-primary w-fit p-2 rounded-full text-white">{{ genre }}</div>
                 </div>
                 <!-- Reviews -->
-
+                <h2 class="mt-[5vh] text-3xl text-black">Reviews</h2>
+                <div v-for="review in book.ratings" :key="review.userId" :review="review">
+                    <ReviewBox :review="review" />
+                </div>
             </div>
             <div class="border-l-3 border-black min-h-screen w-[25vw]">
                 <h1 class="text-3xl">Readers also liked</h1>
@@ -76,6 +79,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useBookStore } from '@/stores/bookStore';
 import { useRoute } from 'vue-router';
 import MainLayout from '@/layouts/MainLayout.vue';
+import ReviewBox from '@/components/ReviewBox.vue';
 
 const bookStore = useBookStore();
 const route = useRoute();

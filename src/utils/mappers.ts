@@ -46,7 +46,7 @@ export const mapToIRating = (rating: any): IRating => {
   return {
     userId: rating.userId,
     ratingValue: rating.ratingValue,
-    review: rating.rating,
+    review: rating.review,
     createdAt: rating.createdAt,
     updatedAt: rating.updatedAt
   } as IRating;
