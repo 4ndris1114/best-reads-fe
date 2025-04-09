@@ -42,7 +42,12 @@ export class ShelfService {
 
   async deleteBookshelf(userId: string, bookshelfId: string): Promise<void> {
     try {
-      await instance.delete(`/bookshelf/${userId}/${bookshelfId}`);
+      const response = await instance.delete(`/bookshelf/${userId}/${bookshelfId}`);
+      if (response.status == 201) {
+        return;
+      } else {
+        throw new Error('Failed to delete bookshelf');
+      }
     } catch (error) {
       console.error('Error deleting bookshelf:', error);
       throw error;
@@ -52,7 +57,11 @@ export class ShelfService {
   async renameBookshelf(userId: string, bookshelfId: string, newName: string): Promise<IBookshelf> {
     try {
       const response = await instance.put(`/bookshelf/${userId}/${bookshelfId}/rename`, { name: newName });
-      return mapToIBookshelf(response.data);
+      if (response.status == 201) {
+        return mapToIBookshelf(response.data);
+      } else {
+        throw new Error('Failed to delete bookshelf');
+      }
     } catch (error) {
       console.error('Error renaming bookshelf:', error);
       throw error;
