@@ -51,7 +51,7 @@ export class ShelfService {
 
   async renameBookshelf(userId: string, bookshelfId: string, newName: string): Promise<IBookshelf> {
     try {
-      const response = await instance.put(`/bookshelf/${userId}/${bookshelfId}`, { name: newName });
+      const response = await instance.put(`/bookshelf/${userId}/${bookshelfId}/rename`, { name: newName });
       return mapToIBookshelf(response.data);
     } catch (error) {
       console.error('Error renaming bookshelf:', error);
