@@ -40,11 +40,11 @@
                  class="absolute right-6 top-16 bg-white border border-black rounded-lg shadow-md w-[200px] z-50">
               <ul class="text-black text-lg">
 
-                <li @click="renameBookshelf"
+                <li @click="renameBookshelf(selectedBookshelf.name)"
                     class="px-4 py-2 hover:bg-gray-200 cursor-pointer">
                  Rename Bookshelf
                 </li>
-                <li @click="deleteBookshelf"
+                <li @click="deleteBookshelf(selectedBookshelf)"
                     class="px-4 py-2 text-red-600 font-semibold hover:bg-gray-200 cursor-pointer">
                   Delete Bookshelf
                 </li>
@@ -81,7 +81,9 @@
         <BookModal :book="selectedBook" :isVisible="isModalVisible" @closeModal="closeModal" />
         <NewBookshelfModal :isShelfVisible="isShelfVisible" @closeShelfModal="closeShelfModal"
                            @bookshelfCreated="showNewBookshelf" />
-        <RenameBookshelfModal :isVisible="isRenameVisible" :currentName="selectedBookshelf?.name || ''" @close="isRenameVisible = false" @rename="handleRenameBookshelf" />
+        <RenameBookshelfModal :isVisible="isRenameModalVisible" :currentName="selectedBookshelf?.name || ''" @close="isRenameModalVisible = false" @renameBookshelf="handleRenameBookshelf" />
+        <DeleteBookshelfModal :isVisible="isDeleteModalVisible" :selectedBookshelf="selectedBookshelf?.id || ''" @closeModal="isDeleteModalVisible = false" @deleteBookshelf="handleDeleteBookshelf" />
+
       </div>
     </div>
   </div>
@@ -93,6 +95,7 @@ import Navbar from '@/components/Navbar.vue';
 import BookModal from '@/components/BookModal.vue';
 import NewBookshelfModal from '@/components/NewBookshelfModal.vue';
 import RenameBookshelfModal from '@/components/RenameBookshelfModal.vue';
+import DeleteBookshelfModal from '@/components/DeleteBookshelfModal.vue';
 import Bookshelf from '@/components/Bookshelf.vue';
 import type { IBook } from '@/types/interfaces/IBook';
 import { useBookStore } from '@/stores/bookStore';
@@ -100,18 +103,24 @@ import { useShelfStore } from '@/stores/shelfStore';
 import { useUserStore } from '@/stores/userStore';
 import type { IBookshelf } from '@/types/interfaces/IBookshelf';
 
-const loading = computed(() => shelfStore.loading);
-const error = ref<string | null>(null);
-const selectedBook = ref<IBook | null>(null);
 const bookStore = useBookStore();
-const isModalVisible = ref(false);
-const isShelfVisible = ref(false);
-const dropdownOpen = ref(false);
-const settingsOpen = ref(false);
 const shelfStore = useShelfStore();
 const userStore = useUserStore();
+
+const isDeleteModalVisible = ref(false);
+const isRenameModalVisible = ref(false);
+const isModalVisible = ref(false);
+const isShelfVisible = ref(false);
+
+const dropdownOpen = ref(false);
+const settingsOpen = ref(false);
+
+const loading = computed(() => shelfStore.loading);
+const error = ref<string | null>(null);
+
 const bookshelves = computed(() => shelfStore.bookshelves || []);
 const selectedBookshelf = ref<IBookshelf | null>(bookshelves.value.length > 0 ? bookshelves.value[0] : null);
+const selectedBook = ref<IBook | null>(null);
 
 const swipeToNextBookshelf = (increment: number) => {
   const currentIndex = bookshelves.value.findIndex((shelf) => shelf.id === selectedBookshelf.value?.id);
@@ -133,28 +142,34 @@ const toggleSettings = () => {
   settingsOpen.value = !settingsOpen.value;
 };
 
-const renameBookshelf = () => {
-  settingsOpen.value = false;
-  isRenameVisible.value = true;
-};
-
-const deleteBookshelf = () => {
-  console.log("Delete bookshelf...");
-  settingsOpen.value = false;
-};
-
 const showNewBookshelf = () => {
   selectedBookshelf.value = bookshelves.value[bookshelves.value.length - 1];
 };
 
-const isRenameVisible = ref(false);
-
+const renameBookshelf = (newName: string) => {
+  settingsOpen.value = false;
+  isRenameModalVisible.value = true;
+};
 const handleRenameBookshelf = async (newName: string) => {
   if (!selectedBookshelf.value) return;
   await shelfStore.renameBookshelf(userStore.loggedInUser!.id, selectedBookshelf.value.id, newName);
-  isRenameVisible.value = false;
+  isRenameModalVisible.value = false;
 };
 
+const deleteBookshelf =  (shelf: IBookshelf) => {
+    settingsOpen.value = false;
+    isDeleteModalVisible.value = true;
+}
+
+const handleDeleteBookshelf = async (shelf: IBookshelf) => {
+  if (!selectedBookshelf.value) return;
+  await shelfStore.deleteBookshelf(userStore.loggedInUser!.id, selectedBookshelf.value.id);
+  isDeleteModalVisible.value = false;
+};
+
+const handleCloseDeleteModal = () => {
+  isDeleteModalVisible.value = false;
+};
 
 const openModal = (book: IBook) => {
   selectedBook.value = book;
@@ -192,3 +207,4 @@ onUnmounted(() => {
   window.removeEventListener('click', closeDropdowns);
 });
 </script>
+<style scoped></style>

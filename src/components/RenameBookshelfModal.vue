@@ -4,7 +4,7 @@
       <h2 class="text-xl font-bold mb-2">Rename Bookshelf</h2>
       <input v-model="newName" class="border w-full p-2 mb-4" />
       <div class="flex justify-end gap-2">
-        <button @click="$emit('close')" class="bg-gray-400 px-3 py-1 rounded cursor-pointer">Cancel</button>
+        <button @click="close" class="bg-gray-400 px-3 py-1 rounded cursor-pointer">Cancel</button>
         <button @click="confirmRename" class="bg-green-600 text-white px-3 py-1 rounded cursor-pointer">Rename</button>
       </div>
     </div>
@@ -26,12 +26,20 @@ const emits = defineEmits<{
 
 const newName = ref(props.currentName);
 
+// Watch for prop change
 watch(() => props.currentName, (newVal) => {
   newName.value = newVal;
 });
 
+// Method to confirm renaming
 const confirmRename = () => {
-  if (!newName.value.trim()) return;
+  if (!newName.value.trim()) return; // Don't emit if input is empty or just spaces
   emits('rename', newName.value.trim());
+};
+
+// Method to close the modal
+const close = () => {
+  emits('close');
+  newName.value = props.currentName;
 };
 </script>
