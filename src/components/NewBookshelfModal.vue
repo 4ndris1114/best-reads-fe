@@ -4,7 +4,7 @@
        @click.self="closeModal"> <!-- Close modal when clicking outside -->
     <div class="bg-white p-8 rounded-lg w-96 relative"> <!-- Increased modal size -->
       <!-- Close Button Positioned Top Right -->
-      <button @click="closeModal" class="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-700 focus:outline-none">
+      <button @click="closeModal" class="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-700 focus:outline-none cursor-pointer">
         Close
       </button>
 
@@ -22,7 +22,7 @@
         class="mt-1 block w-full py-3 px-4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
         />
 
-        <button type="submit" :disabled="isLoading" class="mt-3 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <button type="submit" :disabled="isLoading" class="mt-3 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer">
           {{ isLoading ? 'Creating...' : 'Create' }}
         </button>
       </form>

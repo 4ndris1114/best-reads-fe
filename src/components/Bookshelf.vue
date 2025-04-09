@@ -1,6 +1,6 @@
 <template>
 <div class="bookshelf-container mt-20 flex flex-col p-4 bookshelf">
-          <div class="shelf justify-center flex flex-wrap items-center p-1 border-b-7 text-white border-[#ccc]">
+          <div class="shelf justify-center flex w-[50vW] flex-wrap items-center p-1 border-b-7 text-white border-[#ccc]">
             <div v-for="book in books" :key="book.id" class="book flex items-center justify-center text-s font-bold transform rotate-180 p-1 m-1 rounded-sm cursor-pointer"
                 :style="{ width: getBookWidth(book.title), backgroundColor: getRandomColor() }"
                 @click="emits('openModal',book)">
