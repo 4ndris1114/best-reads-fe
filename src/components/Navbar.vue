@@ -2,7 +2,7 @@
     <!-- Header -->
     <header class="fixed top-0 w-full bg-accent text-white shadow-sm z-50">
       <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="text-2xl font-bold text-white-600">BestReads</div>
+            <router-link to="/" class="text-2xl font-bold text-white-600">BestReads</router-link>
 
            <!-- Navigation -->
           <nav class="flex items-center gap-6 ml-8"><router-link to="/" class="text-white-700 hover:text-slate-800 font-medium">Home</router-link>

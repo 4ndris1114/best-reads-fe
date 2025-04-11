@@ -17,11 +17,12 @@ import { useUserStore } from '@/stores/userStore';
 
 const props = defineProps<{
   isVisible: boolean;
-  bookshelfId: number;
+  bookshelfId: string;
 }>();
 
 const emits = defineEmits<{
-  closeModal: () => void;
+  
+  handleCloseDeleteModal: () => void;
   deleteBookshelf: () => void;
 }>();
 
@@ -33,7 +34,7 @@ const deleteBookshelf = async () => {
     // Perform the delete operation
     await shelfStore.deleteBookshelf(userStore.loggedInUser!.id, props.bookshelfId);
     emits('deleteBookshelf');
-    emits('closeModal');
+    emits('handleCloseDeleteModal');
   } catch (error) {
     console.error('Error deleting bookshelf:', error);
   }

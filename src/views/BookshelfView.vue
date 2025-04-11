@@ -1,15 +1,18 @@
 <template>
   <div>
     <Navbar />
-    <div class="bookshelf-container bg-[rgb(38,38,48)] flex flex-col items-center justify-center p-4 bookshelf h-screen">
-      <div class="bookshelf-container p-4 h-[calc(100%-4rem)]">
+    <div class="bookshelf-container bg-[#222C34] flex flex-col items-center justify-center p-10 bookshelf h-screen">
+      <div class="bg-[#191B1D] rounded-3xl">
+
+      <div class="bookshelf-container p-4 h-[calc(100%-4rem)] rounded-lg">
+
         <div v-if="loading" class="text-center text-gray-600">Loading bookshelves...</div>
         <div v-else-if="error" class="text-center text-red-500">{{ error }}</div>
 
         <div v-else-if="selectedBookshelf">
-          <div class="mt-20 shelf-label flex items-center justify-center w-full relative">            <!-- Bookshelf Title + Dropdown -->
+          <div class="mt-20 shelf-label flex items-center justify-center -full relative">            <!-- Bookshelf Title + Dropdown -->
             <button @click="toggleDropdown"
-                    class="relative flex items-center gap-2 bg-[#9F6932] py-2 px-4 rounded-3xl border-4 border-[#522623] text-3xl font-extrabold text-black-900 hover:bg-[#af7c3a] transition w-[250px] cursor-pointer">
+                    class="relative flex items-center text-[#3a281d] gap-2 bg-[#9F6932] drop-shadow-3xl py-2 px-4 rounded-3xl text-3xl font-extrabold text-black-900 hover:bg-[#af7c3a] transition w-[250px] cursor-pointer">
               {{ selectedBookshelf.name }}
               <fa :icon="dropdownOpen ? 'chevron-up' : 'chevron-down'" class="ml-auto" />
                           <!-- Dropdown List -->
@@ -31,7 +34,7 @@
 
             <!-- Settings Button -->
             <button @click="toggleSettings"
-                    class="absolute right-6 top-6 bg-gray-700 text-white p-2 rounded-lg hover:bg-gray-600 cursor-pointer">
+                    class="absolute right-6 top-6 bg-[#9F6932] text-white p-4 rounded-xl hover:bg-[#6B4423] cursor-pointer">
               <fa icon="cog" />
             </button>
 
@@ -82,11 +85,11 @@
         <NewBookshelfModal :isShelfVisible="isShelfVisible" @closeShelfModal="closeShelfModal"
                            @bookshelfCreated="showNewBookshelf" />
         <RenameBookshelfModal :isVisible="isRenameModalVisible" :currentName="selectedBookshelf?.name || ''" @close="isRenameModalVisible = false" @renameBookshelf="handleRenameBookshelf" />
-        <DeleteBookshelfModal :isVisible="isDeleteModalVisible" :selectedBookshelf="selectedBookshelf?.id || ''" @closeModal="isDeleteModalVisible = false" @deleteBookshelf="handleDeleteBookshelf" />
-
+        <DeleteBookshelfModal  :isVisible="isDeleteModalVisible" :bookshelfId="selectedBookshelf?.id || ''" @onCloseModal= "isDeleteModalVisible = false" @deleteBookshelf="handleCloseDeleteModal" />
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script setup lang="ts">
