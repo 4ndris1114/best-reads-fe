@@ -1,7 +1,14 @@
 <template>
-  <div class="flex flex-col w-full">
-    <div v-for="(shelfBooks, index) in chunkedBooks" :key="index"
-      class="shelf flex justify-center items-end p-1 border-b-7 text-white border-[#ccc]">
+  <div class="flex flex-col w-full h-full flex-grow">
+    <!-- Empty state -->
+    <div v-if="styledBooks.length === 0" class="flex flex-col items-center w-auto justify-center text-white text-2xl flex-grow h-full">
+      Add your first book.
+      <div class="w-[300px] mt-2 border-b-8 border-[#5b3826] rounded-sm"></div>
+    </div>
+
+    <!-- Books on shelf -->
+    <div v-else v-for="(shelfBooks, index) in chunkedBooks" :key="index"
+      class="shelf flex justify-center items-end mb-2 border-b-9 border-[#5b3826]">
       <div v-for="{ book, color, height } in shelfBooks" :key="book.id"
         class="book flex items-center justify-center text-s font-bold transform rotate-180 p-1 m-1 rounded-sm cursor-pointer"
         :style="{
@@ -14,7 +21,8 @@
                 color === '#522623' ? '#d6a688' :
                   color === '#444A41' ? '#b59a6f' :
                     'white',
-        }" @click="emits('openModal', book)">
+        }"
+        @click="emits('openModal', book)">
         <span class="book-title">{{ book.title }}</span>
       </div>
     </div>
@@ -137,7 +145,7 @@ const assignColorsAndHeights = () => {
 
 const getBookWidth = (title: string) => {
   const charCount = title.length;
-  const width = Math.min(12.5 + charCount * 2.5, 100);
+  const width = Math.min(2.5 + charCount * 2.5, 90);
   return `${width}px`;
 };
 </script>
@@ -147,6 +155,7 @@ const getBookWidth = (title: string) => {
   display: flex;
   justify-content: center;
   align-items: flex-end;
+  border-radius: 3px 3px;
 }
 
 .book {

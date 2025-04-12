@@ -17,7 +17,7 @@
               <fa :icon="dropdownOpen ? 'chevron-up' : 'chevron-down'" class="ml-auto" />
               <!-- Dropdown List -->
               <div v-if="dropdownOpen"
-                class="absolute w-full left-0 top-13 bg-gray-100 border border-black rounded-lg shadow-md z-50">
+                class="absolute w-full w-auto left-0 top-13 bg-gray-100 border border-black rounded-lg shadow-md z-50">
                 <ul class="text-black text-lg">
                   <li v-for="shelf in bookshelves" :key="shelf.id" @click="selectBookshelf(shelf)"
                     class="px-4 py-2 text-left hover:bg-gray-200 cursor-pointer">

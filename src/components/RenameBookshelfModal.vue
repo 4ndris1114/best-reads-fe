@@ -1,6 +1,6 @@
 <template>
-  <div v-if="isVisible" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-    <div class="bg-white p-4 rounded-lg w-[300px] z-50">
+  <div v-if="isVisible" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div class="bg-white p-4 rounded-lg w-[300px]">
       <h2 class="text-xl font-bold mb-2">Rename Bookshelf</h2>
       <input v-model="newName" class="border w-full p-2 mb-4" />
       <div class="flex justify-end gap-2">
