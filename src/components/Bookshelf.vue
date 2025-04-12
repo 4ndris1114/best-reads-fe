@@ -1,22 +1,20 @@
 <template>
   <div class="flex flex-col w-full">
-    <div
-      v-for="(shelfBooks, index) in chunkedBooks"
-      :key="index"
-      class="shelf flex justify-center items-end p-1 border-b-7 text-white border-[#ccc]"
-    >
-      <div
-        v-for="{ book, color, height } in shelfBooks"
-        :key="book.id"
+    <div v-for="(shelfBooks, index) in chunkedBooks" :key="index"
+      class="shelf flex justify-center items-end p-1 border-b-7 text-white border-[#ccc]">
+      <div v-for="{ book, color, height } in shelfBooks" :key="book.id"
         class="book flex items-center justify-center text-s font-bold transform rotate-180 p-1 m-1 rounded-sm cursor-pointer"
         :style="{
           width: getBookWidth(book.title),
           height: `${height}px`,
           backgroundColor: color,
-          color: color === '#9F6932' ? '#2A1A14' : 'white',
-        }"
-        @click="emits('openModal', book)"
-      >
+          color:
+            color === '#9F6932' ? '#2A1A14' :
+              color === '#2A374D' ? '#547786' :
+                color === '#522623' ? '#d6a688' :
+                  color === '#444A41' ? '#b59a6f' :
+                    'white',
+        }" @click="emits('openModal', book)">
         <span class="book-title">{{ book.title }}</span>
       </div>
     </div>
@@ -24,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, nextTick } from 'vue';
 import type { IBookshelf } from '@/types/interfaces/IBookshelf';
 import type { IBook } from '@/types/interfaces/IBook';
 import { useBookStore } from '../stores/bookStore';
@@ -83,7 +81,30 @@ onMounted(async () => {
   books.value = (await Promise.all(bookPromises)).filter((b) => b !== null) as IBook[];
   totalBooks.value = books.value.length;
   assignColorsAndHeights();
+  await nextTick();
+  adjustBookTitleSizes();
+
 });
+
+const adjustBookTitleSizes = () => {
+  const books = document.querySelectorAll('.book');
+
+  books.forEach((book) => {
+    const title = book.querySelector('.book-title') as HTMLElement;
+    if (!title) return;
+
+    const maxHeight = book.clientHeight - 10; // accounting for padding
+
+    // Shrink font until it fits within 2 lines
+    let fontSize = parseFloat(window.getComputedStyle(title).fontSize);
+    const lineHeight = parseFloat(window.getComputedStyle(title).lineHeight || "1");
+
+    while (title.scrollHeight > maxHeight && fontSize > 10) {
+      fontSize -= 1;
+      title.style.fontSize = `${fontSize}px`;
+    }
+  });
+};
 
 const assignColorsAndHeights = () => {
   let lastColor = '';
@@ -136,10 +157,24 @@ const getBookWidth = (title: string) => {
   text-align: center;
   font-weight: bold;
   writing-mode: vertical-rl;
-  padding: 5px;
+  padding: 2px;
   margin: 2px;
   border-radius: 0 0 3px 3px;
   cursor: pointer;
   text-transform: uppercase;
 }
+
+.book-title {
+  writing-mode: vertical-rl;
+  text-align: center;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* max 2 lines */
+  -webkit-box-orient: vertical;
+  line-height: 1;
+  font-size: 0.75rem; /* start with base size */
+  max-height: 100%;
+  word-break: break-word;
+}
+
 </style>

@@ -1,8 +1,8 @@
 <template>
   <div>
     <Navbar />
-    <div class="bookshelf-container bg-[#222C34] flex flex-col items-center justify-center p-10 bookshelf h-screen">
-      <div class="bg-[#191B1D] rounded-3xl">
+    <div class="bookshelf-container bg-[#222C34] flex flex-col justify-center p-30 bookshelf h-screen overflow-y-scroll">
+      <div class="bg-[#191B1D] rounded-3xl mt-20">
 
       <div class="bookshelf-container p-4 h-[calc(100%-4rem)] rounded-lg">
 
@@ -10,7 +10,7 @@
         <div v-else-if="error" class="text-center text-red-500">{{ error }}</div>
 
         <div v-else-if="selectedBookshelf">
-          <div class="mt-20 shelf-label flex items-center justify-center -full relative">            <!-- Bookshelf Title + Dropdown -->
+          <div class="mb-10 shelf-label flex items-center justify-center -full relative">            <!-- Bookshelf Title + Dropdown -->
             <button @click="toggleDropdown"
                     class="relative flex items-center text-[#3a281d] gap-2 bg-[#9F6932] drop-shadow-3xl py-2 px-4 rounded-3xl text-3xl font-extrabold text-black-900 hover:bg-[#af7c3a] transition w-[250px] cursor-pointer">
               {{ selectedBookshelf.name }}
@@ -63,7 +63,7 @@
         <div class="flex justify-center items-center mt-4 gap-4">
           <!-- Left Arrow -->
           <button @click="swipeToNextBookshelf(-1)"
-                  class="text-white bg-gray-600 p-2 rounded-lg hover:bg-gray-500 cursor-pointer">
+                  class="text-white bg-gray-600 mr-auto p-2 rounded-lg hover:bg-gray-500 cursor-pointer">
             <fa icon="chevron-left" />
           </button>
 
@@ -75,7 +75,7 @@
 
           <!-- Right Arrow -->
           <button @click="swipeToNextBookshelf(1)"
-                  class="text-white bg-gray-600 p-2 rounded-lg hover:bg-gray-500 cursor-pointer">
+                  class="text-white bg-gray-600 p-2 ml-auto rounded-lg hover:bg-gray-500 cursor-pointer">
             <fa icon="chevron-right" />
           </button>
         </div>
