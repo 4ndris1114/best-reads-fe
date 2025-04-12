@@ -70,7 +70,6 @@ onMounted(async () => {
     if (!book) {
       try {
         book = await bookStore.getBookById(bookId);
-        if (book) bookStore.books.push(book);
       } catch (error) {
         console.error(`Error fetching book ${bookId}`, error);
       }
