@@ -1,9 +1,9 @@
 <template>
-  <div class="flex flex-col w-full h-full flex-grow">
+  <div class="flex w-[700px] flex-col w-full h-full flex-grow">
     <!-- Empty state -->
-    <div v-if="styledBooks.length === 0" class="flex flex-col items-center w-auto justify-center text-white text-2xl flex-grow h-full">
+    <div v-if="styledBooks.length === 0" class="flex flex-col items-center w-auto mt-20 justify-center text-white text-2xl flex-grow h-full">
       Add your first book.
-      <div class="w-[300px] mt-2 border-b-8 border-[#5b3826] rounded-sm"></div>
+      <div class="w-[700px] h-[300px] mt-2 border-b-8 border-[#5b3826] rounded-sm"></div>
     </div>
 
     <!-- Books on shelf -->
@@ -165,7 +165,7 @@ const getBookWidth = (title: string) => {
   text-align: center;
   font-weight: bold;
   writing-mode: vertical-rl;
-  padding: 2px;
+  padding: 3px;
   margin: 2px;
   border-radius: 0 0 3px 3px;
   cursor: pointer;
