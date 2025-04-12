@@ -1,32 +1,30 @@
 <template>
   <div>
     <Navbar />
-    <div class="bookshelf-container bg-[#222C34] flex flex-col justify-center p-30 bookshelf h-screen overflow-y-scroll">
-      <div class="bg-[#191B1D] rounded-3xl mt-20">
-
-      <div class="bookshelf-container p-4 h-[calc(100%-4rem)] rounded-lg">
+    <div class="bookshelf-container bg-[#222C34] flex flex-col p-4 bookshelf h-screen overflow-y-scroll">
+      <div class="bg-[#191B1D] rounded-3xl mt-20 max-w-[820px] mx-auto bookshelf-container p-4 shadow-2xl rounded-lg">
 
         <div v-if="loading" class="text-center text-gray-600">Loading bookshelves...</div>
         <div v-else-if="error" class="text-center text-red-500">{{ error }}</div>
 
         <div v-else-if="selectedBookshelf">
-          <div class="mb-10 shelf-label flex items-center justify-center -full relative">            <!-- Bookshelf Title + Dropdown -->
+          <div class="mb-10 shelf-label flex justify-center  items-center gap-2 drop-shadow-3xl py-2 px-4 rounded-3xl text-3xl font-extrabold">            <!-- Bookshelf Title + Dropdown -->
             <button @click="toggleDropdown"
-                    class="relative flex items-center text-[#3a281d] gap-2 bg-[#9F6932] drop-shadow-3xl py-2 px-4 rounded-3xl text-3xl font-extrabold text-black-900 hover:bg-[#af7c3a] transition w-[250px] cursor-pointer">
+                    class="relative flex items-center justify-center mr-2 w-auto text-[#3a281d] gap-2 bg-[#9F6932] drop-shadow-3xl py-2 px-4 rounded-xl text-3xl font-extrabold hover:bg-[#af7c3a] transition w-[250px] cursor-pointer">
               {{ selectedBookshelf.name }}
               <fa :icon="dropdownOpen ? 'chevron-up' : 'chevron-down'" class="ml-auto" />
                           <!-- Dropdown List -->
             <div v-if="dropdownOpen"
-                 class="absolute left-0 bottom-0 mt-2 bg-white border border-black rounded-lg shadow-md w-[250px] z-50">
+                 class="absolute w-full left-0 top-13 bg-gray-100 border border-black rounded-lg shadow-md z-50">
               <ul class="text-black text-lg">
                 <li v-for="shelf in bookshelves" :key="shelf.id"
                     @click="selectBookshelf(shelf)"
-                    class="px-4 py-2  hover:bg-gray-200 cursor-pointer">
+                    class="px-4 py-2 text-left hover:bg-gray-200 cursor-pointer">
                   {{ shelf.name }}
                 </li>
                 <li @click="openShelfModal"
-                    class="px-4 py-2 text-green-700 font-semibold hover:bg-gray-200 cursor-pointer">
-                  + Create New Bookshelf
+                    class="px-4 py-2 text-left text-green-700 font-semibold hover:bg-gray-200 cursor-pointer">
+                  Create New Bookshelf
                 </li>
               </ul>
             </div>
@@ -34,13 +32,13 @@
 
             <!-- Settings Button -->
             <button @click="toggleSettings"
-                    class="absolute right-6 top-6 bg-[#9F6932] text-white p-4 rounded-xl hover:bg-[#6B4423] cursor-pointer">
+                    class="absolute right-11 bg-gray-600 text-white p-2 rounded-xl drop-shadow-xl hover:bg-gray-500 cursor-pointer">
               <fa icon="cog" />
             </button>
 
             <!-- Settings Dropdown -->
             <div v-if="settingsOpen"
-                 class="absolute right-6 top-16 bg-white border border-black rounded-lg shadow-md w-[200px] z-50">
+                 class="absolute right-6 top-16 bg-white border border-black rounded-lg z-50">
               <ul class="text-black text-lg">
 
                 <li @click="renameBookshelf(selectedBookshelf.name)"
@@ -62,8 +60,8 @@
 
         <div class="flex justify-center items-center mt-4 gap-4">
           <!-- Left Arrow -->
-          <button @click="swipeToNextBookshelf(-1)"
-                  class="text-white bg-gray-600 mr-auto p-2 rounded-lg hover:bg-gray-500 cursor-pointer">
+          <button v-if="bookshelves.length > 1" @click="swipeToNextBookshelf(-1)"
+                  class="text-white bg-[#9F6932] mr-auto p-2 rounded-lg hover:bg-gray-500 cursor-pointer">
             <fa icon="chevron-left" />
           </button>
 
@@ -74,8 +72,8 @@
           </div>
 
           <!-- Right Arrow -->
-          <button @click="swipeToNextBookshelf(1)"
-                  class="text-white bg-gray-600 p-2 ml-auto rounded-lg hover:bg-gray-500 cursor-pointer">
+          <button v-if="bookshelves.length > 1" @click="swipeToNextBookshelf(1)"
+                  class="text-white bg-[#9F6932] p-2 ml-auto rounded-lg hover:bg-gray-500 cursor-pointer">
             <fa icon="chevron-right" />
           </button>
         </div>
@@ -84,12 +82,11 @@
         <BookModal :book="selectedBook" :isVisible="isModalVisible" @closeModal="closeModal" />
         <NewBookshelfModal :isShelfVisible="isShelfVisible" @closeShelfModal="closeShelfModal"
                            @bookshelfCreated="showNewBookshelf" />
-        <RenameBookshelfModal :isVisible="isRenameModalVisible" :currentName="selectedBookshelf?.name || ''" @close="isRenameModalVisible = false" @renameBookshelf="handleRenameBookshelf" />
+        <RenameBookshelfModal :isVisible="isRenameModalVisible" :currentName="selectedBookshelf?.name || ''" :bookshelfId="selectedBookshelf?.id || ''" @closeModal="isRenameModalVisible = false"/>
         <DeleteBookshelfModal  :isVisible="isDeleteModalVisible" :bookshelfId="selectedBookshelf?.id || ''" @closeModal= "isDeleteModalVisible = false" />
       </div>
     </div>
   </div>
-</div>
 </template>
 
 <script setup lang="ts">
@@ -138,10 +135,12 @@ const selectBookshelf = (shelf: IBookshelf) => {
 };
 
 const toggleDropdown = () => {
+  settingsOpen.value = false;
   dropdownOpen.value = !dropdownOpen.value;
 };
 
 const toggleSettings = () => {
+  dropdownOpen.value = false;
   settingsOpen.value = !settingsOpen.value;
 };
 

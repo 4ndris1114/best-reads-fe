@@ -137,7 +137,7 @@ const assignColorsAndHeights = () => {
 
 const getBookWidth = (title: string) => {
   const charCount = title.length;
-  const width = Math.min(12.5 + charCount * 2.5, 125);
+  const width = Math.min(12.5 + charCount * 2.5, 100);
   return `${width}px`;
 };
 </script>
@@ -168,8 +168,6 @@ const getBookWidth = (title: string) => {
   text-align: center;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* max 2 lines */
-  -webkit-box-orient: vertical;
   line-height: 1;
   font-size: 0.75rem; /* start with base size */
   max-height: 100%;

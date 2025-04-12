@@ -40,13 +40,18 @@ export class ShelfService {
     }
   }
 
-  async renameBookshelf(userId: string, bookshelfId: string, newName: string): Promise<IBookshelf> {
+  async renameBookshelf(userId: string, bookshelfId: string, newName: string): Promise<string> {
     try {
-      const response = await instance.put(`/bookshelf/${userId}/${bookshelfId}/rename`, { name: newName });
-      if (response.status == 201) {
-        return mapToIBookshelf(response.data);
+      const response = await instance.put(`/bookshelf/${userId}/${bookshelfId}/rename`, newName,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+      if (response.status == 200) {
+        return response.data;
       } else {
-        throw new Error('Failed to delete bookshelf');
+        throw new Error('Failed to rename bookshelf');
       }
     } catch (error) {
       console.error('Error renaming bookshelf:', error);

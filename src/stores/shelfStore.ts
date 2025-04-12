@@ -53,17 +53,12 @@ export const useShelfStore = defineStore('shelfStore', {
 
     async renameBookshelf(userId: string, bookshelfId: string, newName: string) {
       try {
-        const updatedBookshelf = await this.service.renameBookshelf(userId, bookshelfId, newName);
-        this.bookshelves = this.bookshelves.map(bookshelf => {
-          if (bookshelf.id === bookshelfId) {
-            return updatedBookshelf;
-          }
-          return bookshelf;
-        });
+        const updatedName = await this.service.renameBookshelf(userId, bookshelfId, newName);
+        this.bookshelves.find(bookshelf => bookshelf.id === bookshelfId)!.name = updatedName;
+        return updatedName;
       } catch (error) {
         console.error('Error renaming bookshelf:', error);
       }
     }
   }
 })
-
