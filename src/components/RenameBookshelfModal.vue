@@ -24,7 +24,6 @@ const props = defineProps<{
   currentName: string;
   bookshelfId: string;
 }>();
-console.log(props)
 
 const newName = ref(props.currentName);
 const emits = defineEmits(['closeModal']);
