@@ -8,45 +8,44 @@
         <div v-else-if="error" class="text-center text-red-500">{{ error }}</div>
 
         <div v-else-if="selectedBookshelf">
-          <div class="mb-10 shelf-label flex justify-center  items-center gap-2 drop-shadow-3xl py-2 px-4 rounded-3xl text-3xl font-extrabold">            <!-- Bookshelf Title + Dropdown -->
+          <div
+            class="mb-10 shelf-label flex justify-center  items-center gap-2 drop-shadow-3xl py-2 px-4 rounded-3xl text-3xl font-extrabold">
+            <!-- Bookshelf Title + Dropdown -->
             <button @click="toggleDropdown"
-                    class="relative flex items-center justify-center mr-2 w-auto text-[#3a281d] gap-2 bg-[#9F6932] drop-shadow-3xl py-2 px-4 rounded-xl text-3xl font-extrabold hover:bg-[#af7c3a] transition w-[250px] cursor-pointer">
+              class="relative flex items-center justify-center mr-2 w-auto text-[#3a281d] gap-2 bg-[#9F6932] drop-shadow-3xl py-2 px-4 rounded-xl text-3xl font-extrabold hover:bg-[#af7c3a] transition w-[250px] cursor-pointer">
               {{ selectedBookshelf.name }}
               <fa :icon="dropdownOpen ? 'chevron-up' : 'chevron-down'" class="ml-auto" />
-                          <!-- Dropdown List -->
-            <div v-if="dropdownOpen"
-                 class="absolute w-full left-0 top-13 bg-gray-100 border border-black rounded-lg shadow-md z-50">
-              <ul class="text-black text-lg">
-                <li v-for="shelf in bookshelves" :key="shelf.id"
-                    @click="selectBookshelf(shelf)"
+              <!-- Dropdown List -->
+              <div v-if="dropdownOpen"
+                class="absolute w-full left-0 top-13 bg-gray-100 border border-black rounded-lg shadow-md z-50">
+                <ul class="text-black text-lg">
+                  <li v-for="shelf in bookshelves" :key="shelf.id" @click="selectBookshelf(shelf)"
                     class="px-4 py-2 text-left hover:bg-gray-200 cursor-pointer">
-                  {{ shelf.name }}
-                </li>
-                <li @click="openShelfModal"
+                    {{ shelf.name }}
+                  </li>
+                  <li @click="openShelfModal"
                     class="px-4 py-2 text-left text-green-700 font-semibold hover:bg-gray-200 cursor-pointer">
-                  Create New Bookshelf
-                </li>
-              </ul>
-            </div>
+                    Create New Bookshelf
+                  </li>
+                </ul>
+              </div>
             </button>
 
             <!-- Settings Button -->
             <button @click="toggleSettings"
-                    class="absolute right-11 bg-gray-600 text-white p-2 rounded-xl drop-shadow-xl hover:bg-gray-500 cursor-pointer">
+              class="absolute right-11 bg-gray-600 text-white p-2 rounded-xl drop-shadow-xl hover:bg-gray-500 cursor-pointer">
               <fa icon="cog" />
             </button>
 
             <!-- Settings Dropdown -->
-            <div v-if="settingsOpen"
-                 class="absolute right-6 top-16 bg-white border border-black rounded-lg z-50">
+            <div v-if="settingsOpen" class="absolute right-6 top-16 bg-white border border-black rounded-lg z-50">
               <ul class="text-black text-lg">
 
-                <li @click="renameBookshelf(selectedBookshelf.name)"
-                    class="px-4 py-2 hover:bg-gray-200 cursor-pointer">
-                 Rename Bookshelf
+                <li @click="renameBookshelf(selectedBookshelf.name)" class="px-4 py-2 hover:bg-gray-200 cursor-pointer">
+                  Rename Bookshelf
                 </li>
                 <li @click="deleteBookshelf(selectedBookshelf)"
-                    class="px-4 py-2 text-red-600 font-semibold hover:bg-gray-200 cursor-pointer">
+                  class="px-4 py-2 text-red-600 font-semibold hover:bg-gray-200 cursor-pointer">
                   Delete Bookshelf
                 </li>
               </ul>
@@ -61,19 +60,19 @@
         <div class="flex justify-center items-center mt-4 gap-4">
           <!-- Left Arrow -->
           <button v-if="bookshelves.length > 1" @click="swipeToNextBookshelf(-1)"
-                  class="text-white bg-[#9F6932] mr-auto p-2 rounded-lg hover:bg-gray-500 cursor-pointer">
+            class="text-white bg-[#9F6932] mr-auto p-2 rounded-lg hover:bg-gray-500 cursor-pointer">
             <fa icon="chevron-left" />
           </button>
 
           <!-- Bookshelf Component -->
           <div class="flex justify-center items-center w-2/3">
             <Bookshelf v-if="selectedBookshelf" :key="selectedBookshelf.id" :shelf="selectedBookshelf"
-                       @openModal="openModal" />
+              @openModal="openModal" />
           </div>
 
           <!-- Right Arrow -->
           <button v-if="bookshelves.length > 1" @click="swipeToNextBookshelf(1)"
-                  class="text-white bg-[#9F6932] p-2 ml-auto rounded-lg hover:bg-gray-500 cursor-pointer">
+            class="text-white bg-[#9F6932] p-2 ml-auto rounded-lg hover:bg-gray-500 cursor-pointer">
             <fa icon="chevron-right" />
           </button>
         </div>
@@ -81,10 +80,11 @@
         <!-- Modals -->
         <BookModal :book="selectedBook" :isVisible="isModalVisible" @closeModal="closeModal" />
         <NewBookshelfModal :isShelfVisible="isShelfVisible" @closeShelfModal="closeShelfModal"
-                           @bookshelfCreated="showNewBookshelf" />
-
-                           <RenameBookshelfModal :isVisible="isRenameModalVisible" :currentName="selectedBookshelf?.name || ''" :bookshelfId="selectedBookshelf?.id || ''" @closeModal="isRenameModalVisible = false"/>
-        <DeleteBookshelfModal  :isVisible="isDeleteModalVisible" :bookshelfId="selectedBookshelf?.id || ''" @closeModal= "isDeleteModalVisible = false" @deleteBookshelf="handleDeleteBookshelf" />
+          @bookshelfCreated="showNewBookshelf" />
+        <RenameBookshelfModal :isVisible="isRenameModalVisible" :currentName="selectedBookshelf?.name || ''"
+          :bookshelfId="selectedBookshelf?.id || ''" @closeModal="isRenameModalVisible = false" />
+        <DeleteBookshelfModal :isVisible="isDeleteModalVisible" :bookshelfId="selectedBookshelf?.id || ''"
+          @closeModal="isDeleteModalVisible = false" @deleteBookshelf="handleDeleteBookshelf" />
       </div>
     </div>
   </div>
@@ -160,9 +160,9 @@ const handleRenameBookshelf = async (newName: string) => {
   isRenameModalVisible.value = false;
 };
 
-const deleteBookshelf =  (shelf: IBookshelf) => {
-    settingsOpen.value = false;
-    isDeleteModalVisible.value = true;
+const deleteBookshelf = (shelf: IBookshelf) => {
+  settingsOpen.value = false;
+  isDeleteModalVisible.value = true;
 }
 
 const handleDeleteBookshelf = () => {
