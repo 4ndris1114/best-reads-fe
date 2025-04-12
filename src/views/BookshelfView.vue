@@ -85,7 +85,7 @@
         <NewBookshelfModal :isShelfVisible="isShelfVisible" @closeShelfModal="closeShelfModal"
                            @bookshelfCreated="showNewBookshelf" />
         <RenameBookshelfModal :isVisible="isRenameModalVisible" :currentName="selectedBookshelf?.name || ''" @close="isRenameModalVisible = false" @renameBookshelf="handleRenameBookshelf" />
-        <DeleteBookshelfModal  :isVisible="isDeleteModalVisible" :bookshelfId="selectedBookshelf?.id || ''" @closeModal= "isDeleteModalVisible = false" />
+        <DeleteBookshelfModal  :isVisible="isDeleteModalVisible" :bookshelfId="selectedBookshelf?.id || ''" @closeModal= "isDeleteModalVisible = false" @deleteBookshelf="handleDeleteBookshelf" />
       </div>
     </div>
   </div>
@@ -129,6 +129,7 @@ const swipeToNextBookshelf = (increment: number) => {
   const currentIndex = bookshelves.value.findIndex((shelf) => shelf.id === selectedBookshelf.value?.id);
   let nextIndex = (currentIndex + increment) % bookshelves.value.length;
   if (nextIndex < 0) nextIndex = bookshelves.value.length - 1;
+  if (currentIndex === -1) nextIndex = 0;
   selectedBookshelf.value = bookshelves.value[nextIndex];
 };
 
@@ -164,9 +165,10 @@ const deleteBookshelf =  (shelf: IBookshelf) => {
     isDeleteModalVisible.value = true;
 }
 
-const handleCloseDeleteModal = () => {
+const handleDeleteBookshelf = () => {
   isDeleteModalVisible.value = false;
-};
+  swipeToNextBookshelf(-1);
+}
 
 const openModal = (book: IBook) => {
   selectedBook.value = book;
