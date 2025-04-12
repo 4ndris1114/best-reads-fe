@@ -85,7 +85,7 @@
         <NewBookshelfModal :isShelfVisible="isShelfVisible" @closeShelfModal="closeShelfModal"
                            @bookshelfCreated="showNewBookshelf" />
         <RenameBookshelfModal :isVisible="isRenameModalVisible" :currentName="selectedBookshelf?.name || ''" @close="isRenameModalVisible = false" @renameBookshelf="handleRenameBookshelf" />
-        <DeleteBookshelfModal  :isVisible="isDeleteModalVisible" :bookshelfId="selectedBookshelf?.id || ''" @onCloseModal= "isDeleteModalVisible = false" @deleteBookshelf="handleCloseDeleteModal" />
+        <DeleteBookshelfModal  :isVisible="isDeleteModalVisible" :bookshelfId="selectedBookshelf?.id || ''" @closeModal= "isDeleteModalVisible = false" />
       </div>
     </div>
   </div>
@@ -163,12 +163,6 @@ const deleteBookshelf =  (shelf: IBookshelf) => {
     settingsOpen.value = false;
     isDeleteModalVisible.value = true;
 }
-
-const handleDeleteBookshelf = async (shelf: IBookshelf) => {
-  if (!selectedBookshelf.value) return;
-  await shelfStore.deleteBookshelf(userStore.loggedInUser!.id, selectedBookshelf.value.id);
-  isDeleteModalVisible.value = false;
-};
 
 const handleCloseDeleteModal = () => {
   isDeleteModalVisible.value = false;
