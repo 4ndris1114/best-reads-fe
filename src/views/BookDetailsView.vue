@@ -7,7 +7,7 @@
         <div v-else class="flex flex-row">
             <!-- Book cover, button, rating -->
             <div class="flex flex-col space-y-6 items-center w-[25vw] pt-[6vh] ml-[5vw]">
-                <img :src="book.coverImage" alt="Book cover" class="w-72 h-96" />
+                <img :src="book.coverImage" alt="Book cover" class="lg:w-64 lg:h-92 md:w-64 md:h-78 sm:w-56 sm:h-64 xs:w-42 xs:h-40" />
                 <!-- Want to read button -->
                 <button class="bg-highlight text-white px-12 py-2 rounded-full focous-none shadow-lg cursor-pointer min-w-3/5" @click="">
                     <!-- Conditional? What if its at already want to read? -->
@@ -27,10 +27,10 @@
                 <span class="text-lg -mt-2">Rate this book</span>
             </div>
             <!-- Book details -->
-            <div class="flex flex-col space-y-2 w-[65vw] pt-[5.5vh] pl-[1vw] p-[10vw]">
+            <div class="flex flex-col space-y-2 w-[65vw] pt-[5.5vh] md:pl-[1vw] pl-[4vw] p-[6vw]">
                 <div class="flex flex-row items-center space-x-[3vw] relative">
-                    <h1 class="text-4xl text-highlight font-bold max-w-[25vw]">{{ book.title }}</h1>
-                    <div v-if="book.averageRating" class="absolute top-2 right-0 flex space-x-5">
+                    <h1 class="lg:text-4xl md:text-3xl sm:text-2xl text-xl text-highlight font-bold max-w-[25vw]">{{ book.title }}</h1>
+                    <div v-if="book.averageRating" class="absolute top-2 right-0 flex lg:space-x-4 md:space-x-2">
                         <fa 
                         v-for="n in 5"
                         :key="n"
@@ -80,6 +80,7 @@ import { useBookStore } from '@/stores/bookStore';
 import { useRoute } from 'vue-router';
 import MainLayout from '@/layouts/MainLayout.vue';
 import ReviewBox from '@/components/ReviewBox.vue';
+import CloudinaryImage from '@/components/CloudinaryImage.vue';
 
 const bookStore = useBookStore();
 const route = useRoute();
