@@ -80,7 +80,6 @@ import { useBookStore } from '@/stores/bookStore';
 import { useRoute } from 'vue-router';
 import MainLayout from '@/layouts/MainLayout.vue';
 import ReviewBox from '@/components/ReviewBox.vue';
-import CloudinaryImage from '@/components/CloudinaryImage.vue';
 
 const bookStore = useBookStore();
 const route = useRoute();
