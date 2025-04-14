@@ -6,31 +6,33 @@
         </div>
         <div v-else class="flex flex-row">
             <!-- Book cover, button, rating -->
-            <div class="flex flex-col space-y-6 items-center w-[25vw] pt-[6vh] ml-[5vw]">
-                <img :src="book.coverImage" alt="Book cover" class="lg:w-64 lg:h-92 md:w-64 md:h-78 sm:w-56 sm:h-64 xs:w-42 xs:h-40" />
+            <div class="flex flex-col md:space-y-6 sm:space-y-4 space-y-3 items-center w-[25vw] pt-[6vh] ml-[5vw]">
+                <CloudinaryImage :publicId="book.coverImage" alt="Book cover" :width="300" :height="450" />
                 <!-- Want to read button -->
-                <button class="bg-highlight text-white px-12 py-2 rounded-full focous-none shadow-lg cursor-pointer min-w-3/5" @click="">
+                <button class="bg-highlight text-white px-4 sm:py-2 py-1 rounded-full focous-none shadow-lg cursor-pointer min-w-4/5 flex items-center lg:text-lg md:text-sm sm:text-xs" 
+                        @click="">
                     <!-- Conditional? What if its at already want to read? -->
-                    Want to Read 
+                    <span class="sm:block hidden">Add to bookshelf <fa icon="circle-plus" class="ml-2" /></span>
+                    <span class="sm:hidden block text-xs">Add <fa icon="circle-plus" class="ml-2" /></span>
                 </button>
                 <!-- Rate the book (stars) -->
-                <div class="flex space-x-5">
+                <div class="flex lg:space-x-5 md:space-x-2 sm:space-x-1 xs:space-x-0">
                     <fa 
                     v-for="n in 5"
                     :key="n"
                     :icon="['fas', 'star']" 
-                    class="scale-200 cursor-pointer transition-colors duration-200"
+                    class="lg:scale-200 md:scale-150 sm:scale-125 cursor-pointer transition-colors duration-200"
                     :class="n <= hoveredStar ? 'text-yellow-500' : 'text-slate-300'"
                     @mouseover="setHovered(n)"
                     @mouseleave="resetHovered" />
                 </div>
-                <span class="text-lg -mt-2">Rate this book</span>
+                <span class="md:text-lg sm:text-md -mt-2">Rate book</span>
             </div>
             <!-- Book details -->
             <div class="flex flex-col space-y-2 w-[65vw] pt-[5.5vh] md:pl-[1vw] pl-[4vw] p-[6vw]">
                 <div class="flex flex-row items-center space-x-[3vw] relative">
                     <h1 class="lg:text-4xl md:text-3xl sm:text-2xl text-xl text-highlight font-bold max-w-[25vw]">{{ book.title }}</h1>
-                    <div v-if="book.averageRating" class="absolute top-2 right-0 flex lg:space-x-4 md:space-x-2">
+                    <div v-if="book.averageRating" class="sm:block hidden absolute top-2 right-0 lg:space-x-4 md:space-x-2">
                         <fa 
                         v-for="n in 5"
                         :key="n"
@@ -42,6 +44,7 @@
                     </div>
                 </div>
                 <p class="text-2xl text-gray-500">{{ book.author }}</p>
+                <span class="block sm:hidden text-lg"> <fa :icon="['fas', 'star']" class="text-yellow-500"></fa>({{ book.averageRating }})</span>
 
                 <!-- Replace later -->
                 <p v-if="!isShowingMore" class="pt-[3vh] text-justify">{{ bookDescription.length > 500 ? bookDescription.substring(0, 500).trim() + "..." : bookDescription }} 
@@ -80,6 +83,8 @@ import { useBookStore } from '@/stores/bookStore';
 import { useRoute } from 'vue-router';
 import MainLayout from '@/layouts/MainLayout.vue';
 import ReviewBox from '@/components/ReviewBox.vue';
+import CloudinaryImage from '@/components/CloudinaryImage.vue';
+import type { IBook } from '@/types/interfaces/IBook';
 
 const bookStore = useBookStore();
 const route = useRoute();
@@ -96,7 +101,7 @@ onMounted(() => {
 });
 
 const bookIdFromRoute = ref<string | null>(null);
-const book = computed(() => bookStore.selectedBook);
+const book = computed<IBook | null>(() => bookStore.selectedBook);
 const hoveredStar = ref(0);
 const isShowingMore = ref(false);
 
