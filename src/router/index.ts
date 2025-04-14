@@ -41,7 +41,6 @@ const router = createRouter({
         }
       },
     },
-    // Uncomment and add more routes if necessary
     // {
     //   path: '/about',
     //   name: 'about',
@@ -51,3 +50,4 @@ const router = createRouter({
 })
 
 export default router
+
