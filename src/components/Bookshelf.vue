@@ -78,6 +78,7 @@ onMounted(async () => {
     if (!book) {
       try {
         book = await bookStore.getBookById(bookId);
+        if (book) bookStore.books.push(book);
       } catch (error) {
         console.error(`Error fetching book ${bookId}`, error);
       }
@@ -86,6 +87,7 @@ onMounted(async () => {
   });
 
   books.value = (await Promise.all(bookPromises)).filter((b) => b !== null) as IBook[];
+
   totalBooks.value = books.value.length;
   assignColorsAndHeights();
   await nextTick();
@@ -182,5 +184,4 @@ const getBookWidth = (title: string) => {
   max-height: 100%;
   word-break: break-word;
 }
-
 </style>
