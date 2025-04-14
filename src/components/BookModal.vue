@@ -42,7 +42,7 @@ const close = () => {
 }
 
 .modal-content {
-  background-color: white;
+  background-color: rgb(235, 235, 235);
   padding: 2rem;
   border-radius: 8px;
   width: 300px;
@@ -55,6 +55,8 @@ const close = () => {
   border-radius: 4px;
   cursor: pointer;
   border: none;
+  top: 20;
+  right: 20;
 }
 
 .modal-close:hover {

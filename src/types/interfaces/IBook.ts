@@ -9,6 +9,6 @@ export interface IBook {
   publishedDate: Date;
   coverImage: string;
   genres: [string];
-  ratings: [IRating]; //needs to be changed
+  ratings: [IRating];
   averageRating: number;
 }

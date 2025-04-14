@@ -15,11 +15,9 @@
             <ul>
                 <li v-for="book in searchResults" :key="book.id"
                     class="flex items-center gap-4 px-4 py-3 hover:bg-gray-100 cursor-pointer">
-
                     <img :src="imageCache.get(book.coverImage) ?? book.coverImage" :alt="book.title"
                         class="w-12 h-16 object-cover rounded-md"
                         loading="lazy">
-
                     <div class="flex-1">
                         <h3 class="font-semibold text-sm text-gray-900">{{ book.title }}</h3>
                         <p class="text-xs text-gray-600">by {{ book.author }}</p>
@@ -73,13 +71,13 @@ const preloadImage = async (url: string) => {
     }
 };
 
-
 //stores
 const bookStore = useBookStore();
 
 const books = computed<IBook[]>(() => bookStore.books);
 const searchQuery = ref<string>("");
 const isRecommendationsOpen = ref<boolean>(false);
+
 const searchResults = computed<IBook[]>(() => {
     if (!searchQuery.value) {
         return books.value;
@@ -95,7 +93,6 @@ const searchResults = computed<IBook[]>(() => {
 const toggleRecommendations = () => {
     isRecommendationsOpen.value = !isRecommendationsOpen.value;
 };
-
 // Start preloading whenever search results change
 watchEffect(() => {
     searchResults.value.forEach(book => preloadImage(book.coverImage));

@@ -46,7 +46,6 @@ const router = createRouter({
         }
       },
     },
-    // Uncomment and add more routes if necessary
     // {
     //   path: '/about',
     //   name: 'about',

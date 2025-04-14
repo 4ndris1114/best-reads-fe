@@ -6,7 +6,7 @@ import type { IBook } from '@/types/interfaces/IBook';
 export const useBookStore = defineStore('bookStore', {
     state: () => ({
         books: [] as IBook[],
-        selectedBook: {} as IBook,
+        selectedBook: null,
         loading: false,
 
         service: new BookService() as BookService
@@ -30,7 +30,13 @@ export const useBookStore = defineStore('bookStore', {
         async getBookById(bookId: string): Promise<IBook> {
           try {
             this.loading = true;
-            return await this.service.getBookById(bookId);
+            const book = await this.service.getBookById(bookId);
+            if (book && !this.books.find(b => b.id === book.id)) {
+              this.books.push(book);
+              return book;
+            } else {
+              return book;
+            }
           } catch (error) {
             console.error('Error fetching book:', error);
             throw error;
