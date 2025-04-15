@@ -37,6 +37,24 @@ export class UserService {
       }
     }
 
+    async editUserById(userId:string, IUser: IUser): Promise<IUser> {
+    try {
+      const response = await instance.put(`/user/${userId}/edit`, IUser, {
+        headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+        if (response.status == 200) {
+          return response.data;
+        } else {
+          throw new Error('Failed to edit user');
+        }
+      } catch (error) {
+        console.error('Errorediting use:', error);
+        throw error;
+      }
+    }
+
     mapToIUser(user: any): IUser {
       return {
         id: user._id,

@@ -9,7 +9,7 @@ export const useUserStore = defineStore('userStore', {
   state: () => ({
     loggedInUser: null as IUser | null,
     token: sessionStorage.getItem('jwtToken') || null as string | null,
-    isAuthenticated: false, 
+    isAuthenticated: false,
 
     userService: new UserService() as UserService,
   }),
@@ -27,7 +27,7 @@ export const useUserStore = defineStore('userStore', {
         }
       }
     },
-    
+
     async login(email: string, password: string) {
       try {
         const token = await this.userService.login(email, password);
@@ -57,6 +57,15 @@ export const useUserStore = defineStore('userStore', {
       } catch (e: any) {
         console.error(e);
         throw e;
+      }
+    },
+
+    async editUserById(userId:string, IUser: IUser) {
+      try {
+        const response = await this.userService.editUserById(userId, IUser);
+        return response;
+      } catch (e: any) {
+        console.error("Error editing user:", e);
       }
     },
 
