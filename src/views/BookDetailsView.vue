@@ -20,7 +20,7 @@
                         <div v-if="!userStore.isAuthenticated" 
                             @click="$router.push('/login')"
                             class="bg-white border border-black rounded-lg shadow-lg lg:text-lg md:text-md sm:text-sm xs:text-xs">
-                            <a href="" class="py-2 text-left hover:bg-gray-200 cursor-pointer underline text-blue-600">Log in</a>
+                            <a href="/login" class="py-2 text-left cursor-pointer underline text-blue-600">Log in</a>
                             to add to a bookshelf
                         </div>
                         <ul v-else class="bg-white border border-black rounded-lg shadow-lg lg:text-lg md:text-md sm:text-sm xs:text-xs max-h-[22vh] overflow-y-auto">
@@ -164,15 +164,15 @@ const addBookToShelf = async (shelf: IBookshelf) => {
 };
 
 const moveBookToNewShelf = async (shelfId: string) => {
-    // try {
-    //     await shelfStore.moveBookToNewShelf(userStore.loggedInUser!.id, shelfId, book.value!.id);
-    //     showToastMessage("Book moved to new shelf successfully!", "success");
-    //     isMoveBookModalOpen.value = false;
-    // } catch (error) {
-    //     console.error('Error moving book to new shelf:', error);
-    //     showToastMessage("Error moving book to new shelf", "error");
-    //     isMoveBookModalOpen.value = false;
-    // }
+    try {
+        await shelfStore.moveBookToBookshelf(userStore.loggedInUser!.id, currentBasicShelf.value!.id, book.value!.id, shelfId);
+        showToastMessage("Book moved to new shelf successfully!", "success");
+        isMoveBookModalOpen.value = false;
+    } catch (error) {
+        console.error('Error moving book to new shelf:', error);
+        showToastMessage("Error moving book to new shelf", "error");
+        isMoveBookModalOpen.value = false;
+    }
 }
 
 const showToastMessage = (message: string, type: 'success' | 'error') => {

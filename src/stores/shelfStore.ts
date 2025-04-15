@@ -43,6 +43,30 @@ export const useShelfStore = defineStore('shelfStore', {
       }
     },
 
+    async moveBookToBookshelf(userId: string, sourceShelfId: string, bookId: string, targetShelfId: string) {
+      try {
+        const response = await this.service.moveBookToBookshelf(userId, sourceShelfId, bookId, targetShelfId);
+    
+        if (response === bookId) {
+          // Remove book from source shelf
+          const sourceShelf = this.bookshelves.find(bookshelf => bookshelf.id === sourceShelfId);
+          if (sourceShelf) {
+            sourceShelf.books = sourceShelf.books.filter(id => id !== bookId);
+          }
+      
+          // Add book to target shelf
+          const targetShelf = this.bookshelves.find(bookshelf => bookshelf.id === targetShelfId);
+          if (targetShelf && !targetShelf.books.includes(bookId)) {
+            targetShelf.books.push(bookId);
+          }
+        }
+      } catch (error) {
+        console.error('Error moving book to bookshelf:', error);
+        throw error;
+      }
+    },
+    
+
     async deleteBookshelf(userId: string, bookshelfId: string) {
       try {
         await this.service.deleteBookshelf(userId, bookshelfId);

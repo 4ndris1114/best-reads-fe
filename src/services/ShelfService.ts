@@ -50,6 +50,20 @@ export class ShelfService {
     }
   }
 
+  async moveBookToBookshelf(userId: string, sourceShelfId: string, bookId: string, targetShelfId: string): Promise<string> {
+    try {
+      const response = await instance.put(`/bookshelf/${userId}/${sourceShelfId}/move/${bookId}/to/${targetShelfId}`);
+      if (response.status == 200) {
+        return response.data;
+      } else {
+        throw new Error('Failed to move book to bookshelf');
+      }
+    } catch (error) {
+      console.error('Error moving book to bookshelf:', error);
+      throw error;
+    }
+  }
+
   async renameBookshelf(userId: string, bookshelfId: string, newName: string): Promise<string> {
     try {
       const response = await instance.put(`/bookshelf/${userId}/${bookshelfId}/rename`, newName,
