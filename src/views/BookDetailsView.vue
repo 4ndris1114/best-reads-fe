@@ -17,7 +17,13 @@
                         <span class="sm:hidden block text-xs">Add <fa icon="circle-plus" class="ml-2" /></span>
                     </button>
                     <div v-if="isShelfDropdownOpen" class="absolute lg:top-11 md:top-9 sm:top-8 right-0 z-50 w-full text-center">
-                        <ul class="bg-white border border-black rounded-lg shadow-lg lg:text-lg md:text-md sm:text-sm xs:text-xs max-h-[22vh] overflow-y-auto">
+                        <div v-if="!userStore.isAuthenticated" 
+                            @click="$router.push('/login')"
+                            class="bg-white border border-black rounded-lg shadow-lg lg:text-lg md:text-md sm:text-sm xs:text-xs">
+                            <a href="" class="py-2 text-left hover:bg-gray-200 cursor-pointer underline text-blue-600">Log in</a>
+                            to add to a bookshelf
+                        </div>
+                        <ul v-else class="bg-white border border-black rounded-lg shadow-lg lg:text-lg md:text-md sm:text-sm xs:text-xs max-h-[22vh] overflow-y-auto">
                             <li v-for="shelf in userShelves" :key="shelf.id" @click="addBookToShelf(shelf)" class="px-4 py-2 text-left hover:bg-gray-200 cursor-pointer">
                                 {{ shelf.name }}
                             </li>
