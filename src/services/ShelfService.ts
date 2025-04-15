@@ -33,9 +33,33 @@ export class ShelfService {
 
   async addBookToBookshelf(userId: string, bookshelfId: string, bookId: string): Promise<void> {
     try {
-      await instance.post(`/bookshelf/${userId}/${bookshelfId}/books/${bookId}`);
+      const response = await instance.post(`/bookshelf/${userId}/${bookshelfId}/books`, bookId,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.status == 200) {
+        return response.data;
+      } else {
+        throw new Error('Failed to add book to bookshelf');
+      }
     } catch (error) {
       console.error('Error adding book to bookshelf:', error);
+      throw error;
+    }
+  }
+
+  async moveBookToBookshelf(userId: string, sourceShelfId: string, bookId: string, targetShelfId: string): Promise<string> {
+    try {
+      const response = await instance.put(`/bookshelf/${userId}/${sourceShelfId}/move/${bookId}/to/${targetShelfId}`);
+      if (response.status == 200) {
+        return response.data;
+      } else {
+        throw new Error('Failed to move book to bookshelf');
+      }
+    } catch (error) {
+      console.error('Error moving book to bookshelf:', error);
       throw error;
     }
   }

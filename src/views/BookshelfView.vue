@@ -32,7 +32,7 @@
             </button>
 
             <!-- Settings Button -->
-            <button @click="toggleSettings"
+            <button v-if="selectedBookshelf.isMutable" @click="toggleSettings"
               class="absolute right-11 bg-gray-600 text-white p-2 rounded-xl drop-shadow-xl hover:bg-gray-500 cursor-pointer">
               <fa icon="cog" />
             </button>

@@ -25,7 +25,7 @@ export const useShelfStore = defineStore('shelfStore', {
 
     async createBookshelf(userId: string, bookshelfName: string) {
       try {
-        const newBookshelf = { id:"", name: bookshelfName, books: [] } as IBookshelf;
+        const newBookshelf = { id:"", name: bookshelfName, books: [], isMutable: true } as IBookshelf;
         const createdBookshelf = await this.service.createBookshelf(userId, newBookshelf);
         this.bookshelves.push(createdBookshelf);
       } catch (error) {
@@ -36,11 +36,36 @@ export const useShelfStore = defineStore('shelfStore', {
     async addBookToBookshelf(userId: string, bookshelfId: string, bookId: string) {
       try {
         const response = await this.service.addBookToBookshelf(userId, bookshelfId, bookId);
-        console.log('Book', bookId, 'successfully added to bookshelf:', response);
+        this.bookshelves.find(bookshelf => bookshelf.id === bookshelfId)!.books.push(bookId);
       } catch (error) {
         console.error('Error adding book to bookshelf:', error);
+        throw error;
       }
     },
+
+    async moveBookToBookshelf(userId: string, sourceShelfId: string, bookId: string, targetShelfId: string) {
+      try {
+        const response = await this.service.moveBookToBookshelf(userId, sourceShelfId, bookId, targetShelfId);
+    
+        if (response === bookId) {
+          // Remove book from source shelf
+          const sourceShelf = this.bookshelves.find(bookshelf => bookshelf.id === sourceShelfId);
+          if (sourceShelf) {
+            sourceShelf.books = sourceShelf.books.filter(id => id !== bookId);
+          }
+      
+          // Add book to target shelf
+          const targetShelf = this.bookshelves.find(bookshelf => bookshelf.id === targetShelfId);
+          if (targetShelf && !targetShelf.books.includes(bookId)) {
+            targetShelf.books.push(bookId);
+          }
+        }
+      } catch (error) {
+        console.error('Error moving book to bookshelf:', error);
+        throw error;
+      }
+    },
+    
 
     async deleteBookshelf(userId: string, bookshelfId: string) {
       try {
