@@ -2,7 +2,7 @@
   <div class="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
       <ul class="py-1 text-sm text-gray-700">
           <li>
-              <a href="/profile/some-id" class="block px-4 py-2 hover:bg-gray-100">
+              <a :href="'/profile/'+ userStore.loggedInUser!.id" class="block px-4 py-2 hover:bg-gray-100">
                   <fa icon="user" class="mr-2" />
                   My Profile
               </a>
@@ -34,9 +34,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useUserStore } from '@/stores/userStore';
 
-// Dummy profile picture for now
-const profilePicture = ref("https://via.placeholder.com/150");
+const userStore = useUserStore();
+
 const open = ref(false);
 
 function toggleDropdown() {
