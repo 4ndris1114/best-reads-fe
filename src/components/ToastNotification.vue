@@ -8,7 +8,6 @@
 </template>
 
 <script setup>
-console.log("Toast Notification");
 const props = defineProps({
     show: {
         type: Boolean,

@@ -104,6 +104,7 @@ import type { IBookshelf } from '@/types/interfaces/IBookshelf';
 import { useUserStore } from '@/stores/userStore';
 import { useShelfStore } from '@/stores/shelfStore';
 import ToastNotification from '@/components/ToastNotification.vue';
+import { isBookInBasicShelf } from '@/utils/shelfActions';
 
 const bookStore = useBookStore();
 const userStore = useUserStore();
@@ -130,6 +131,12 @@ const toastMessage = ref("");
 const showToast = ref(false);
 
 const addBookToShelf = async (shelf: IBookshelf) => {
+    const shelfContainsBook = isBookInBasicShelf(book.value!, userShelves.value);
+    
+    if (shelfContainsBook) {
+        showToastMessage("This book is already added to this bookshelf: "+ shelfContainsBook.name, "error");
+        return;
+    }
     try {
         await shelfStore.addBookToBookshelf(userStore.loggedInUser!.id, shelf.id, book.value!.id);
         showToastMessage("Book added to shelf successfully!", "success");

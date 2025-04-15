@@ -36,7 +36,7 @@ export const useShelfStore = defineStore('shelfStore', {
     async addBookToBookshelf(userId: string, bookshelfId: string, bookId: string) {
       try {
         const response = await this.service.addBookToBookshelf(userId, bookshelfId, bookId);
-        console.log('Book', bookId, 'successfully added to bookshelf:', response);
+        this.bookshelves.find(bookshelf => bookshelf.id === bookshelfId)!.books.push(bookId);
       } catch (error) {
         console.error('Error adding book to bookshelf:', error);
         throw error;
