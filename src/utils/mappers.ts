@@ -24,6 +24,7 @@ export const mapToIBookshelf = (bookshelf: any): IBookshelf => {
     id: bookshelf.id,
     name: bookshelf.name,
     books: bookshelf.books,
+    isMutable: bookshelf.isMutable
   } as IBookshelf;
 }
 
