@@ -39,6 +39,7 @@ export const useShelfStore = defineStore('shelfStore', {
         console.log('Book', bookId, 'successfully added to bookshelf:', response);
       } catch (error) {
         console.error('Error adding book to bookshelf:', error);
+        throw error;
       }
     },
 

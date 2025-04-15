@@ -29,7 +29,7 @@ export const mapToIBookshelf = (bookshelf: any): IBookshelf => {
 
 export const mapToIBook = (book: any): IBook => {
   return {
-    id: book._id,
+    id: book.id,
     apiId: book.apiId,
     title: book.title,
     author: book.author,

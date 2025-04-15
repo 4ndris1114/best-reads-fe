@@ -17,7 +17,7 @@
                         <span class="sm:hidden block text-xs">Add <fa icon="circle-plus" class="ml-2" /></span>
                     </button>
                     <div v-if="isShelfDropdownOpen" class="absolute lg:top-11 md:top-9 sm:top-8 right-0 z-50 w-full text-center">
-                        <ul class="bg-white border border-black rounded-lg shadow-lg lg:text-lg md:text-md sm:text-sm xs:text-xs">
+                        <ul class="bg-white border border-black rounded-lg shadow-lg lg:text-lg md:text-md sm:text-sm xs:text-xs max-h-[22vh] overflow-y-auto">
                             <li v-for="shelf in userShelves" :key="shelf.id" @click="addBookToShelf(shelf)" class="px-4 py-2 text-left hover:bg-gray-200 cursor-pointer">
                                 {{ shelf.name }}
                             </li>
@@ -83,6 +83,7 @@
                 <h1 class="text-3xl">Readers also liked</h1>
             </div>
         </div>
+        <ToastNotification :show="showToast" :toastType="toastType" :message="toastMessage" />
     </MainLayout>
 </template>
 
@@ -96,9 +97,12 @@ import CloudinaryImage from '@/components/CloudinaryImage.vue';
 import type { IBook } from '@/types/interfaces/IBook';
 import type { IBookshelf } from '@/types/interfaces/IBookshelf';
 import { useUserStore } from '@/stores/userStore';
+import { useShelfStore } from '@/stores/shelfStore';
+import ToastNotification from '@/components/ToastNotification.vue';
 
 const bookStore = useBookStore();
 const userStore = useUserStore();
+const shelfStore = useShelfStore();
 const route = useRoute();
 
 // REPLCE LATER
@@ -120,11 +124,29 @@ const hoveredStar = ref(0);
 const isShowingMore = ref(false);
 const isShelfDropdownOpen = ref(false);
 
-const error = ref<string>("");
+const toastType = ref("");
+const toastMessage = ref("");
+const showToast = ref(false);
 
-const addBookToShelf = (shelf: IBookshelf) => {
-    // shelfStore.addBookToShelf(shelfId, book.value!.id);
-    // shelvesDropdownOpen.value = false;
+const addBookToShelf = async (shelf: IBookshelf) => {
+    try {
+        await shelfStore.addBookToBookshelf(userStore.loggedInUser!.id, shelf.id, book.value!.id);
+        showToastMessage("Book added to shelf successfully!", "success");
+        isShelfDropdownOpen.value = false;
+    } catch (error) {
+        console.error('Error adding book to shelf:', error);
+        showToastMessage("This book is already added to this bookshelf", "error");
+        isShelfDropdownOpen.value = false;
+    }
+};
+
+const showToastMessage = (message: string, type: 'success' | 'error') => {
+    toastMessage.value = message;
+    toastType.value = type;
+    showToast.value = true;
+    setTimeout(() => {
+        showToast.value = false;
+    }, 3000);
 };
 
 // Functions to update hovered state for rating

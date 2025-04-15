@@ -32,8 +32,15 @@ export class ShelfService {
   }
 
   async addBookToBookshelf(userId: string, bookshelfId: string, bookId: string): Promise<void> {
+    console.log(userId, bookshelfId, bookId);
+    
     try {
-      await instance.post(`/bookshelf/${userId}/${bookshelfId}/books/${bookId}`);
+      await instance.post(`/bookshelf/${userId}/${bookshelfId}/books`, bookId,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
     } catch (error) {
       console.error('Error adding book to bookshelf:', error);
       throw error;
