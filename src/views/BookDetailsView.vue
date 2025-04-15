@@ -89,6 +89,14 @@
             </div>
         </div>
         <ToastNotification :show="showToast" :toastType="toastType" :message="toastMessage" />
+        <MoveBookModal v-if="book" @click.self="isMoveBookModalOpen = false"
+        :isOpen="isMoveBookModalOpen"
+        :currentShelf="currentBasicShelf"
+        :targetShelves="userShelves.filter(s => !s.isMutable && s.id !== currentBasicShelf?.id)"
+        :bookId="book!.id"
+        @move="moveBookToNewShelf"
+        @close="isMoveBookModalOpen = false"
+        />
     </MainLayout>
 </template>
 
@@ -105,6 +113,7 @@ import { useUserStore } from '@/stores/userStore';
 import { useShelfStore } from '@/stores/shelfStore';
 import ToastNotification from '@/components/ToastNotification.vue';
 import { isBookInBasicShelf } from '@/utils/shelfActions';
+import MoveBookModal from '@/components/MoveBookModal.vue';
 
 const bookStore = useBookStore();
 const userStore = useUserStore();
@@ -125,16 +134,22 @@ const hoveredStar = ref(0);
 
 const isShowingMore = ref(false);
 const isShelfDropdownOpen = ref(false);
+const isMoveBookModalOpen = ref(false);
+const currentBasicShelf = ref<IBookshelf | null>(null);
 
 const toastType = ref("");
 const toastMessage = ref("");
 const showToast = ref(false);
 
 const addBookToShelf = async (shelf: IBookshelf) => {
-    const shelfContainsBook = isBookInBasicShelf(book.value!, userShelves.value);
+    //if the book is already on one of the user's basic bookshelves, offer user to move
+    const shelfContainsBook = isBookInBasicShelf(book.value!, userShelves.value.filter((shelf) => !shelf.isMutable));
     
-    if (shelfContainsBook) {
-        showToastMessage("This book is already added to this bookshelf: "+ shelfContainsBook.name, "error");
+    if (!shelf.isMutable && shelfContainsBook) {
+        //render a modal that asks user to move book to another bookshelf
+        currentBasicShelf.value = shelfContainsBook;
+        isMoveBookModalOpen.value = true;
+        isShelfDropdownOpen.value = false;
         return;
     }
     try {
@@ -147,6 +162,18 @@ const addBookToShelf = async (shelf: IBookshelf) => {
         isShelfDropdownOpen.value = false;
     }
 };
+
+const moveBookToNewShelf = async (shelfId: string) => {
+    // try {
+    //     await shelfStore.moveBookToNewShelf(userStore.loggedInUser!.id, shelfId, book.value!.id);
+    //     showToastMessage("Book moved to new shelf successfully!", "success");
+    //     isMoveBookModalOpen.value = false;
+    // } catch (error) {
+    //     console.error('Error moving book to new shelf:', error);
+    //     showToastMessage("Error moving book to new shelf", "error");
+    //     isMoveBookModalOpen.value = false;
+    // }
+}
 
 const showToastMessage = (message: string, type: 'success' | 'error') => {
     toastMessage.value = message;
