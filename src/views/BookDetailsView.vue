@@ -8,13 +8,22 @@
             <!-- Book cover, button, rating -->
             <div class="flex flex-col md:space-y-6 sm:space-y-4 space-y-3 items-center w-[25vw] pt-[6vh] ml-[5vw]">
                 <CloudinaryImage :publicId="book.coverImage" alt="Book cover" :width="300" :height="450" />
-                <!-- Want to read button -->
-                <button class="bg-highlight text-white px-4 sm:py-2 py-1 rounded-full focous-none shadow-lg cursor-pointer min-w-4/5 flex items-center lg:text-lg md:text-sm sm:text-xs" 
-                        @click="">
-                    <!-- Conditional? What if its at already want to read? -->
-                    <span class="sm:block hidden">Add to bookshelf <fa icon="circle-plus" class="ml-2" /></span>
-                    <span class="sm:hidden block text-xs">Add <fa icon="circle-plus" class="ml-2" /></span>
-                </button>
+                <!-- Bookshelves button and dropdown -->
+                <div class="relative">
+                    <button class="bg-highlight text-white px-4 sm:py-2 py-1 rounded-lg focous-none shadow-lg cursor-pointer min-w-4/5 flex items-center lg:text-lg md:text-sm sm:text-xs justify-center" 
+                        @click="toggleShelvesDropdown">
+                        <!-- Conditional? What if its at already want to read? -->
+                        <span class="sm:block hidden">Add to bookshelf <fa icon="circle-plus" class="ml-2" /></span>
+                        <span class="sm:hidden block text-xs">Add <fa icon="circle-plus" class="ml-2" /></span>
+                    </button>
+                    <div v-if="isShelfDropdownOpen" class="absolute lg:top-11 md:top-9 sm:top-8 right-0 z-50 w-full text-center">
+                        <ul class="bg-white border border-black rounded-lg shadow-lg lg:text-lg md:text-md sm:text-sm xs:text-xs">
+                            <li v-for="shelf in userShelves" :key="shelf.id" @click="addBookToShelf(shelf)" class="px-4 py-2 text-left hover:bg-gray-200 cursor-pointer">
+                                {{ shelf.name }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
                 <!-- Rate the book (stars) -->
                 <div class="flex lg:space-x-5 md:space-x-2 sm:space-x-1 xs:space-x-0">
                     <fa 
@@ -85,8 +94,11 @@ import MainLayout from '@/layouts/MainLayout.vue';
 import ReviewBox from '@/components/ReviewBox.vue';
 import CloudinaryImage from '@/components/CloudinaryImage.vue';
 import type { IBook } from '@/types/interfaces/IBook';
+import type { IBookshelf } from '@/types/interfaces/IBookshelf';
+import { useUserStore } from '@/stores/userStore';
 
 const bookStore = useBookStore();
+const userStore = useUserStore();
 const route = useRoute();
 
 // REPLCE LATER
@@ -102,10 +114,18 @@ onMounted(() => {
 
 const bookIdFromRoute = ref<string | null>(null);
 const book = computed<IBook | null>(() => bookStore.selectedBook);
+const userShelves = computed<IBookshelf[]>(() => userStore.loggedInUser ? userStore.loggedInUser.bookshelves : []);
 const hoveredStar = ref(0);
+
 const isShowingMore = ref(false);
+const isShelfDropdownOpen = ref(false);
 
 const error = ref<string>("");
+
+const addBookToShelf = (shelf: IBookshelf) => {
+    // shelfStore.addBookToShelf(shelfId, book.value!.id);
+    // shelvesDropdownOpen.value = false;
+};
 
 // Functions to update hovered state for rating
 const setHovered = (index: number) => {
@@ -113,6 +133,10 @@ const setHovered = (index: number) => {
 };
 const resetHovered = () => {
   hoveredStar.value = 0;
+};
+
+const toggleShelvesDropdown = () => {
+    isShelfDropdownOpen.value = !isShelfDropdownOpen.value;
 };
 </script>
 

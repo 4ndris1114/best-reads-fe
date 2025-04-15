@@ -5,7 +5,7 @@ import type { IRating } from "@/types/interfaces/IRating";
 
 export const mapToIUser = (user: any): IUser => {
   return {
-    id: user._id,
+    id: user.id,
     username: user.username,
     email: user.email,
     profilePicture: user.profilePicture,
