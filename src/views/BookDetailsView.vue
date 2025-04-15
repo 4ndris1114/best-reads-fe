@@ -61,12 +61,11 @@
                 <p class="text-2xl text-gray-500">{{ book.author }}</p>
                 <span class="block sm:hidden text-lg"> <fa :icon="['fas', 'star']" class="text-yellow-500"></fa>({{ book.averageRating }})</span>
 
-                <!-- Replace later -->
-                <p v-if="!isShowingMore" class="pt-[3vh] text-justify">{{ bookDescription.length > 500 ? bookDescription.substring(0, 500).trim() + "..." : bookDescription }} 
-                    <a v-if="bookDescription.length > 500" href="#" class="pl-2 text-highlight underline"
+                <p v-if="!isShowingMore" class="pt-[3vh] text-justify">{{ book.description.length > 500 ? book.description.substring(0, 500).trim() + "..." : book.description }} 
+                    <a v-if="book.description.length > 500" href="#" class="pl-2 text-highlight underline"
                     @click="isShowingMore = true">Show more</a>
                 </p>
-                <p v-else class="pt-[3vh] text-justify">{{ bookDescription }}
+                <p v-else class="pt-[3vh] text-justify">{{ book.description }}
                     <a href="#" class="pl-2 text-highlight underline"
                     @click="isShowingMore = false">Show less</a>
                     <br />
@@ -110,10 +109,6 @@ const bookStore = useBookStore();
 const userStore = useUserStore();
 const shelfStore = useShelfStore();
 const route = useRoute();
-
-// REPLCE LATER
-const bookDescription = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It but also the leap into electronic typesetting, but also the leap into electronic typesetting, but also the leap into electronic typesetting, but also the leap into electronic typesetting, but also the leap into electronic typesetting,"
-// -------
 
 onMounted(() => {
     bookIdFromRoute.value = route.params.id as string | null;
