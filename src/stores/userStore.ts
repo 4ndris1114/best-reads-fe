@@ -48,6 +48,14 @@ export const useUserStore = defineStore('userStore', {
     },
 
     async logout() {
+      try {
+        await this.userService.logout();
+      } catch (e) {
+        console.warn('Server logout failed. Proceeding with local cleanup.');
+      } finally {
+        this.clearAuthData();
+        router.push('/login');
+      }
     },
 
     async getUserById(userId: string) {
@@ -79,6 +87,22 @@ export const useUserStore = defineStore('userStore', {
       } catch (error) {
         console.error("Error decoding token:", error);
         this.clearAuthData();
+      }
+    },
+
+    async followUser(userId: string) {
+      try {
+        await this.userService.followUser(userId);
+      } catch (e) {
+        throw e;
+      }
+    },
+
+    async unfollowUser(userId: string) {
+      try {
+        await this.userService.unfollowUser(userId);
+      } catch (e) {
+        throw e;
       }
     },
 

@@ -24,7 +24,13 @@ export class UserService {
     }
 
     async logout() {
-        //endpoint for logout or just clear token + loggedInUser info ?
+      try {
+        const response = await instance.post('/auth/logout');
+        return response.data;
+      } catch (error) {
+        console.error('Error during logout:', error);
+        throw error;
+      }
     }
 
     async getUserById(userId: string) {
@@ -51,6 +57,26 @@ export class UserService {
         }
       } catch (error) {
         console.error('Errorediting use:', error);
+        throw error;
+      }
+    }
+
+    async followUser(userId: string, followingId: string) {
+      try {
+        const response = await instance.post(`/user/${userId}/follow/${followingId}`);
+        return response.data;
+      } catch (error) {
+        console.error('Error following user:', error);
+        throw error;
+      }
+    }
+
+    async unfollowUser(userId: string, followingId: string) {
+      try {
+        const response = await instance.delete(`/user/${userId}/unfollow/${followingId}`);
+        return response.data;
+      } catch (error) {
+        console.error('Error unfollowing user:', error);
         throw error;
       }
     }
