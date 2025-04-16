@@ -13,26 +13,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import type {IBook} from '@/types/interfaces/IBook';
+import type {IRating} from '@/types/interfaces/IRating';
 import BookCard from '@/components/BookCard.vue';
 import { BookService } from '@/services/BookService';
 
-// Define the book interface
-interface Rating {
-  rating: number;
-}
-
-interface Book {
-  title: string;
-  author: string;
-  isbn: string;
-  publishedDate: string;
-  coverImage?: string;
-  genres: string[];
-  ratings: Rating[];
-  averageRating: number;
-}
-
-const books = ref<Book[]>([]);
+const books = ref<IBook[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
 
