@@ -1,11 +1,15 @@
 <template>
-  <div v-if="isVisible" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div class="bg-white p-4 rounded-lg w-[300px]">
-      <h2 class="text-xl font-bold mb-2">Rename Bookshelf</h2>
+  <div v-if="isVisible" class="fixed inset-0 bg-black/[var(--bg-opacity)] [--bg-opacity:50%] flex justify-center items-center z-50">
+    <div class="bg-white relative border-2 border-green-600 p-4 rounded-lg w-[300px]">
+      <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-white p-2 rounded-full shadow-md">
+        <fa icon="pen" class="text-green-600 text-2xl" />
+      </div>
+
+      <h2 class="text-xl font-bold my-4">Rename Bookshelf</h2>
       <input v-model="newName" class="border w-full p-2 mb-4" />
-      <div class="flex justify-end gap-2">
-        <button @click="emits('closeModal')" class="bg-gray-400 px-3 py-1 rounded cursor-pointer">Cancel</button>
-        <button @click="confirmRename" class="bg-green-600 text-white px-3 py-1 rounded cursor-pointer">Rename</button>
+      <div class="flex justify-center gap-7">
+        <button @click="emits('closeModal')" class="bg-gray-400 px-3 py-1 rounded hover:bg-gray-600 cursor-pointer">Cancel</button>
+        <button @click="confirmRename" class="bg-green-600 text-white px-3 hover:bg-green-800 py-1 rounded cursor-pointer">Rename</button>
       </div>
     </div>
   </div>
