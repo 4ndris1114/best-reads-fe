@@ -26,7 +26,15 @@ const router = createRouter({
     {
       path: '/bookshelves',
       name: 'bookshelves',
-      component: () => import('../views/BookshelfView.vue')
+      component: () => import('../views/BookshelfView.vue'),
+      beforeEnter: async (to, from, next) => {
+        const userStore = useUserStore()
+        if (!userStore.isAuthenticated) {
+          next({ name: 'auth' })
+        } else {
+          next()
+        }
+      },
     },
     {
       path: '/bookdetails/:id',
