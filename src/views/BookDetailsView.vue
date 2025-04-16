@@ -31,6 +31,7 @@
                     </div>
                 </div>
                 <!-- Rate the book (stars) -->
+                <span class="md:text-lg sm:text-md mb-2">Rate this book:</span>
                 <div class="flex lg:space-x-5 md:space-x-2 sm:space-x-1 xs:space-x-0">
                     <fa 
                     v-for="n in 5"
@@ -39,9 +40,9 @@
                     class="lg:scale-200 md:scale-150 sm:scale-125 cursor-pointer transition-colors duration-200"
                     :class="n <= hoveredStar ? 'text-yellow-500' : 'text-slate-300'"
                     @mouseover="setHovered(n)"
-                    @mouseleave="resetHovered" />
+                    @mouseleave="resetHovered"
+                    @click="clickedStar = n; showReviewModal = true" />
                 </div>
-                <span class="md:text-lg sm:text-md -mt-2">Rate book</span>
             </div>
             <!-- Book details -->
             <div class="flex flex-col space-y-2 w-[65vw] pt-[5.5vh] md:pl-[1vw] pl-[4vw] p-[6vw]">
@@ -97,6 +98,12 @@
         @move="moveBookToNewShelf"
         @close="isMoveBookModalOpen = false"
         />
+        <LeaveReviewModal
+            :isOpen="showReviewModal"
+            :ratingValue="clickedStar"
+            @submit="handleReviewSubmit"
+            @close="showReviewModal = false"
+        />
     </MainLayout>
 </template>
 
@@ -114,6 +121,7 @@ import { useShelfStore } from '@/stores/shelfStore';
 import ToastNotification from '@/components/ToastNotification.vue';
 import { isBookInBasicShelf } from '@/utils/shelfActions';
 import MoveBookModal from '@/components/MoveBookModal.vue';
+import LeaveReviewModal from '@/components/LeaveReviewModal.vue';
 
 const bookStore = useBookStore();
 const userStore = useUserStore();
@@ -136,6 +144,9 @@ const isShowingMore = ref(false);
 const isShelfDropdownOpen = ref(false);
 const isMoveBookModalOpen = ref(false);
 const currentBasicShelf = ref<IBookshelf | null>(null);
+
+const showReviewModal = ref(false);
+const clickedStar = ref(0);
 
 const toastType = ref("");
 const toastMessage = ref("");
@@ -174,6 +185,11 @@ const moveBookToNewShelf = async (shelfId: string) => {
         isMoveBookModalOpen.value = false;
     }
 }
+
+const handleReviewSubmit = (payload: { rating: number; reviewText: string; isPublic: boolean }) => {
+    showReviewModal.value = false;
+    showToastMessage("Review submitted successfully!", "success");
+};
 
 const showToastMessage = (message: string, type: 'success' | 'error') => {
     toastMessage.value = message;
