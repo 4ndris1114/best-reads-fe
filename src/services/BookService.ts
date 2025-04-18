@@ -35,4 +35,15 @@ export class BookService {
             throw error;
         }
     }
+
+    async postReview(bookId: string, review: any) {
+        try {
+            const response = await httpClient.post(`/review/book/${bookId}`, review);
+            console.log(response);
+            
+        } catch (error) {
+            console.error('Error posting review:', error);
+            throw error;
+        }
+    }
 }

@@ -58,7 +58,13 @@ export const useBookStore = defineStore('bookStore', {
           }
         },
         async postReview(bookId: string, review: IReview) {
-          
+          try {
+            const response = await this.service.postReview(bookId, review);
+            return response;
+          } catch (error) {
+            console.error('Error posting review:', error);
+            throw error;
+          }
         }
     }
 });
