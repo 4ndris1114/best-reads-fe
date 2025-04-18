@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { BookService } from '@/services/BookService';
 import type { IBook } from '@/types/interfaces/IBook';
+import type { IReview } from '@/types/interfaces/IReview';
 
 export const useBookStore = defineStore('bookStore', {
     state: () => ({
@@ -55,6 +56,9 @@ export const useBookStore = defineStore('bookStore', {
           } else {
             this.selectedBook = bookToBeSelected;
           }
+        },
+        async postReview(bookId: string, review: IReview) {
+          
         }
     }
 });

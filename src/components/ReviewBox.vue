@@ -7,19 +7,19 @@
                 <p class="text-sm text-gray-500">{{ review.createdAt.toLocaleString().split('T')[0] }}</p>
             </div>
         </div>
-        <p class="mt-2 text-gray-700">{{ review.review }}</p>
+        <p class="mt-2 text-gray-700">{{ review.reviewText }}</p>
     </div>
 </template>
 
 <script setup lang="ts">
-import type { IRating } from '@/types/interfaces/IRating';
+import type { IReview } from '@/types/interfaces/IReview';
 import { onMounted, ref } from 'vue';
 import { useUserStore } from '@/stores/userStore';
 import type { IUser } from '@/types/interfaces/IUser';
 
 const props = defineProps({
     review: {
-        type: Object as () => IRating,
+        type: Object as () => IReview,
         required: true
     }
 })

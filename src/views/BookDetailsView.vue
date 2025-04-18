@@ -81,7 +81,7 @@
                 </div>
                 <!-- Reviews -->
                 <h2 class="mt-[5vh] text-3xl text-black">Reviews</h2>
-                <div v-for="review in book.ratings" :key="review.userId" :review="review">
+                <div v-for="review in book.reviews" :key="review.userId" :review="review">
                     <ReviewBox :review="review" />
                 </div>
             </div>
@@ -122,6 +122,7 @@ import ToastNotification from '@/components/ToastNotification.vue';
 import { isBookInBasicShelf } from '@/utils/shelfActions';
 import MoveBookModal from '@/components/MoveBookModal.vue';
 import LeaveReviewModal from '@/components/LeaveReviewModal.vue';
+import type { IReview } from '@/types/interfaces/IReview';
 
 const bookStore = useBookStore();
 const userStore = useUserStore();
@@ -187,8 +188,19 @@ const moveBookToNewShelf = async (shelfId: string) => {
 }
 
 const handleReviewSubmit = (payload: { rating: number; reviewText: string; isPublic: boolean }) => {
+    try {
+        const newRating = {
+            userId: userStore.loggedInUser!.id,
+            ratingValue: payload.rating,
+            reviewText: payload.reviewText,
+        } as IReview;
+        bookStore.postReview(book.value!.id, newRating);
+        showToastMessage("Review submitted successfully!", "success");
+    } catch (error) {
+        console.error('Error submitting review:', error);
+        showToastMessage("Error submitting review", "error");
+    }
     showReviewModal.value = false;
-    showToastMessage("Review submitted successfully!", "success");
 };
 
 const showToastMessage = (message: string, type: 'success' | 'error') => {

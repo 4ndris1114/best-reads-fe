@@ -1,4 +1,4 @@
-import type { IRating } from "./IRating";
+import type { IReview } from "./IReview";
 
 export interface IBook {
   id: string;
@@ -10,6 +10,6 @@ export interface IBook {
   publishedDate: Date;
   coverImage: string;
   genres: [string];
-  ratings: [IRating];
+  reviews: [IReview];
   averageRating: number;
 }

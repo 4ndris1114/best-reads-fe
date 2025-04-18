@@ -1,7 +1,8 @@
-export interface IRating {
+export interface IReview {
+    id: string;
     userId: string;
     ratingValue: number;
-    review: string;
+    reviewText: string;
     createdAt: Date;
     updatedAt: Date;
 }
