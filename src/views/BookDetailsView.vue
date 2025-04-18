@@ -4,7 +4,7 @@
             <p class="text-red-500">Uh-oh, we couldn't find that book.</p>
             <router-link to="/" class="text-blue-500 underline">Back to home</router-link>
         </div>
-        <div v-else class="flex flex-row">
+        <div v-else class="flex flex-row h-full overflow-y-auto">
             <!-- Book cover, button, rating -->
             <div class="flex flex-col md:space-y-6 sm:space-y-4 space-y-3 items-center w-[25vw] pt-[6vh] ml-[5vw]">
                 <CloudinaryImage :publicId="book.coverImage" alt="Book cover" :width="300" :height="450" />
@@ -80,12 +80,12 @@
                     class="bg-primary w-fit p-2 rounded-full text-white">{{ genre }}</div>
                 </div>
                 <!-- Reviews -->
-                <h2 class="mt-[5vh] text-3xl text-black">Reviews</h2>
+                <h2 class="mt-[5vh] text-3xl text-black pb-2">Reviews</h2>
                 <div v-for="review in book.reviews" :key="review.userId" :review="review">
                     <ReviewBox :review="review" />
                 </div>
             </div>
-            <div class="border-l-3 border-black min-h-screen w-[25vw]">
+            <div class="border-l-4 border-black h-screen w-[25vw] p-4 sticky top-0">
                 <h1 class="text-3xl">Readers also liked</h1>
             </div>
         </div>
