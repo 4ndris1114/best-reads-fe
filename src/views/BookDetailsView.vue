@@ -225,13 +225,27 @@ const moveBookToNewShelf = async (shelfId: string) => {
 
 const handleReviewSubmit = async (payload: { rating: number; reviewText: string; isPublic: boolean }) => {
     try {
-        const newRating = {
-            userId: userStore.loggedInUser!.id,
-            ratingValue: payload.rating,
-            reviewText: payload.reviewText,
-        } as IReview;
-        await bookStore.postReview(book.value!.id, newRating);
-        showToastMessage("Review submitted successfully!", "success");
+        if (!alreadyRated.value) {
+            const newReview = {
+                userId: userStore.loggedInUser!.id,
+                ratingValue: payload.rating,
+                reviewText: payload.reviewText,
+                isPublic: payload.isPublic
+            } as IReview;
+            await bookStore.postReview(book.value!.id, newReview);
+            showToastMessage("Review submitted successfully!", "success");         
+        } else {
+            const reviewId = book.value!.reviews.find((review: IReview) => review.userId === userStore.loggedInUser!.id)!.id;
+            const updatedReview = {
+                id: reviewId,
+                userId: userStore.loggedInUser!.id,
+                ratingValue: payload.rating,
+                reviewText: payload.reviewText,
+                isPublic: payload.isPublic
+            } as IReview;
+            await bookStore.updateReview(book.value!.id, updatedReview);
+            showToastMessage("Review updated successfully!", "success");
+        }
     } catch (error) {
         console.error('Error submitting review:', error);
         showToastMessage("Error submitting review", "error");

@@ -7,7 +7,7 @@ import type { IReview } from '@/types/interfaces/IReview';
 export const useBookStore = defineStore('bookStore', {
     state: () => ({
         books: [] as IBook[],
-        selectedBook: null,
+        selectedBook: null as IBook | null,
         loading: false,
 
         service: new BookService() as BookService
@@ -60,11 +60,23 @@ export const useBookStore = defineStore('bookStore', {
         async postReview(bookId: string, review: IReview) {
           try {
             const response = await this.service.postReview(bookId, review);
+            this.selectedBook!.reviews.push(response);
             return response;
           } catch (error) {
             console.error('Error posting review:', error);
             throw error;
           }
-        }
+        },
+
+        async updateReview(bookId: string, review: IReview) {
+          try {
+            const response = await this.service.updateReview(bookId, review);
+            this.selectedBook!.reviews = this.selectedBook!.reviews.map(r => r.id === response.id ? response : r);
+            return response;
+          } catch (error) {
+            console.error('Error updating review:', error);
+            throw error;
+          }
+        },
     }
 });
