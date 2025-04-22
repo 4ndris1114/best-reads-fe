@@ -5,6 +5,7 @@ export interface IBook {
   apiId: string;
   title: string;
   description: string;
+  numberOfPages: number,
   author: string;
   isbn: string;
   publishedDate: Date;

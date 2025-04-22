@@ -34,6 +34,7 @@ export const mapToIBook = (book: any): IBook => {
     apiId: book.apiId,
     title: book.title,
     description: book.description,
+    numberOfPages: book.numberOfPages,
     author: book.author,
     isbn: book.isbn,
     publishedDate: book.publishedDate,
