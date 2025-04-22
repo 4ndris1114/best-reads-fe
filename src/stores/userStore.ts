@@ -71,9 +71,14 @@ export const useUserStore = defineStore('userStore', {
     async editUserById(userId:string, IUser: IUser) {
       try {
         const response = await this.userService.editUserById(userId, IUser);
-        return response;
+        if(response) {
+          this.loggedInUser = response
+          return response;
+        }
+        throw new Error("Error");
       } catch (e: any) {
         console.error("Error editing user:", e);
+        throw e;
       }
     },
 
