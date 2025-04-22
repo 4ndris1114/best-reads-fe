@@ -3,6 +3,7 @@ export interface IReview {
     userId: string;
     ratingValue: number;
     reviewText: string;
+    isPublic: boolean;
     createdAt: Date;
     updatedAt: Date;
 }

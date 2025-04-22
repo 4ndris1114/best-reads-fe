@@ -40,17 +40,18 @@ export const mapToIBook = (book: any): IBook => {
     publishedDate: book.publishedDate,
     coverImage: book.coverImage,
     genres: book.genres,
-    reviews: book.reviews.map((review: any) => mapToIRating(review)),
+    reviews: book.reviews.map((review: any) => mapToIReview(review)),
     averageRating: book.averageRating
   } as IBook;
 }
 
-export const mapToIRating = (review: any): IReview => {
+export const mapToIReview = (review: any): IReview => {
   return {
     id: review.id,
     userId: review.userId,
     ratingValue: review.ratingValue,
     reviewText: review.reviewText,
+    isPublic: review.isPublic,
     createdAt: review.createdAt,
     updatedAt: review.updatedAt
   } as IReview;
