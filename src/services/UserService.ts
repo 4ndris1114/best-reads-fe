@@ -24,7 +24,13 @@ export class UserService {
     }
 
     async logout() {
-        //endpoint for logout or just clear token + loggedInUser info ?
+      try {
+        const response = await instance.post('/auth/logout');
+        return response.data;
+      } catch (error) {
+        console.error('Error during logout:', error);
+        throw error;
+      }
     }
 
     async getUserById(userId: string) {
@@ -33,6 +39,44 @@ export class UserService {
         return mapToIUser(response.data);
       } catch (error) {
         console.error('Error fetching user by id:', error);
+        throw error;
+      }
+    }
+
+    async editUserById(userId:string, user: IUser): Promise<IUser> {
+    try {
+      const response = await instance.put(`/user/${userId}/edit`, user, {
+        headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+        if (response.status == 200) {
+          return mapToIUser(response.data);
+        } else {
+          throw new Error('Failed to edit user');
+        }
+      } catch (error) {
+        console.error('Error editing user:', error);
+        throw error;
+      }
+    }
+
+    async followUser(userId: string, followingId: string) {
+      try {
+        const response = await instance.post(`/user/${userId}/follow/${followingId}`);
+        return response.data;
+      } catch (error) {
+        console.error('Error following user:', error);
+        throw error;
+      }
+    }
+
+    async unfollowUser(userId: string, followingId: string) {
+      try {
+        const response = await instance.delete(`/user/${userId}/unfollow/${followingId}`);
+        return response.data;
+      } catch (error) {
+        console.error('Error unfollowing user:', error);
         throw error;
       }
     }

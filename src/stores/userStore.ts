@@ -9,7 +9,7 @@ export const useUserStore = defineStore('userStore', {
   state: () => ({
     loggedInUser: null as IUser | null,
     token: sessionStorage.getItem('jwtToken') || null as string | null,
-    isAuthenticated: false, 
+    isAuthenticated: false,
 
     userService: new UserService() as UserService,
   }),
@@ -27,7 +27,7 @@ export const useUserStore = defineStore('userStore', {
         }
       }
     },
-    
+
     async login(email: string, password: string) {
       try {
         const token = await this.userService.login(email, password);
@@ -48,6 +48,14 @@ export const useUserStore = defineStore('userStore', {
     },
 
     async logout() {
+      try {
+        await this.userService.logout();
+      } catch (e) {
+        console.warn('Server logout failed. Proceeding with local cleanup.');
+      } finally {
+        this.clearAuthData();
+        router.push('/login');
+      }
     },
 
     async getUserById(userId: string) {
@@ -56,6 +64,20 @@ export const useUserStore = defineStore('userStore', {
         return user;
       } catch (e: any) {
         console.error(e);
+        throw e;
+      }
+    },
+
+    async editUserById(userId:string, IUser: IUser) {
+      try {
+        const response = await this.userService.editUserById(userId, IUser);
+        if(response) {
+          this.loggedInUser = response
+          return response;
+        }
+        throw new Error("Error");
+      } catch (e: any) {
+        console.error("Error editing user:", e);
         throw e;
       }
     },
@@ -70,6 +92,22 @@ export const useUserStore = defineStore('userStore', {
       } catch (error) {
         console.error("Error decoding token:", error);
         this.clearAuthData();
+      }
+    },
+
+    async followUser(userId: string) {
+      try {
+        await this.userService.followUser(userId);
+      } catch (e) {
+        throw e;
+      }
+    },
+
+    async unfollowUser(userId: string) {
+      try {
+        await this.userService.unfollowUser(userId);
+      } catch (e) {
+        throw e;
       }
     },
 

@@ -12,11 +12,12 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
+import type { IBook } from '@/types/interfaces/IBook';
 
 const props = defineProps({
-  book: Object,
+  book: Object as () => IBook,
   isVisible: Boolean,
 });
 

@@ -10,28 +10,58 @@
           </nav>
 
             <Searchbar />
+<!-- User actions -->
+<div class="flex items-center gap-6 relative">
+        <button class="relative !rounded-button cursor-pointer">
+          <fa icon="message" class="scale-140" />
+          <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+        </button>
 
-            <!-- User actions -->
-            <div class="flex items-center gap-6">
-              <button class="relative !rounded-button cursor-pointer">
-                    <fa icon="message" class="scale-140" />
-                    <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
-                <button class="relative !rounded-button cursor-pointer">
-                    <fa icon="bell" class="scale-140" />
-                    <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
-                <div
-                    class="cursor-pointer flex items-center justify-center w-8 h-8 bg-slate-800 text-white rounded-full">
-                    <fa icon="user" />
-                </div>
-            </div>
+        <button class="relative !rounded-button cursor-pointer">
+          <fa icon="bell" class="scale-140" />
+          <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+        </button>
+
+        <!-- Profile Dropdown Trigger -->
+        <div @click="toggleDropdown" class="cursor-pointer flex items-center justify-center w-8 h-8 bg-slate-800 text-white rounded-full">
+          <fa icon="user" />
         </div>
-    </header>
+
+        <!-- Dropdown -->
+        <div v-if="showDropdown" class="absolute right-0 top-12 z-50">
+          <ProfileDropdown />
+        </div>
+      </div>
+    </div>
+  </header>
 </template>
 
 <script setup lang="ts">
 import Searchbar from './Searchbar.vue';
+import ProfileDropdown from '@/components/ProfileModal.vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+
+const showDropdown = ref(false);
+
+function toggleDropdown() {
+  showDropdown.value = !showDropdown.value;
+}
+
+function handleClickOutside(event: MouseEvent) {
+  const dropdown = document.getElementById('profile-dropdown');
+  if (dropdown && !dropdown.contains(event.target as Node)) {
+    showDropdown.value = false;
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
+
 </script>
 
 <style scoped></style>
