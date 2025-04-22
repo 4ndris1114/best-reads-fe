@@ -10,7 +10,7 @@
                 <CloudinaryImage :publicId="book.coverImage" alt="Book cover" :width="300" :height="450" />
                 <!-- Bookshelves button and dropdown -->
                 <div class="relative">
-                    <button class="bg-highlight text-white px-4 sm:py-2 py-1 rounded-lg focous-none shadow-lg cursor-pointer min-w-4/5 flex items-center lg:text-lg md:text-sm sm:text-xs justify-center" 
+                    <button class="bg-highlight text-white px-4 sm:py-2 py-1 rounded-lg focous-none shadow-lg cursor-pointer min-w-full flex items-center lg:text-lg md:text-sm sm:text-xs justify-center" 
                         @click="toggleShelvesDropdown">
                         <!-- Conditional? What if its at already want to read? -->
                         <span class="sm:block hidden">Add to bookshelf <fa icon="circle-plus" class="ml-2" /></span>
@@ -32,7 +32,7 @@
                 </div>
                 <!-- Rate the book (stars) -->
                 <div v-if="alreadyRated" class="flex flex-col items-center relative">
-                    <span class="md:text-lg sm:text-md mb-2">                    <!-- Tooltip -->
+                    <span class="md:text-lg sm:text-md mb-4">                    <!-- Tooltip -->
                         <fa icon="info-circle" class="text-sm text-gray-600 mr-2 cursor-pointer"
                                 @click="showReviewTooltip = !showReviewTooltip" @mouseenter="showReviewTooltip = true"
                                 @mouseleave="showReviewTooltip = false" />
@@ -55,7 +55,7 @@
                     </div>
                 </div>
                 <div v-else class="flex flex-col items-center relative">
-                    <span class="md:text-lg sm:text-md mb-2">                    <!-- Tooltip -->
+                    <span class="md:text-lg sm:text-md mb-4">                    <!-- Tooltip -->
                         <fa icon="info-circle" class="text-sm text-gray-600 mr-2 cursor-pointer"
                                 @click="showReviewTooltip = !showReviewTooltip" @mouseenter="showReviewTooltip = true"
                                 @mouseleave="showReviewTooltip = false" />
@@ -116,11 +116,12 @@
                 <!-- Reviews -->
                 <h2 class="mt-[5vh] text-3xl text-black pb-2">Reviews</h2>
                 <div v-for="review in book.reviews.filter(review => review.isPublic || review.userId === userStore.loggedInUser?.id)" :key="review.userId" :review="review">
-                    <ReviewBox :review="review" @edit="showReviewModal = true" @delete="handleReviewDelete" />
+                    <ReviewBox :review="review" @edit="clickedStar = review.ratingValue; showReviewModal = true" @delete="handleReviewDelete" />
                 </div>
             </div>
             <div class="border-l-4 border-black h-screen w-[25vw] p-4 sticky top-0">
-                <h1 class="text-3xl">Readers also liked</h1>
+                <h1 class="text-3xl text-center text-highlight font-extrabold">Readers also liked</h1>
+                
             </div>
         </div>
         <ToastNotification :show="showToast" :toastType="toastType" :message="toastMessage" />
@@ -179,7 +180,7 @@ const hoveredStar = ref(0);
 const usersReview = computed(() => book.value?.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id));
 const alreadyRated = computed(() => !!usersReview.value);
 const reviewText = computed(() => alreadyRated.value ? book.value!.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id)!.reviewText : '');
-const isPublic = computed(() => alreadyRated.value ? book.value!.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id)!.isPublic : false);
+const isPublic = computed(() => alreadyRated.value ? book.value!.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id)!.isPublic : true);
 
 const isShowingMore = ref(false);
 const isShelfDropdownOpen = ref(false);
@@ -187,7 +188,7 @@ const isMoveBookModalOpen = ref(false);
 const currentBasicShelf = ref<IBookshelf | null>(null);
 
 const showReviewModal = ref(false);
-const clickedStar = computed(() => alreadyRated.value ? book.value!.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id)!.ratingValue : 0);
+const clickedStar = ref(0); 
 const showReviewTooltip = ref(false);
 
 const toastType = ref("");
