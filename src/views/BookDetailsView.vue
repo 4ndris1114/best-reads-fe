@@ -115,7 +115,7 @@
                 </div>
                 <!-- Reviews -->
                 <h2 class="mt-[5vh] text-3xl text-black pb-2">Reviews</h2>
-                <div v-for="review in book.reviews" :key="review.userId" :review="review">
+                <div v-for="review in book.reviews.filter(review => review.isPublic || review.userId === userStore.loggedInUser?.id)" :key="review.userId" :review="review">
                     <ReviewBox :review="review" />
                 </div>
             </div>

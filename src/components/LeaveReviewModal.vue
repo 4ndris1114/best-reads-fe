@@ -36,7 +36,7 @@
                         <span>Public</span>
                     </label>
                     <label class="flex items-center space-x-2">
-                        <input type="radio" value="false" v-model="isPublic" class="accent-highlight" />
+                        <input type="radio" :value="false" v-model="isPublic" class="accent-highlight" />
                         <span>Private</span>
                     </label>
                 </div>
@@ -57,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps<{
     isOpen: boolean;
@@ -71,7 +71,7 @@ const emit = defineEmits<{
 }>();
 
 const rating = ref<number>(props.ratingValue);
-const reviewText = computed(() => props.reviewText);
+const reviewText = ref(props.reviewText);
 const isPublic = ref(true);
 
 const confirmingSubmit = ref(false)
@@ -99,6 +99,10 @@ const handleSubmit = () => {
     reviewText.value = '';
     confirmingSubmit.value = false;
 };
+
+watch(() => props.reviewText, (val) => {
+    reviewText.value = val;
+});
 </script>
 
 <style scoped>

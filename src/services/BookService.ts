@@ -1,6 +1,7 @@
 import httpClient from "@/services/httpClient";
 //todo: add missing imports for interfaces, types
 import type { IBook } from "@/types/interfaces/IBook";
+import type { IReview } from "@/types/interfaces/IReview";
 import { mapToIBook, mapToIReview } from "@/utils/mappers";
 
 export class BookService {
@@ -36,10 +37,8 @@ export class BookService {
         }
     }
 
-    async postReview(bookId: string, review: any) {
+    async postReview(bookId: string, review: IReview) {
         try {
-            console.log(review);
-
             const response = await httpClient.post(`/review/book/${bookId}`, review);
             
             return mapToIReview(response.data);
@@ -49,7 +48,7 @@ export class BookService {
         }
     }
 
-    async updateReview(bookId: string, review: any) {
+    async updateReview(bookId: string, review: IReview) {
         try {
             const response = await httpClient.put(`/review/${review.id}/book/${bookId}`, review);
             return mapToIReview(response.data);
