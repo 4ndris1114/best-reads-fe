@@ -57,11 +57,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
     isOpen: boolean;
     ratingValue: number;
+    reviewText: string;
 }>();
 
 const emit = defineEmits<{
@@ -70,7 +71,7 @@ const emit = defineEmits<{
 }>();
 
 const rating = ref<number>(props.ratingValue);
-const reviewText = ref('');
+const reviewText = computed(() => props.reviewText);
 const isPublic = ref(true);
 
 const confirmingSubmit = ref(false)
