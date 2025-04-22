@@ -32,7 +32,7 @@
                 <span class="text-sm text-gray-600 mt-2">Who can see this review?</span>
                 <div class="flex items-center justify-start space-x-4 mt-1">
                     <label class="flex items-center space-x-2">
-                        <input type="radio" value="true" v-model="isPublic" class="accent-highlight" />
+                        <input type="radio" :value="true" v-model="isPublic" class="accent-highlight" />
                         <span>Public</span>
                     </label>
                     <label class="flex items-center space-x-2">
@@ -63,6 +63,7 @@ const props = defineProps<{
     isOpen: boolean;
     ratingValue: number;
     reviewText: string;
+    isPublic: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -72,7 +73,7 @@ const emit = defineEmits<{
 
 const rating = ref<number>(props.ratingValue);
 const reviewText = ref(props.reviewText);
-const isPublic = ref(true);
+const isPublic = ref(props.isPublic);
 
 const confirmingSubmit = ref(false)
 const showInfo = ref(false)
@@ -95,14 +96,16 @@ const handleSubmit = () => {
         reviewText: reviewText.value,
         isPublic: isPublic.value,
     });
-
-    reviewText.value = '';
     confirmingSubmit.value = false;
 };
 
 watch(() => props.reviewText, (val) => {
     reviewText.value = val;
 });
+
+watch(() => props.isPublic, (val) => {
+    isPublic.value = val;
+})
 </script>
 
 <style scoped>

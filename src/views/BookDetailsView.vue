@@ -136,6 +136,7 @@
             :isOpen="showReviewModal"
             :ratingValue="clickedStar"
             :reviewText="reviewText"
+            :isPublic="isPublic"
             @submit="handleReviewSubmit"
             @close="showReviewModal = false"
         />
@@ -175,8 +176,10 @@ const bookIdFromRoute = ref<string | null>(null);
 const book = computed<IBook | null>(() => bookStore.selectedBook);
 const userShelves = computed<IBookshelf[]>(() => userStore.loggedInUser ? userStore.loggedInUser.bookshelves : []);
 const hoveredStar = ref(0);
-const alreadyRated = computed(() => book.value?.reviews.some((review: IReview) => review.userId === userStore.loggedInUser?.id));
+const usersReview = computed(() => book.value?.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id));
+const alreadyRated = computed(() => !!usersReview.value);
 const reviewText = computed(() => alreadyRated.value ? book.value!.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id)!.reviewText : '');
+const isPublic = computed(() => alreadyRated.value ? book.value!.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id)!.isPublic : false);
 
 const isShowingMore = ref(false);
 const isShelfDropdownOpen = ref(false);

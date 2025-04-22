@@ -11,6 +11,6 @@ export interface IBook {
   publishedDate: Date;
   coverImage: string;
   genres: [string];
-  reviews: [IReview];
+  reviews: Array<IReview>;
   averageRating: number;
 }
