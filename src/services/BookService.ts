@@ -57,4 +57,13 @@ export class BookService {
             throw error;
         }
     }
+
+    async deleteReview(bookId: string, reviewId: string) {
+        try {
+            await httpClient.delete(`/review/${reviewId}/book/${bookId}`);
+        } catch (error) {
+            console.error('Error deleting review:', error);
+            throw error;
+        }
+    }
 }

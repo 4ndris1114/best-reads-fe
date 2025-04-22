@@ -78,5 +78,15 @@ export const useBookStore = defineStore('bookStore', {
             throw error;
           }
         },
+
+        async deleteReview(bookId: string, reviewId: string) {
+          try {
+            await this.service.deleteReview(bookId, reviewId);
+            this.selectedBook!.reviews = this.selectedBook!.reviews.filter(r => r.id !== reviewId);
+          } catch (error) {
+            console.error('Error deleting review:', error);
+            throw error;
+          }
+        }
     }
 });

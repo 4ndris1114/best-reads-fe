@@ -116,7 +116,7 @@
                 <!-- Reviews -->
                 <h2 class="mt-[5vh] text-3xl text-black pb-2">Reviews</h2>
                 <div v-for="review in book.reviews.filter(review => review.isPublic || review.userId === userStore.loggedInUser?.id)" :key="review.userId" :review="review">
-                    <ReviewBox :review="review" @edit="showReviewModal = true" />
+                    <ReviewBox :review="review" @edit="showReviewModal = true" @delete="handleReviewDelete" />
                 </div>
             </div>
             <div class="border-l-4 border-black h-screen w-[25vw] p-4 sticky top-0">
@@ -256,6 +256,16 @@ const handleReviewSubmit = async (payload: { rating: number; reviewText: string;
         showToastMessage("Error submitting review", "error");
     }
     showReviewModal.value = false;
+};
+
+const handleReviewDelete = async (reviewId: string) => {
+    try {
+        await bookStore.deleteReview(book.value!.id, reviewId);
+        showToastMessage("Review deleted successfully!", "success");
+    } catch (error) {
+        console.error('Error deleting review:', error);
+        showToastMessage("Error deleting review", "error");
+    }
 };
 
 const showToastMessage = (message: string, type: 'success' | 'error') => {
