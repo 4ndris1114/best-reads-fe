@@ -116,7 +116,7 @@
                 <!-- Reviews -->
                 <h2 class="mt-[5vh] text-3xl text-black pb-2">Reviews</h2>
                 <div v-for="review in book.reviews.filter(review => review.isPublic || review.userId === userStore.loggedInUser?.id)" :key="review.userId" :review="review">
-                    <ReviewBox :review="review" />
+                    <ReviewBox :review="review" @edit="showReviewModal = true" />
                 </div>
             </div>
             <div class="border-l-4 border-black h-screen w-[25vw] p-4 sticky top-0">
@@ -187,7 +187,7 @@ const isMoveBookModalOpen = ref(false);
 const currentBasicShelf = ref<IBookshelf | null>(null);
 
 const showReviewModal = ref(false);
-const clickedStar = ref(0);
+const clickedStar = computed(() => alreadyRated.value ? book.value!.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id)!.ratingValue : 0);
 const showReviewTooltip = ref(false);
 
 const toastType = ref("");

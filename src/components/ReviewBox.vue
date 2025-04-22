@@ -30,7 +30,7 @@
             </div>
             <div v-on-click-outside="closeDropdown" v-if="dropdownOpen" class="absolute right-2 top-12 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
               <ul class="text-black text-sm">
-                <li class="px-4 py-2 hover:bg-gray-200 cursor-pointer">Edit</li>
+                <li @click="emits('edit', review)" class="px-4 py-2 hover:bg-gray-200 cursor-pointer">Edit</li>
                 <li class="px-4 py-2 text-red-600 font-semibold hover:bg-gray-200 cursor-pointer">Delete</li>
               </ul>
             </div>
@@ -69,6 +69,10 @@
       required: true
     }
   });
+
+  const emits = defineEmits<{
+    (e: 'edit', review: IReview): void
+  }>();
   
   const userStore = useUserStore();
   const user = ref<IUser>();
