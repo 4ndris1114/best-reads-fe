@@ -1,13 +1,5 @@
 <template>
   <div class="p-4 bg-gray-50 rounded-xl shadow-md relative">
-    <!-- Private Badge -->
-    <div 
-      v-if="!review.isPublic" 
-      class="absolute bottom-2 right-2 bg-red-100 text-red-700 text-xs font-semibold px-2 py-1 rounded-full shadow-sm"
-    >
-      Private
-    </div>
-
     <div v-if="user" class="flex flex-wrap items-center gap-4">
       <img 
         class="w-16 h-16 rounded-full object-cover" 
@@ -32,7 +24,16 @@
                 n <= Math.floor(review.ratingValue) ? 'text-yellow-500' : 'text-slate-300'
               ]"
             />
-            <span class="text-sm text-gray-600">({{ review.ratingValue }})</span>
+            <span class="text-sm text-gray-600 mr-4">({{ review.ratingValue }})</span>
+            <div v-if="userStore.loggedInUser?.id === review.userId">
+              <fa icon="ellipsis-vertical" class="cursor-pointer" @click="dropdownOpen = !dropdownOpen"></fa>
+            </div>
+            <div v-on-click-outside="closeDropdown" v-if="dropdownOpen" class="absolute right-2 top-12 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+              <ul class="text-black text-sm">
+                <li class="px-4 py-2 hover:bg-gray-200 cursor-pointer">Edit</li>
+                <li class="px-4 py-2 text-red-600 font-semibold hover:bg-gray-200 cursor-pointer">Delete</li>
+              </ul>
+            </div>
           </div>
         </div>
         <p class="text-xs text-gray-500 mt-1">
@@ -44,6 +45,13 @@
     <p class="mt-4 text-gray-700 text-sm sm:text-base leading-relaxed">
       {{ review.reviewText }}
     </p>
+        <!-- Private Badge -->
+    <div 
+      v-if="!review.isPublic" 
+      class="absolute bottom-2 right-2 bg-red-100 text-red-700 text-xs font-semibold px-2 py-1 rounded-full shadow-sm"
+    >
+      Private
+    </div>
   </div>
 </template>
 
@@ -53,6 +61,7 @@
   import { onMounted, ref } from 'vue';
   import { useUserStore } from '@/stores/userStore';
   import type { IUser } from '@/types/interfaces/IUser';
+  import { vOnClickOutside } from '@vueuse/components'
   
   const props = defineProps({
     review: {
@@ -63,6 +72,12 @@
   
   const userStore = useUserStore();
   const user = ref<IUser>();
+
+  const dropdownOpen = ref(false);
+
+  const closeDropdown = () => {
+    dropdownOpen.value = false;
+  };
   
   onMounted(async () => {
     user.value = await userStore.getUserById(props.review.userId);
