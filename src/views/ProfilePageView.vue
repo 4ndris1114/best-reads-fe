@@ -43,22 +43,8 @@
                   <template v-else>
                     <h1 class="text-4xl font-bold text-gray-900">{{ user.username }}</h1>
                   </template>
-
-                  <!-- Badges -->
-                  <div class="flex items-center space-x-2 ml-2">
-                    <div class="flex items-center bg-[#522623] px-2 py-1 rounded-full text-white text-sm">
-                      <fa icon="book" class="mr-1" /> {{ user.readingStats.booksReadThisYear }} books
-                    </div>
-                    <div
-                      class="flex items-center border-2 border-[#522623] px-2 py-1 rounded-full text-[#522623] text-sm">
-                      <fa icon="book-open" class="mr-1" /> {{ user.readingStats.pagesRead }} pages
-                    </div>
-                    <div class="flex items-center bg-[#522623] px-2 py-1 rounded-full text-white text-sm">
-                      <fa icon="fire" class="mr-1" /> {{ user.readingStats.avgRatingGiven }} points
-                    </div>
-                  </div>
+                  <UserBadges :readingStats="user.readingStats" />
                 </div>
-
                 <!-- Right side: Buttons -->
                 <div class="flex space-x-2">
                   <button v-if="profileUser && user.id === profileUser.id" @click="toggleEdit"
@@ -107,19 +93,7 @@
                 Joined on {{ new Date(user.createdAt).toLocaleDateString() }}
               </div>
 
-              <!-- Bookshelves -->
-              <section id="bookshelves">
-                <h2 class="text-2xl font-bold mb-4">Bookshelves</h2>
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                  <div v-for="shelf in user.bookshelves" :key="shelf.id"
-                    class="bg-yellow-100 p-4 rounded drop-shadow-xl text-center">
-                    <h3 class="text-sm word-break">
-                      {{ shelf.name.length > 17 ? shelf.name.substring(0, 17) + '...' : shelf.name }}
-                    </h3>
-                    <p class="text-xs text-gray-500">{{ shelf.books.length }} books</p>
-                  </div>
-                </div>
-              </section>
+              <BookshelvesOverview :bookshelves="user.bookshelves" />
 
               <!-- Preferences and Security -->
               <section v-if="profileUser && user.id === profileUser.id">
@@ -160,6 +134,8 @@ import { watch, ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import MainLayout from "@/layouts/MainLayout.vue";
 import ToastNotification from "@/components/ToastNotification.vue";
+import UserBadges from '@/components/ProfileBadges.vue';
+import BookshelvesOverview from "@/components/BookshelvesOverview.vue";
 
 const userStore = useUserStore();
 const route = useRoute();
