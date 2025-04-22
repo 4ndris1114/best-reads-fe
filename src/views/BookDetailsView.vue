@@ -31,17 +31,51 @@
                     </div>
                 </div>
                 <!-- Rate the book (stars) -->
-                <span class="md:text-lg sm:text-md mb-2">Rate this book:</span>
-                <div class="flex lg:space-x-5 md:space-x-2 sm:space-x-1 xs:space-x-0">
-                    <fa 
-                    v-for="n in 5"
-                    :key="n"
-                    :icon="['fas', 'star']" 
-                    class="lg:scale-200 md:scale-150 sm:scale-125 cursor-pointer transition-colors duration-200"
-                    :class="n <= hoveredStar ? 'text-yellow-500' : 'text-slate-300'"
-                    @mouseover="setHovered(n)"
-                    @mouseleave="resetHovered"
-                    @click="clickedStar = n; showReviewModal = true" />
+                <div v-if="alreadyRated" class="flex flex-col items-center relative">
+                    <span class="md:text-lg sm:text-md mb-2">                    <!-- Tooltip -->
+                        <fa icon="info-circle" class="text-sm text-gray-600 mr-2 cursor-pointer"
+                                @click="showReviewTooltip = !showReviewTooltip" @mouseenter="showReviewTooltip = true"
+                                @mouseleave="showReviewTooltip = false" />
+                                You rated this book:
+                    </span>
+                    <div v-if="showReviewTooltip"
+                        class="absolute top-1/2 left-0 w-64 p-3 text-sm text-white bg-gray-800 rounded-lg shadow-lg z-10">
+                        Click on the stars to change your rating for this book.
+                    </div>
+                    <div class="flex lg:space-x-5 md:space-x-2 sm:space-x-1 xs:space-x-0">
+                        <fa 
+                        v-for="n in 5"
+                        :key="n"
+                        :icon="['fas', 'star']" 
+                        class="lg:scale-200 md:scale-150 sm:scale-125 cursor-pointer transition-colors duration-200"
+                        :class="(hoveredStar || book.reviews.find(review => review.userId === userStore.loggedInUser!.id)!.ratingValue) >= n ? 'text-yellow-500' : 'text-slate-300'"
+                        @mouseover="setHovered(n)"
+                        @mouseleave="resetHovered"
+                        @click="clickedStar = n; showReviewModal = true" />
+                    </div>
+                </div>
+                <div v-else class="flex flex-col items-center relative">
+                    <span class="md:text-lg sm:text-md mb-2">                    <!-- Tooltip -->
+                        <fa icon="info-circle" class="text-sm text-gray-600 mr-2 cursor-pointer"
+                                @click="showReviewTooltip = !showReviewTooltip" @mouseenter="showReviewTooltip = true"
+                                @mouseleave="showReviewTooltip = false" />
+                                Rate this book:
+                    </span>
+                    <div v-if="showReviewTooltip"
+                        class="absolute top-1/2 left-0 w-64 p-3 text-sm text-white bg-gray-800 rounded-lg shadow-lg z-10">
+                        Click on the stars to rate this book.
+                    </div>
+                    <div class="flex lg:space-x-5 md:space-x-2 sm:space-x-1 xs:space-x-0">
+                        <fa 
+                        v-for="n in 5"
+                        :key="n"
+                        :icon="['fas', 'star']" 
+                        class="lg:scale-200 md:scale-150 sm:scale-125 cursor-pointer transition-colors duration-200"
+                        :class="n <= hoveredStar ? 'text-yellow-500' : 'text-slate-300'"
+                        @mouseover="setHovered(n)"
+                        @mouseleave="resetHovered"
+                        @click="clickedStar = n; showReviewModal = true" />
+                    </div>
                 </div>
             </div>
             <!-- Book details -->
@@ -140,6 +174,7 @@ const bookIdFromRoute = ref<string | null>(null);
 const book = computed<IBook | null>(() => bookStore.selectedBook);
 const userShelves = computed<IBookshelf[]>(() => userStore.loggedInUser ? userStore.loggedInUser.bookshelves : []);
 const hoveredStar = ref(0);
+const alreadyRated = computed(() => book.value?.reviews.some((review: IReview) => review.userId === userStore.loggedInUser?.id));
 
 const isShowingMore = ref(false);
 const isShelfDropdownOpen = ref(false);
@@ -148,6 +183,7 @@ const currentBasicShelf = ref<IBookshelf | null>(null);
 
 const showReviewModal = ref(false);
 const clickedStar = ref(0);
+const showReviewTooltip = ref(false);
 
 const toastType = ref("");
 const toastMessage = ref("");
