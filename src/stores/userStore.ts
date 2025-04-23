@@ -95,22 +95,6 @@ export const useUserStore = defineStore('userStore', {
       }
     },
 
-    async followUser(userId: string) {
-      try {
-        await this.userService.followUser(userId);
-      } catch (e) {
-        throw e;
-      }
-    },
-
-    async unfollowUser(userId: string) {
-      try {
-        await this.userService.unfollowUser(userId);
-      } catch (e) {
-        throw e;
-      }
-    },
-
     persistTokenInSessionStorage(token: string) {
       sessionStorage.setItem('jwtToken', token);
     },
