@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { BookService } from '@/services/BookService';
 import type { IBook } from '@/types/interfaces/IBook';
+import type { IReview } from '@/types/interfaces/IReview';
 
 export const useBookStore = defineStore('bookStore', {
     state: () => ({
@@ -54,6 +55,37 @@ export const useBookStore = defineStore('bookStore', {
             }
           } else {
             this.selectedBook = bookToBeSelected;
+          }
+        },
+        async postReview(bookId: string, review: IReview) {
+          try {
+            const response = await this.service.postReview(bookId, review);
+            this.selectedBook!.reviews.push(response);
+            return response;
+          } catch (error) {
+            console.error('Error posting review:', error);
+            throw error;
+          }
+        },
+
+        async updateReview(bookId: string, review: IReview) {
+          try {
+            const response = await this.service.updateReview(bookId, review);
+            this.selectedBook!.reviews = this.selectedBook!.reviews.map(r => r.id === response.id ? response : r);
+            return response;
+          } catch (error) {
+            console.error('Error updating review:', error);
+            throw error;
+          }
+        },
+
+        async deleteReview(bookId: string, reviewId: string) {
+          try {
+            await this.service.deleteReview(bookId, reviewId);
+            this.selectedBook!.reviews = this.selectedBook!.reviews.filter(r => r.id !== reviewId);
+          } catch (error) {
+            console.error('Error deleting review:', error);
+            throw error;
           }
         }
     }

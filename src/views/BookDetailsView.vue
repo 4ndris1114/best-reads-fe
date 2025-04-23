@@ -4,13 +4,13 @@
             <p class="text-red-500">Uh-oh, we couldn't find that book.</p>
             <router-link to="/" class="text-blue-500 underline">Back to home</router-link>
         </div>
-        <div v-else class="flex flex-row">
+        <div v-else class="flex flex-row h-full overflow-y-auto">
             <!-- Book cover, button, rating -->
             <div class="flex flex-col md:space-y-6 sm:space-y-4 space-y-3 items-center w-[25vw] pt-[6vh] ml-[5vw]">
                 <CloudinaryImage :publicId="book.coverImage" alt="Book cover" :width="300" :height="450" />
                 <!-- Bookshelves button and dropdown -->
                 <div class="relative">
-                    <button class="bg-highlight text-white px-4 sm:py-2 py-1 rounded-lg focous-none shadow-lg cursor-pointer min-w-4/5 flex items-center lg:text-lg md:text-sm sm:text-xs justify-center" 
+                    <button class="bg-highlight text-white px-4 sm:py-2 py-1 rounded-lg focous-none shadow-lg cursor-pointer min-w-full flex items-center lg:text-lg md:text-sm sm:text-xs justify-center" 
                         @click="toggleShelvesDropdown">
                         <!-- Conditional? What if its at already want to read? -->
                         <span class="sm:block hidden">Add to bookshelf <fa icon="circle-plus" class="ml-2" /></span>
@@ -31,17 +31,52 @@
                     </div>
                 </div>
                 <!-- Rate the book (stars) -->
-                <div class="flex lg:space-x-5 md:space-x-2 sm:space-x-1 xs:space-x-0">
-                    <fa 
-                    v-for="n in 5"
-                    :key="n"
-                    :icon="['fas', 'star']" 
-                    class="lg:scale-200 md:scale-150 sm:scale-125 cursor-pointer transition-colors duration-200"
-                    :class="n <= hoveredStar ? 'text-yellow-500' : 'text-slate-300'"
-                    @mouseover="setHovered(n)"
-                    @mouseleave="resetHovered" />
+                <div v-if="alreadyRated" class="flex flex-col items-center relative">
+                    <span class="md:text-lg sm:text-md mb-4">                    <!-- Tooltip -->
+                        <fa icon="info-circle" class="text-sm text-gray-600 mr-2 cursor-pointer"
+                                @click="showReviewTooltip = !showReviewTooltip" @mouseenter="showReviewTooltip = true"
+                                @mouseleave="showReviewTooltip = false" />
+                                You rated this book:
+                    </span>
+                    <div v-if="showReviewTooltip"
+                        class="absolute top-1/2 left-0 w-64 p-3 text-sm text-white bg-gray-800 rounded-lg shadow-lg z-10">
+                        Click on the stars to change your rating for this book.
+                    </div>
+                    <div class="flex lg:space-x-5 md:space-x-2 sm:space-x-1 xs:space-x-0">
+                        <fa 
+                        v-for="n in 5"
+                        :key="n"
+                        :icon="['fas', 'star']" 
+                        class="lg:scale-200 md:scale-150 sm:scale-125 cursor-pointer transition-colors duration-200"
+                        :class="(hoveredStar || book.reviews.find(review => review.userId === userStore.loggedInUser!.id)!.ratingValue) >= n ? 'text-yellow-500' : 'text-slate-300'"
+                        @mouseover="setHovered(n)"
+                        @mouseleave="resetHovered"
+                        @click="clickedStar = n; showReviewModal = true" />
+                    </div>
                 </div>
-                <span class="md:text-lg sm:text-md -mt-2">Rate book</span>
+                <div v-else class="flex flex-col items-center relative">
+                    <span class="md:text-lg sm:text-md mb-4">                    <!-- Tooltip -->
+                        <fa icon="info-circle" class="text-sm text-gray-600 mr-2 cursor-pointer"
+                                @click="showReviewTooltip = !showReviewTooltip" @mouseenter="showReviewTooltip = true"
+                                @mouseleave="showReviewTooltip = false" />
+                                Rate this book:
+                    </span>
+                    <div v-if="showReviewTooltip"
+                        class="absolute top-1/2 left-0 w-64 p-3 text-sm text-white bg-gray-800 rounded-lg shadow-lg z-10">
+                        Click on the stars to rate this book.
+                    </div>
+                    <div class="flex lg:space-x-5 md:space-x-2 sm:space-x-1 xs:space-x-0">
+                        <fa 
+                        v-for="n in 5"
+                        :key="n"
+                        :icon="['fas', 'star']" 
+                        class="lg:scale-200 md:scale-150 sm:scale-125 cursor-pointer transition-colors duration-200"
+                        :class="n <= hoveredStar ? 'text-yellow-500' : 'text-slate-300'"
+                        @mouseover="setHovered(n)"
+                        @mouseleave="resetHovered"
+                        @click="clickedStar = n; showReviewModal = true" />
+                    </div>
+                </div>
             </div>
             <!-- Book details -->
             <div class="flex flex-col space-y-2 w-[65vw] pt-[5.5vh] md:pl-[1vw] pl-[4vw] p-[6vw]">
@@ -79,13 +114,14 @@
                     class="bg-primary w-fit p-2 rounded-full text-white">{{ genre }}</div>
                 </div>
                 <!-- Reviews -->
-                <h2 class="mt-[5vh] text-3xl text-black">Reviews</h2>
-                <div v-for="review in book.ratings" :key="review.userId" :review="review">
-                    <ReviewBox :review="review" />
+                <h2 class="mt-[5vh] text-3xl text-black pb-2">Reviews</h2>
+                <div v-for="review in book.reviews.filter(review => review.isPublic || review.userId === userStore.loggedInUser?.id)" :key="review.userId" :review="review">
+                    <ReviewBox :review="review" @edit="clickedStar = review.ratingValue; showReviewModal = true" @delete="handleReviewDelete" />
                 </div>
             </div>
-            <div class="border-l-3 border-black min-h-screen w-[25vw]">
-                <h1 class="text-3xl">Readers also liked</h1>
+            <div class="border-l-4 border-black h-screen w-[25vw] p-4 sticky top-0">
+                <h1 class="text-3xl text-center text-highlight font-extrabold">Readers also liked</h1>
+                
             </div>
         </div>
         <ToastNotification :show="showToast" :toastType="toastType" :message="toastMessage" />
@@ -96,6 +132,14 @@
         :bookId="book!.id"
         @move="moveBookToNewShelf"
         @close="isMoveBookModalOpen = false"
+        />
+        <LeaveReviewModal
+            :isOpen="showReviewModal"
+            :ratingValue="clickedStar"
+            :reviewText="reviewText"
+            :isPublic="isPublic"
+            @submit="handleReviewSubmit"
+            @close="showReviewModal = false"
         />
     </MainLayout>
 </template>
@@ -114,6 +158,8 @@ import { useShelfStore } from '@/stores/shelfStore';
 import ToastNotification from '@/components/ToastNotification.vue';
 import { isBookInBasicShelf } from '@/utils/shelfActions';
 import MoveBookModal from '@/components/MoveBookModal.vue';
+import LeaveReviewModal from '@/components/LeaveReviewModal.vue';
+import type { IReview } from '@/types/interfaces/IReview';
 
 const bookStore = useBookStore();
 const userStore = useUserStore();
@@ -131,11 +177,19 @@ const bookIdFromRoute = ref<string | null>(null);
 const book = computed<IBook | null>(() => bookStore.selectedBook);
 const userShelves = computed<IBookshelf[]>(() => userStore.loggedInUser ? userStore.loggedInUser.bookshelves : []);
 const hoveredStar = ref(0);
+const usersReview = computed(() => book.value?.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id));
+const alreadyRated = computed(() => !!usersReview.value);
+const reviewText = computed(() => alreadyRated.value ? book.value!.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id)!.reviewText : '');
+const isPublic = computed(() => alreadyRated.value ? book.value!.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id)!.isPublic : true);
 
 const isShowingMore = ref(false);
 const isShelfDropdownOpen = ref(false);
 const isMoveBookModalOpen = ref(false);
 const currentBasicShelf = ref<IBookshelf | null>(null);
+
+const showReviewModal = ref(false);
+const clickedStar = ref(0); 
+const showReviewTooltip = ref(false);
 
 const toastType = ref("");
 const toastMessage = ref("");
@@ -174,6 +228,46 @@ const moveBookToNewShelf = async (shelfId: string) => {
         isMoveBookModalOpen.value = false;
     }
 }
+
+const handleReviewSubmit = async (payload: { rating: number; reviewText: string; isPublic: boolean }) => {
+    try {
+        if (!alreadyRated.value) {
+            const newReview = {
+                userId: userStore.loggedInUser!.id,
+                ratingValue: payload.rating,
+                reviewText: payload.reviewText,
+                isPublic: payload.isPublic
+            } as IReview;
+            await bookStore.postReview(book.value!.id, newReview);
+            showToastMessage("Review submitted successfully!", "success");         
+        } else {
+            const reviewId = book.value!.reviews.find((review: IReview) => review.userId === userStore.loggedInUser!.id)!.id;
+            const updatedReview = {
+                id: reviewId,
+                userId: userStore.loggedInUser!.id,
+                ratingValue: payload.rating,
+                reviewText: payload.reviewText,
+                isPublic: payload.isPublic
+            } as IReview;
+            await bookStore.updateReview(book.value!.id, updatedReview);
+            showToastMessage("Review updated successfully!", "success");
+        }
+    } catch (error) {
+        console.error('Error submitting review:', error);
+        showToastMessage("Error submitting review", "error");
+    }
+    showReviewModal.value = false;
+};
+
+const handleReviewDelete = async (reviewId: string) => {
+    try {
+        await bookStore.deleteReview(book.value!.id, reviewId);
+        showToastMessage("Review deleted successfully!", "success");
+    } catch (error) {
+        console.error('Error deleting review:', error);
+        showToastMessage("Error deleting review", "error");
+    }
+};
 
 const showToastMessage = (message: string, type: 'success' | 'error') => {
     toastMessage.value = message;

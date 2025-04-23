@@ -1,7 +1,8 @@
 import httpClient from "@/services/httpClient";
 //todo: add missing imports for interfaces, types
 import type { IBook } from "@/types/interfaces/IBook";
-import { mapToIBook } from "@/utils/mappers";
+import type { IReview } from "@/types/interfaces/IReview";
+import { mapToIBook, mapToIReview } from "@/utils/mappers";
 
 export class BookService {
     async getAll() {
@@ -32,6 +33,36 @@ export class BookService {
             return mapToIBook(response.data);
         } catch (error) {
             console.error('Error fetching book:', error);
+            throw error;
+        }
+    }
+
+    async postReview(bookId: string, review: IReview) {
+        try {
+            const response = await httpClient.post(`/review/book/${bookId}`, review);
+            
+            return mapToIReview(response.data);
+        } catch (error) {
+            console.error('Error posting review:', error);
+            throw error;
+        }
+    }
+
+    async updateReview(bookId: string, review: IReview) {
+        try {
+            const response = await httpClient.put(`/review/${review.id}/book/${bookId}`, review);
+            return mapToIReview(response.data);
+        } catch (error) {
+            console.error('Error updating review:', error);
+            throw error;
+        }
+    }
+
+    async deleteReview(bookId: string, reviewId: string) {
+        try {
+            await httpClient.delete(`/review/${reviewId}/book/${bookId}`);
+        } catch (error) {
+            console.error('Error deleting review:', error);
             throw error;
         }
     }

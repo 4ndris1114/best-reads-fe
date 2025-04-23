@@ -1,7 +1,7 @@
 import type { IBook } from "@/types/interfaces/IBook";
 import type { IBookshelf } from "@/types/interfaces/IBookshelf";
 import type { IUser } from "@/types/interfaces/IUser";
-import type { IRating } from "@/types/interfaces/IRating";
+import type { IReview } from "@/types/interfaces/IReview";
 
 export const mapToIUser = (user: any): IUser => {
   return {
@@ -34,22 +34,25 @@ export const mapToIBook = (book: any): IBook => {
     apiId: book.apiId,
     title: book.title,
     description: book.description,
+    numberOfPages: book.numberOfPages,
     author: book.author,
     isbn: book.isbn,
     publishedDate: book.publishedDate,
     coverImage: book.coverImage,
     genres: book.genres,
-    ratings: book.ratings.map((rating: any) => mapToIRating(rating)),
+    reviews: book.reviews.map((review: any) => mapToIReview(review)),
     averageRating: book.averageRating
   } as IBook;
 }
 
-export const mapToIRating = (rating: any): IRating => {
+export const mapToIReview = (review: any): IReview => {
   return {
-    userId: rating.userId,
-    ratingValue: rating.ratingValue,
-    review: rating.review,
-    createdAt: rating.createdAt,
-    updatedAt: rating.updatedAt
-  } as IRating;
+    id: review.id,
+    userId: review.userId,
+    ratingValue: review.ratingValue,
+    reviewText: review.reviewText,
+    isPublic: review.isPublic,
+    createdAt: review.createdAt,
+    updatedAt: review.updatedAt
+  } as IReview;
 }
