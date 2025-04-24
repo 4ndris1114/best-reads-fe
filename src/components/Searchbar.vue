@@ -10,10 +10,27 @@
         <fa v-if="isRecommendationsOpen" icon="arrow-down" class="absolute right-3 top-3 text-gray-400 text-sm" />
 
         <!-- Search recommendations -->
-        <div v-on-click-outside="toggleRecommendations" v-if="searchResults.length > 0 && isRecommendationsOpen"
+        <div v-on-click-outside="toggleRecommendations" v-if="isRecommendationsOpen"
             class="absolute w-full mt-1 bg-white shadow-lg rounded-lg overflow-y-auto max-h-[69vh] z-50">
+            <div class="flex items-center justify-evenly px-4 py-2 border-b">
+                <div
+                    class="flex-1 text-center px-4 py-2 cursor-pointer rounded-t-lg transition-all duration-200"
+                    @click="searchType = 'books'"
+                    :class="searchType === 'books' ? 'bg-gray-200 font-bold text-gray-900 shadow-inner' : 'bg-white text-gray-700'"
+                >
+                    Search Books
+                </div>
+
+                <div
+                    class="flex-1 text-center px-4 py-2 cursor-pointer rounded-t-lg transition-all duration-200"
+                    @click="searchType = 'users'"
+                    :class="searchType === 'users' ? 'bg-gray-200 font-bold text-gray-900 shadow-inner' : 'bg-white text-gray-700'"
+                >
+                    Search Users
+                </div>
+            </div>
             <ul>
-                <li v-for="book in searchResults" :key="book.id"
+                <li v-if="searchResults.length > 0" v-for="book in searchResults" :key="book.id"
                     class="flex items-center gap-4 px-4 py-3 hover:bg-gray-100 cursor-pointer">
                     <img :src="imageCache.get(book.coverImage) ?? book.coverImage" :alt="book.title"
                         class="w-12 h-16 object-cover rounded-md"
@@ -47,6 +64,15 @@ onMounted(async () => {
 //caching
 const imageCache = shallowRef(new Map<string, string>());
 
+//stores
+const bookStore = useBookStore();
+
+//state
+const books = computed<IBook[]>(() => bookStore.books);
+const searchQuery = ref<string>("");
+const isRecommendationsOpen = ref<boolean>(false);
+const searchType = ref<string>("books");
+
 const resizeImage = (url: string, width = 100, height = 150, quality = 0.7) => {
     return new Promise<string>((resolve) => {
         const img = new Image();
@@ -71,13 +97,6 @@ const preloadImage = async (url: string) => {
     }
 };
 
-//stores
-const bookStore = useBookStore();
-
-const books = computed<IBook[]>(() => bookStore.books);
-const searchQuery = ref<string>("");
-const isRecommendationsOpen = ref<boolean>(false);
-
 const searchResults = computed<IBook[]>(() => {
     if (!searchQuery.value) {
         return books.value;
@@ -93,6 +112,11 @@ const searchResults = computed<IBook[]>(() => {
 const toggleRecommendations = () => {
     isRecommendationsOpen.value = !isRecommendationsOpen.value;
 };
+
+const toggleSearchType = () => {
+    searchType.value = searchType.value === "books" ? "users" : "books";
+};
+
 // Start preloading whenever search results change
 watchEffect(() => {
     searchResults.value.forEach(book => preloadImage(book.coverImage));
