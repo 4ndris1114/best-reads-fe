@@ -4,7 +4,7 @@
         <!-- Search bar -->
         <fa icon="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-black text-sm" />
         <input @click="toggleRecommendations" type="text" v-model="searchQuery"
-            placeholder="Search books, authors, or genres..."
+            placeholder="Search books, authors, genres, and users..."
             class="w-full px-4 py-2 pl-10 border-none bg-gray-100 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
 
         <fa v-if="isRecommendationsOpen" icon="arrow-down" class="absolute right-3 top-3 text-gray-400 text-sm" />
@@ -84,10 +84,11 @@
 import { useBookStore } from '@/stores/bookStore';
 import { useUserStore } from '@/stores/userStore';
 import type { IBook } from '@/types/interfaces/IBook';
-import { computed, onMounted, ref, shallowRef, watchEffect } from 'vue';
+import { computed, onMounted, ref, shallowRef, watch, watchEffect } from 'vue';
 import { vOnClickOutside } from '@vueuse/components'
 import CloudinaryImage from './CloudinaryImage.vue';
 import type { IUser } from '@/types/interfaces/IUser';
+import debounce from 'lodash/debounce';
 
 onMounted(async () => {
     bookStore.getAllBooks();
@@ -102,9 +103,19 @@ const userStore = useUserStore();
 
 //state
 const books = computed<IBook[]>(() => bookStore.books);
+
 const searchQuery = ref<string>("");
-const isRecommendationsOpen = ref<boolean>(false);
+const debouncedQuery = ref('');
 const searchType = ref<string>("books");
+const handleSearchInput = debounce((value: string) => {
+  debouncedQuery.value = value;
+}, 300);
+
+watch(searchQuery, (newVal) => {
+  handleSearchInput(newVal);
+});
+
+const isRecommendationsOpen = ref<boolean>(false);
 
 const resizeImage = (url: string, width = 100, height = 150, quality = 0.7) => {
     return new Promise<string>((resolve) => {
@@ -149,12 +160,12 @@ const bookSearchResults = computed<IBook[]>(() => {
 const userSearchResults = ref<Partial<IUser>[]>([]);
 
 watchEffect(async () => {
-    if (searchType.value !== "users" || !searchQuery.value.trim()) {
+    if (searchType.value !== "users" || !debouncedQuery.value.trim()) {
         userSearchResults.value = [];
         return;
     }
 
-    const results = await userStore.searchByUsername(searchQuery.value.trim());
+    const results = await userStore.searchByUsername(debouncedQuery.value.trim());
 
     userSearchResults.value = Array.isArray(results) ? results as Partial<IUser>[] : [];
 });
