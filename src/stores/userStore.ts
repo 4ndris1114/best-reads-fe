@@ -95,6 +95,17 @@ export const useUserStore = defineStore('userStore', {
       }
     },
 
+    persistTokenInSessionStorage(token: string) {
+      sessionStorage.setItem('jwtToken', token);
+    },
+
+    clearAuthData() {
+      sessionStorage.removeItem('jwtToken');
+      this.token = null;
+      this.isAuthenticated = false;
+      this.loggedInUser = null;
+    },
+
     async followUser(userId: string, friendId: string) {
       try {
         const response = await this.userService.followUser(userId, friendId);
@@ -113,15 +124,13 @@ export const useUserStore = defineStore('userStore', {
       }
     },
 
-    persistTokenInSessionStorage(token: string) {
-      sessionStorage.setItem('jwtToken', token);
+    async searchByUsername(username: string) {
+      try {
+        const response = await this.userService.searchByUsername(username);
+        return response;
+      } catch (e) {
+        throw e;
+      }
     },
-
-    clearAuthData() {
-      sessionStorage.removeItem('jwtToken');
-      this.token = null;
-      this.isAuthenticated = false;
-      this.loggedInUser = null;
-    }
   },
 });
