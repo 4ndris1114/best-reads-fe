@@ -30,19 +30,50 @@
                 </div>
             </div>
             <ul>
-                <li v-if="searchResults.length > 0" v-for="book in searchResults" :key="book.id"
-                    class="flex items-center gap-4 px-4 py-3 hover:bg-gray-100 cursor-pointer">
-                    <CloudinaryImage :publicId="imageCache.get(book.coverImage) ?? book.coverImage" :alt="book.title" :width="45" :height="70" />
-                    <div class="flex-1">
-                        <h3 class="font-semibold text-sm text-gray-900">{{ book.title }}</h3>
-                        <p class="text-xs text-gray-600">by {{ book.author }}</p>
-
-                        <div class="flex items-center gap-1 mt-1">
+                <!-- Book results -->
+                <template v-if="searchType === 'books' && bookSearchResults.length > 0">
+                    <li v-for="book in bookSearchResults" :key="book.id"
+                        @click="$router.push({ name: 'bookdetails', params: { id: book.id } })"
+                        class="flex items-center gap-4 px-4 py-3 hover:bg-gray-100 cursor-pointer">
+                        <CloudinaryImage :publicId="imageCache.get(book.coverImage) ?? book.coverImage" :alt="book.title" :width="45" :height="70" />
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-sm text-gray-900">{{ book.title }}</h3>
+                            <p class="text-xs text-gray-600">by {{ book.author }}</p>
+                            <div class="flex items-center gap-1 mt-1">
                             <fa icon="star" v-for="n in Math.floor(book.averageRating)" :key="n"
                                 class="text-yellow-400 text-xs" />
                             <span class="text-xs text-gray-500">({{ book.averageRating }})</span>
+                            </div>
                         </div>
-                    </div>
+                    </li>
+                </template>
+
+                <!-- User results -->
+                <template v-else-if="searchType === 'users' && userSearchResults.length > 0">
+                    <li
+                        v-for="user in userSearchResults"
+                        @click="$router.push({ name: 'profilepage', params: { id: user.id } })"
+                        :key="user.id"
+                        class="flex items-center gap-4 px-4 py-3 hover:bg-gray-100 cursor-pointer"
+                    >
+                        <img
+                            :src="'../src/assets/' + user?.profilePicture"
+                            alt="Profile Picture"
+                            class="w-10 h-10 rounded-full object-cover border"
+                        />
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-sm text-gray-900">{{ user.username }}</h3>
+                            <p v-if="user.bio" class="text-xs text-gray-600">
+                                {{ user.bio.length > 50 ? user.bio.substring(0, 50) + '...' : user.bio }}
+                            </p>
+                        </div>
+                    </li>
+                </template>
+
+                <!-- No results -->
+                <li v-if="(searchType === 'books' && bookSearchResults.length === 0) || (searchType === 'users' && userSearchResults.length === 0)"
+                    class="text-center text-gray-500 text-sm py-4">
+                    No results found.
                 </li>
             </ul>
         </div>
@@ -51,10 +82,12 @@
 
 <script setup lang="ts">
 import { useBookStore } from '@/stores/bookStore';
+import { useUserStore } from '@/stores/userStore';
 import type { IBook } from '@/types/interfaces/IBook';
 import { computed, onMounted, ref, shallowRef, watchEffect } from 'vue';
 import { vOnClickOutside } from '@vueuse/components'
 import CloudinaryImage from './CloudinaryImage.vue';
+import type { IUser } from '@/types/interfaces/IUser';
 
 onMounted(async () => {
     bookStore.getAllBooks();
@@ -65,6 +98,7 @@ const imageCache = shallowRef(new Map<string, string>());
 
 //stores
 const bookStore = useBookStore();
+const userStore = useUserStore();
 
 //state
 const books = computed<IBook[]>(() => bookStore.books);
@@ -96,17 +130,36 @@ const preloadImage = async (url: string) => {
     }
 };
 
-const searchResults = computed<IBook[]>(() => {
-    if (!searchQuery.value) {
-        return books.value;
+const bookSearchResults = computed<IBook[]>(() => {
+    if (searchType.value === "books") {
+        if (!searchQuery.value) {
+            return books.value;
+        }
+        return books.value.filter(book =>
+            book.title.toLowerCase().includes(searchQuery.value.toLowerCase().trim()) ||
+            book.author.toLowerCase().includes(searchQuery.value.toLowerCase().trim()) ||
+            book.isbn.trim().includes(searchQuery.value.toLowerCase().trim().split("-").join("")) ||
+            book.genres.some(genre => genre.toLowerCase().includes(searchQuery.value.toLowerCase().trim()))
+        )
+    } else {
+        return [];
     }
-    return books.value.filter(book =>
-        book.title.toLowerCase().includes(searchQuery.value.toLowerCase().trim()) ||
-        book.author.toLowerCase().includes(searchQuery.value.toLowerCase().trim()) ||
-        book.isbn.trim().includes(searchQuery.value.toLowerCase().trim().split("-").join("")) ||
-        book.genres.some(genre => genre.toLowerCase().includes(searchQuery.value.toLowerCase().trim()))
-    )
 });
+
+const userSearchResults = ref<Partial<IUser>[]>([]);
+
+watchEffect(async () => {
+    if (searchType.value !== "users" || !searchQuery.value.trim()) {
+        userSearchResults.value = [];
+        return;
+    }
+
+    const results = await userStore.searchByUsername(searchQuery.value.trim());
+
+    userSearchResults.value = Array.isArray(results) ? results as Partial<IUser>[] : [];
+});
+
+
 
 const toggleRecommendations = () => {
     isRecommendationsOpen.value = !isRecommendationsOpen.value;
@@ -118,7 +171,7 @@ const toggleSearchType = () => {
 
 // Start preloading whenever search results change
 watchEffect(() => {
-    searchResults.value.forEach(book => preloadImage(book.coverImage));
+    bookSearchResults.value.forEach(book => preloadImage(book.coverImage));
 });
 </script>
 
