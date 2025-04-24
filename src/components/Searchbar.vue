@@ -109,7 +109,7 @@ const debouncedQuery = ref('');
 const searchType = ref<string>("books");
 const handleSearchInput = debounce((value: string) => {
   debouncedQuery.value = value;
-}, 300);
+}, 400);
 
 watch(searchQuery, (newVal) => {
   handleSearchInput(newVal);

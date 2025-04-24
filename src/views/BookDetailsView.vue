@@ -115,7 +115,7 @@
                 </div>
                 <!-- Reviews -->
                 <h2 class="mt-[5vh] text-3xl text-black pb-2">Reviews</h2>
-                <div v-for="review in book.reviews.filter(review => review.isPublic || review.userId === userStore.loggedInUser?.id)" :key="review.userId" :review="review">
+                <div v-for="review in filteredReviews" :key="review.userId" :review="review">
                     <ReviewBox :review="review" @edit="clickedStar = review.ratingValue; showReviewModal = true" @delete="handleReviewDelete" />
                 </div>
             </div>
@@ -177,6 +177,7 @@ const bookIdFromRoute = ref<string | null>(null);
 const book = computed<IBook | null>(() => bookStore.selectedBook);
 const userShelves = computed<IBookshelf[]>(() => userStore.loggedInUser ? userStore.loggedInUser.bookshelves : []);
 const hoveredStar = ref(0);
+const filteredReviews = computed(() => book.value?.reviews.filter((review: IReview) => review.isPublic || review.userId === userStore.loggedInUser?.id).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
 const usersReview = computed(() => book.value?.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id));
 const alreadyRated = computed(() => !!usersReview.value);
 const reviewText = computed(() => alreadyRated.value ? book.value!.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id)!.reviewText : '');
