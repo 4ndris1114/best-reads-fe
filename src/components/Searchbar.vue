@@ -32,9 +32,7 @@
             <ul>
                 <li v-if="searchResults.length > 0" v-for="book in searchResults" :key="book.id"
                     class="flex items-center gap-4 px-4 py-3 hover:bg-gray-100 cursor-pointer">
-                    <img :src="imageCache.get(book.coverImage) ?? book.coverImage" :alt="book.title"
-                        class="w-12 h-16 object-cover rounded-md"
-                        loading="lazy">
+                    <CloudinaryImage :publicId="imageCache.get(book.coverImage) ?? book.coverImage" :alt="book.title" :width="45" :height="70" />
                     <div class="flex-1">
                         <h3 class="font-semibold text-sm text-gray-900">{{ book.title }}</h3>
                         <p class="text-xs text-gray-600">by {{ book.author }}</p>
@@ -56,6 +54,7 @@ import { useBookStore } from '@/stores/bookStore';
 import type { IBook } from '@/types/interfaces/IBook';
 import { computed, onMounted, ref, shallowRef, watchEffect } from 'vue';
 import { vOnClickOutside } from '@vueuse/components'
+import CloudinaryImage from './CloudinaryImage.vue';
 
 onMounted(async () => {
     bookStore.getAllBooks();
