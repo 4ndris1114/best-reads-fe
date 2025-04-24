@@ -95,17 +95,19 @@ export const useUserStore = defineStore('userStore', {
       }
     },
 
-    async followUser(userId: string) {
+    async followUser(userId: string, friendId: string) {
       try {
-        await this.userService.followUser(userId);
+        const response = await this.userService.followUser(userId, friendId);
+        return response;
       } catch (e) {
         throw e;
       }
     },
 
-    async unfollowUser(userId: string) {
+    async unfollowUser(userId: string, friendId: string) {
       try {
-        await this.userService.unfollowUser(userId);
+        const response = await this.userService.unfollowUser(userId, friendId);
+        return response;
       } catch (e) {
         throw e;
       }

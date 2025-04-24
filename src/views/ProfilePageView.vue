@@ -48,19 +48,19 @@
                 <!-- Right side: Buttons -->
                 <div class="flex space-x-2">
                   <button v-if="profileUser && user.id === profileUser.id" @click="toggleEdit"
-                    class="drop-shadow-xl px-4 py-2 bg-blue-700 text-white font-semibold text-sm rounded hover:bg-blue-800 transition duration-100">
+                    class="drop-shadow-xl px-4 py-2 bg-blue-700 text-white font-semibold text-sm rounded hover:bg-blue-800 transition duration-100 cursor-pointer">
                     <fa icon="pen" class="mr-1" />
                     {{isEditing ? 'Save changes' : 'Edit profile' }}
                   </button>
 
-                  <button v-else-if="!profileUser.following.includes(user.id)" @click="followUser"
-                    class="drop-shadow-xl px-4 py-2 bg-blue-700 text-white font-semibold rounded hover:bg-blue-800 transition duration-100">
+                  <button v-else-if="isFollowing" @click="followUser" :disabled="followDisabled"
+                    class="drop-shadow-xl px-4 py-2 bg-primary text-white font-semibold rounded-full hover:bg-blue-800 transition duration-100 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                     <fa icon="user-plus" class="mr-1" />
                     Follow
                   </button>
 
-                  <button v-else @click="unfollowUser"
-                    class="drop-shadow-xl px-4 py-2 bg-red-700 text-white font-semibold rounded hover:bg-red-800 transition duration-100">
+                  <button v-else @click="unfollowUser" :disabled="followDisabled"
+                    class="drop-shadow-xl px-4 py-2 bg-primary text-white font-semibold rounded-full hover:bg-red-800 transition duration-100 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                     <fa icon="user-times" class="mr-1" />
                     Unfollow
                   </button>
@@ -160,8 +160,12 @@ onMounted(async () => {
   }
 });
 
-const user = ref<IUser | null>(null);
-const profileUser: IUser = userStore.loggedInUser!;
+const user = ref<IUser | null>(null); // current profile you're viewing
+const profileUser: IUser = userStore.loggedInUser!; //logged in user
+const isFollowing = computed(() => {
+  return !user.value?.followers.some(followerId => followerId === profileUser.id) || false;
+});
+const followDisabled = ref(false);
 const isEditingUsername = ref(false);
 const isEditingBio = ref(false);
 const isEditing = ref(false);
@@ -170,13 +174,13 @@ const hasChanges = computed(() =>
   bioInput.value !== user.value?.bio
 );
 
-const showToastMessage = (message: string, type: 'success' | 'error') => {
+const showToastMessage = (message: string, type: 'success' | 'error', duration: number = 3000) => {
     toastMessage.value = message;
     toastType.value = type;
     showToast.value = true;
     setTimeout(()=> {
       showToast.value = false;
-    }, 3000);
+    }, duration);
 };
 
 watch(
@@ -195,6 +199,43 @@ watch(
     }
   }
 )
+
+const followUser = async () => {
+  if (followDisabled.value) return;
+
+  followDisabled.value = true;
+  setTimeout(() => {
+    followDisabled.value = false;
+  }, 2000); // 2 seconds cooldown
+
+  try {
+    const updatedUser = await userStore.followUser(profileUser.id, user.value!.id);
+    if (updatedUser) {
+      user.value = updatedUser;
+    }
+    showToastMessage("You are now following " + user.value?.username, 'success', 1800)
+  } catch (err) {
+    console.error("Failed to follow user:", err);
+  }
+}
+
+const unfollowUser = async () => {
+  if (followDisabled.value) return;
+
+  followDisabled.value = true;
+  setTimeout(() => {
+    followDisabled.value = false;
+  }, 2000); // 2 seconds cooldown
+  try {
+    const updatedUser = await userStore.unfollowUser(profileUser.id, user.value!.id);
+    if (updatedUser) {
+      user.value = updatedUser;
+    }
+    showToastMessage("You are no longer following " + user.value?.username, 'success', 1800)
+  } catch (err) {
+    console.error("Failed to unfollow user:", err);
+  }
+}
 
 const toggleEdit = () => {
 isEditing.value = !isEditing.value

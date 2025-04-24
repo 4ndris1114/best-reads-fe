@@ -61,20 +61,20 @@ export class UserService {
       }
     }
 
-    async followUser(userId: string, followingId: string) {
+    async followUser(userId: string, friendId: string) {
       try {
-        const response = await instance.post(`/user/${userId}/follow/${followingId}`);
-        return response.data;
+        const response = await instance.post(`/user/${userId}/follow/${friendId}`);
+        return mapToIUser(response.data);
       } catch (error) {
         console.error('Error following user:', error);
         throw error;
       }
     }
 
-    async unfollowUser(userId: string, followingId: string) {
+    async unfollowUser(userId: string, friendId: string) {
       try {
-        const response = await instance.delete(`/user/${userId}/unfollow/${followingId}`);
-        return response.data;
+        const response = await instance.delete(`/user/${userId}/unfollow/${friendId}`);
+        return mapToIUser(response.data);
       } catch (error) {
         console.error('Error unfollowing user:', error);
         throw error;
