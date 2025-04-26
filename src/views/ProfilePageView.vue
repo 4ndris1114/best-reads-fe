@@ -67,12 +67,28 @@
                 </div>
               </div>
 
-              <!-- Followers / Following -->
               <div class="mb-8 flex space-x-5 text-gray-700">
-                <p><strong>{{ user.followers.length }}</strong> Followers</p>
-                <p><strong>{{ user.following.length }}</strong> Following</p>
+                <p @click="openFollowers" class="cursor-pointer hover:underline">
+                  <strong>{{ user.followers.length }}</strong> Followers
+                </p>
+                <p @click="openFollowing" class="cursor-pointer hover:underline">
+                  <strong>{{ user.following.length }}</strong> Following
+                </p>
               </div>
 
+              <FollowerListModal 
+                :show="showFollowerModal" 
+                title="Followers" 
+                :userIds="user.followers" 
+                @close="showFollowerModal = false"
+              />
+
+              <FollowerListModal 
+                :show="showFollowingModal" 
+                title="Following" 
+                :userIds="user.following" 
+                @close="showFollowingModal = false"
+              />
 
               <!-- Bio Section -->
               <section id="bio" class="mb-3 text-black">
@@ -136,6 +152,7 @@ import MainLayout from "@/layouts/MainLayout.vue";
 import ToastNotification from "@/components/ToastNotification.vue";
 import UserBadges from '@/components/ProfileBadges.vue';
 import BookshelvesOverview from "@/components/BookshelvesOverview.vue";
+import FollowerListModal from "@/components/FollowerListModal.vue";
 
 const userStore = useUserStore();
 const route = useRoute();
@@ -147,6 +164,16 @@ const usernameInput = ref("");
 const bioInput = ref("");
 const emailInput = ref("");
 const profilePictureInput = ref("");
+
+const showFollowerModal = ref(false);
+const showFollowingModal = ref(false);
+
+const openFollowers = () => {
+  showFollowerModal.value = true;
+};
+const openFollowing = () => {
+  showFollowingModal.value = true;
+};
 
 onMounted(async () => {
   const userId = route.params.id as string;
