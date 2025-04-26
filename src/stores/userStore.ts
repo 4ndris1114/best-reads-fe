@@ -68,6 +68,16 @@ export const useUserStore = defineStore('userStore', {
       }
     },
 
+    async getUsersByIds(userIds: string[]) {
+      try {
+        const users = await this.userService.getUsersByIds(userIds);
+        return users;
+      } catch (e: any) {
+        console.error(e);
+        throw e;
+      }
+    },
+
     async editUserById(userId:string, IUser: IUser) {
       try {
         const response = await this.userService.editUserById(userId, IUser);
