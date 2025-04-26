@@ -1,14 +1,14 @@
 <template>
   <div class="p-4 bg-gray-50 rounded-xl shadow-md relative">
     <div v-if="user" class="flex flex-wrap items-center gap-4">
-      <img 
-        class="w-16 h-16 rounded-full object-cover" 
+      <img @click="$router.push({ name: 'profilepage', params: { id: user.id } })"
+        class="w-16 h-16 rounded-full object-cover cursor-pointer" 
         :src="'../src/assets/' + user.profilePicture" 
         alt="User Avatar"
       />
       <div class="flex-1 min-w-[200px]">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-y-1">
-          <h3 class="text-lg font-semibold text-gray-900">{{ user.username }}</h3>
+          <h3 @click="$router.push({ name: 'profilepage', params: { id: user.id } })" class="text-lg font-semibold text-gray-900 cursor-pointer">{{ user.username }}</h3>
           <div 
             v-if="review.ratingValue" 
             class="flex items-center space-x-0.5"

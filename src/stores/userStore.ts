@@ -68,6 +68,16 @@ export const useUserStore = defineStore('userStore', {
       }
     },
 
+    async getUsersByIds(userIds: string[]) {
+      try {
+        const users = await this.userService.getUsersByIds(userIds);
+        return users;
+      } catch (e: any) {
+        console.error(e);
+        throw e;
+      }
+    },
+
     async editUserById(userId:string, IUser: IUser) {
       try {
         const response = await this.userService.editUserById(userId, IUser);
@@ -95,22 +105,6 @@ export const useUserStore = defineStore('userStore', {
       }
     },
 
-    async followUser(userId: string) {
-      try {
-        await this.userService.followUser(userId);
-      } catch (e) {
-        throw e;
-      }
-    },
-
-    async unfollowUser(userId: string) {
-      try {
-        await this.userService.unfollowUser(userId);
-      } catch (e) {
-        throw e;
-      }
-    },
-
     persistTokenInSessionStorage(token: string) {
       sessionStorage.setItem('jwtToken', token);
     },
@@ -120,6 +114,33 @@ export const useUserStore = defineStore('userStore', {
       this.token = null;
       this.isAuthenticated = false;
       this.loggedInUser = null;
-    }
+    },
+
+    async followUser(userId: string, friendId: string) {
+      try {
+        const response = await this.userService.followUser(userId, friendId);
+        return response;
+      } catch (e) {
+        throw e;
+      }
+    },
+
+    async unfollowUser(userId: string, friendId: string) {
+      try {
+        const response = await this.userService.unfollowUser(userId, friendId);
+        return response;
+      } catch (e) {
+        throw e;
+      }
+    },
+
+    async searchByUsername(username: string) {
+      try {
+        const response = await this.userService.searchByUsername(username);
+        return response;
+      } catch (e) {
+        throw e;
+      }
+    },
   },
 });
