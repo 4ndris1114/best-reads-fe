@@ -43,6 +43,20 @@ export class UserService {
       }
     }
 
+    async getUsersByIds(userIds: string[]) {
+      try {
+        const response = await instance.get('/user/batch?', {
+          params: { ids: userIds.join(',') }
+        });        
+        console.log(response);
+        
+        return response.data;
+      } catch (error) {
+        console.error('Error fetching users by ids:', error);
+        throw error;
+      }
+    }
+
     async editUserById(userId:string, user: IUser): Promise<IUser> {
     try {
       const response = await instance.put(`/user/${userId}/edit`, user, {
