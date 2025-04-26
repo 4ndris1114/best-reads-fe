@@ -1,5 +1,15 @@
 <template>
-  <div v-if="show" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div v-if="show && users.length === 0" class="fixed inset-0 bg-black/[var(--bg-opacity)] [--bg-opacity:50%] flex justify-center items-center z-50">
+    <div class="bg-white rounded-lg w-full max-w-md p-6 overflow-y-auto max-h-[80vh]">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold">{{ title }}</h2>
+        <button @click="close" class="text-gray-500 hover:text-gray-800">&times;</button>
+      </div>
+
+      <p class="text-gray-700">No one to find here.</p>
+    </div>
+  </div>
+  <div v-else-if="show" class="fixed inset-0 bg-black/[var(--bg-opacity)] [--bg-opacity:50%] flex justify-center items-center z-50">
     <div class="bg-white rounded-lg w-full max-w-md p-6 overflow-y-auto max-h-[80vh]">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-bold">{{ title }}</h2>
@@ -12,8 +22,8 @@
 
       <ul v-else>
         <li v-for="user in users" :key="user.id" class="flex items-center space-x-4 py-2">
-          <img :src="'../src/assets/' + user.profilePicture" alt="Profile" class="w-10 h-10 rounded-full object-cover border" />
-          <span class="font-semibold">{{ user.username }}</span>
+          <img @click="$router.push({ name: 'profilepage', params: { id: user.id } })" :src="'../src/assets/' + user.profilePicture" alt="Profile" class="w-10 h-10 rounded-full object-cover border" />
+          <span @click="$router.push({ name: 'profilepage', params: { id: user.id } })" class="font-semibold">{{ user.username }}</span>
         </li>
       </ul>
 

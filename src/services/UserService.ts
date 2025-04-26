@@ -47,9 +47,7 @@ export class UserService {
       try {
         const response = await instance.get('/user/batch?', {
           params: { ids: userIds.join(',') }
-        });        
-        console.log(response);
-        
+        });
         return response.data;
       } catch (error) {
         console.error('Error fetching users by ids:', error);
