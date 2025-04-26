@@ -25,13 +25,13 @@
                         </div>
                         <ul v-else class="bg-white border border-black rounded-lg shadow-lg lg:text-lg md:text-md sm:text-sm xs:text-xs max-h-[22vh] overflow-y-auto">
                             <li v-for="shelf in userShelves" :key="shelf.id" @click="addBookToShelf(shelf)" class="px-4 py-2 text-left hover:bg-gray-200 cursor-pointer">
-                                {{ shelf.name }}
+                                <span v-if="book && shelf.books && shelf.books.some((bbookId: string) => bbookId === book?.id)" class="mr-1">✓</span>{{ shelf.name }}
                             </li>
                         </ul>
                     </div>
                 </div>
                 <!-- Rate the book (stars) -->
-                <div v-if="alreadyRated" class="flex flex-col items-center relative">
+                <div v-if="alreadyRated" class="flex flex-col items-center relative"> 
                     <span class="md:text-lg sm:text-md mb-4">                    <!-- Tooltip -->
                         <fa icon="info-circle" class="text-sm text-gray-600 mr-2 cursor-pointer"
                                 @click="showReviewTooltip = !showReviewTooltip" @mouseenter="showReviewTooltip = true"
