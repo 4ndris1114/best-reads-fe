@@ -6,7 +6,6 @@ export class ActivityService {
     async fetchUserFeed(): Promise<IActivity[]> {
         try {
             const response = await httpClient.get(`/activity/feed`);
-            console.log(response);
             
             return response.data.map((activity: any) => mapToIActivity(activity));
         } catch (error) {

@@ -3,6 +3,7 @@ import type { IBookshelf } from "@/types/interfaces/IBookshelf";
 import type { IUser } from "@/types/interfaces/IUser";
 import type { IReview } from "@/types/interfaces/IReview";
 import type { IActivity } from "@/types/interfaces/IActivity";
+import type { ActivityType } from "@/types/enums/ActiviyType";
 
 export const mapToIUser = (user: any): IUser => {
   return {
@@ -62,7 +63,7 @@ export const mapToIActivity = (activity: any): IActivity => {
   return {
     id: activity.id,
     userId: activity.userId,
-    type: activity.type,
+    type: activity.type as ActivityType,
     createdAt: activity.createdAt,
     payload: activity.payload
   } as IActivity;

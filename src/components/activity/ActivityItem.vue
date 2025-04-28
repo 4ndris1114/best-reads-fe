@@ -6,12 +6,14 @@
 import { computed } from 'vue';
 import AddedBookActivity from '@/components/activity/AddedBookActivity.vue';
 import RatedBookActivity from '@/components/activity/RatedBookActivity.vue';
-import { ActivityType } from '@/types/enums/ActiviyType';
+import { ActivityType, fromNumber } from '@/types/enums/ActiviyType';
 
 const props = defineProps<{ activity: any }>();
 
 const activityComponent = computed(() => {
-    switch (props.activity.type) {
+    const activityType = fromNumber(props.activity.type);
+
+    switch (activityType) {
         case ActivityType.ADDED_BOOK_TO_BOOKSHELF:
             return AddedBookActivity;
         case ActivityType.ADDED_REVIEW:
