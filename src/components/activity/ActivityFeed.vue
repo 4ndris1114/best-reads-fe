@@ -1,9 +1,9 @@
 <template>
-    <div class="space-y-4">
+    <div class="flex flex-col items-center justify-center mx-auto max-w-2xl space-y-6">
         <ActivityItem v-if="activities" v-for="activity in activities" :key="activity.id" :activity="activity" />
-        <!-- <button v-if="hasMore" @click="loadMore">Load more</button> -->
     </div>
 </template>
+
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';

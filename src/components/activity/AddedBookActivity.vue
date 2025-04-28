@@ -1,32 +1,31 @@
 <template>
-    <div v-if="user" class="p-6 rounded-2xl bg-white shadow-md border border-gray-200">
-        <div class="flex items-center space-x-4">
+    <div v-if="user" class="p-6 rounded-2xl bg-[#181C20] shadow-md border border-gray-700 text-white">
+        <div class="flex items-start space-x-4">
             <div class="flex-shrink-0">
-                <div
-                    class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
-                    {{ user.username.charAt(0).toUpperCase() }}
+                <div>
+                    <CloudinaryImage v-if="user.profilePicture !== 'default_profile_picture.jpg'" :publicId="user.profilePicture" alt="User profile image" :width="50" :height="50" />
+                    <img v-else src="@/assets/default_profile_picture.jpg" alt="User profile image" class="w-16 h-16 rounded-full text-black object-cover border" />
                 </div>
             </div>
             <div>
-                <p class="text-gray-800">
-                    <span class="font-semibold">{{ user.username }}</span>
-                    added
-                    <span class="font-semibold text-blue-600">"{{ activity.payload.BookTitle }}"</span>
-                    to their
-                    <span class="font-semibold text-purple-600">"{{ activity.payload.ShelfName }}"</span>
-                    bookshelf.
-                </p>
-                <p class="text-sm text-gray-500 mt-1">
-                    {{ new Date(activity.createdAt).toLocaleString() }}
+                <p class="text-sm text-gray-400">{{ new Date(activity.createdAt).toLocaleDateString() }}</p>
+                <p class="mt-1">
+                    <span class="font-semibold text-white">{{ user.username }}</span>
+                    <span class="text-gray-400"> added </span>
+                    <span class="font-semibold text-blue-400">"{{ activity.payload.BookTitle }}"</span>
+                    <span class="text-gray-400"> to their </span>
+                    <span class="font-semibold text-purple-400">"{{ activity.payload.ShelfName }}"</span>
+                    <span class="text-gray-400"> bookshelf.</span>
                 </p>
             </div>
         </div>
     </div>
 </template>
 
+
 <script setup lang="ts">
 import { useUserStore } from '@/stores/userStore';
-import type { IBook } from '@/types/interfaces/IBook';
+import CloudinaryImage from '../CloudinaryImage.vue';
 import type { IUser } from '@/types/interfaces/IUser';
 import { onMounted, ref } from 'vue';
 
