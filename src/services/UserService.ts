@@ -57,6 +57,8 @@ export class UserService {
 
     async editUserById(userId:string, user: IUser): Promise<IUser> {
     try {
+      console.log(user);
+      
       const response = await instance.put(`/user/${userId}/edit`, user, {
         headers: {
               'Content-Type': 'application/json',
@@ -96,8 +98,6 @@ export class UserService {
     async searchByUsername(username: string) {
       try {
         const response = await instance.get(`/user/search?query=${username}`);
-        console.log(response.data);
-        
         return response.data;
       } catch (error) {
         console.error('Error searching by username:', error);

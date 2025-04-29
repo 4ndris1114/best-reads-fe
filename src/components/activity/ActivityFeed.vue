@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col items-center justify-center mx-auto max-w-2xl space-y-6 bg-[#181C20] rounded-lg mt-[5vh] p-8">
+    <div class="flex flex-col items-center justify-center mx-auto max-w-2xl space-y-6 bg-highlight rounded-lg mt-[5vh] p-8">
         <ActivityItem v-if="activities" v-for="activity in activities" :key="activity.id" :activity="activity" />
     </div>
 </template>
