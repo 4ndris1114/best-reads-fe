@@ -1,6 +1,6 @@
 import type { IUser } from '@/types/interfaces/IUser';
 import instance from './httpClient'
-import { mapToIUser } from '@/utils/mappers';
+import { mapToIUser, mapToReadingProgress } from '@/utils/mappers';
 
 export class UserService {
     async login(email: String, password: String) {
@@ -39,6 +39,26 @@ export class UserService {
         return mapToIUser(response.data);
       } catch (error) {
         console.error('Error fetching user by id:', error);
+        throw error;
+      }
+    }
+
+    async getAllReadingProgress(userId: string) {
+      try {
+        const response = await instance.get(`/Stats/${userId}`);
+        return response.data.map((r:any) => mapToReadingProgress(r));
+      } catch (error) {
+        console.error('Error fetching reading progress:', error);
+        throw error;
+      }
+    }
+
+    async getReadingProgressById(progressId: string) {
+      try {
+        const response = await instance.get(`/Stats/${progressId}`);
+        return response.data;
+      } catch (error) {
+        console.error('Error fetching reading progress:', error);
         throw error;
       }
     }
