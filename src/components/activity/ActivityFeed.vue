@@ -1,8 +1,19 @@
 <template>
-    <div class="flex flex-col items-center justify-center mx-auto max-w-2xl space-y-6 bg-highlight rounded-lg mt-[5vh] p-8">
-        <ActivityItem v-if="activities" v-for="activity in activities" :key="activity.id" :activity="activity" />
+    <div class="flex flex-col mx-auto max-w-2xl h-[85vh] mt-[5vh] rounded-lg overflow-hidden">
+      <!-- Scrollable content area -->
+      <div class="flex-1 overflow-y-auto bg-highlight space-y-4 px-8 py-6">
+        <ActivityItem
+          v-if="activities"
+          v-for="activity in activities"
+          :key="activity.id"
+          :activity="activity"
+        />
+      </div>
+      <!-- Bottom accent line -->
+      <div class="h-3 bg-highlight" />
     </div>
-</template>
+  </template>
+  
 
 
 <script setup lang="ts">
@@ -19,3 +30,9 @@ onMounted(async () => {
     await activityStore.fetchUserFeed();
 });
 </script>
+
+<style scoped>
+::-webkit-scrollbar {
+  display: none;
+}
+</style>

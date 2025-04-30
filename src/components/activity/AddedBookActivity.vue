@@ -1,8 +1,8 @@
 <template>
-    <div v-if="user" class="p-6 rounded-2xl bg-gray-200 shadow-md border border-gray-700 text-white">
+    <div v-if="user" class="p-6 rounded-2xl bg-gray-200 shadow-md text-white">
         <div class="flex items-start space-x-4">
             <div class="flex-shrink-0">
-                <div>
+                <div class="cursor-pointer" @click="$router.push({ name: 'profilepage', params: { id: user.id } })">
                     <CloudinaryImage v-if="user.profilePicture !== 'default_profile_picture.jpg'" :publicId="user.profilePicture" alt="User profile image" :width="50" :height="50" />
                     <img v-else src="@/assets/default_profile_picture.jpg" alt="User profile image" class="w-20 h-20 rounded-full text-inherit object-cover border" />
                 </div>
@@ -10,7 +10,7 @@
             <div>
                 <p class="text-sm text-gray-500">{{ new Date(activity.createdAt).toLocaleDateString() }} at {{ new Date(activity.createdAt).toLocaleTimeString() }}</p>
                 <p class="mt-1">
-                    <span class="font-bold text-black">{{ user.username }}</span>
+                    <span @click="$router.push({ name: 'profilepage', params: { id: user.id } })" class="font-bold text-black cursor-pointer">{{ user.username }}</span>
                     <span class="text-gray-700"> added </span>
                     <span class="font-semibold text-accent">"{{ activity.payload.BookTitle }}"</span>
                     <span class="text-gray-700"> to their </span>

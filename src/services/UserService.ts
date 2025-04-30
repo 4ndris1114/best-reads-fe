@@ -57,8 +57,6 @@ export class UserService {
 
     async editUserById(userId:string, user: IUser): Promise<IUser> {
     try {
-      console.log(user);
-      
       const response = await instance.put(`/user/${userId}/edit`, user, {
         headers: {
               'Content-Type': 'application/json',
