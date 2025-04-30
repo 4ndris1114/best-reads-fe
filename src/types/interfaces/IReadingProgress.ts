@@ -1,5 +1,6 @@
 export interface IReadingProgress {
+    id: string,
     bookId: string,
-    progress: number,
+    currentPage: number,
     updatedAt: Date
 }
