@@ -27,7 +27,7 @@
             v-model="newComment"
             type="text"
             placeholder="Write a comment..."
-            class="border rounded p-1 flex-1"
+            class="border rounded p-1 flex-1 outline-slate-500"
           />
           <button @click="submitComment" class="bg-accent text-white px-3 py-1 rounded">
             Post
