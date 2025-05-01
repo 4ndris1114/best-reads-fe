@@ -1,10 +1,89 @@
 <template>
-    <div class="p-4 rounded-xl bg-gray-100">
-      <p><strong>{{ activity.userName }}</strong> rated <strong>{{ activity.payload.bookTitle }}</strong> as <strong>{{ activity.payload.rating }} stars</strong>.</p>
+  <div v-if="user" class="flex items-start space-x-4">
+    <!-- Profile Image -->
+    <div class="flex-shrink-0">
+      <div class="cursor-pointer" @click="$router.push({ name: 'profilepage', params: { id: user.id } })">
+        <CloudinaryImage
+          v-if="user.profilePicture !== 'default_profile_picture.jpg'"
+          :publicId="user.profilePicture"
+          alt="User profile image"
+          :width="50"
+          :height="50"
+          class="w-20 h-20 rounded-full object-cover"
+        />
+        <img
+          v-else
+          src="@/assets/default_profile_picture.jpg"
+          alt="User profile image"
+          class="w-20 h-20 rounded-full object-cover"
+        />
+      </div>
     </div>
-  </template>
-  
-  <script setup lang="ts">
-  const props = defineProps<{ activity: any }>();
-  </script>
-  
+
+    <!-- Text Content -->
+    <div class="flex-1">
+      <p class="text-sm text-gray-500">
+        {{ new Date(activity.createdAt).toLocaleDateString() }} at
+        {{ new Date(activity.createdAt).toLocaleTimeString() }}
+      </p>
+      <p class="mt-1 space-y-6">
+        <span @click="$router.push({ name: 'profilepage', params: { id: user.id } })" class="font-bold text-black cursor-pointer">{{ user.username }}</span>
+        <span class="text-gray-700"> rated </span>
+        <span class="font-semibold text-accent">"{{ activity.payload.BookTitle }}"</span>
+        <br />
+        <div class="lg:space-x-4 md:space-x-2.5 sm:space-x-2 mt-1.5">
+          <fa 
+            v-for="n in Math.floor(activity.payload.Rating)"
+            :key="n"
+            :icon="['fas', 'star']" 
+            class="lg:scale-175 md:scale-150 sm:scale-150 cursor-pointer transition-colors duration-200"
+            :class="n <= Math.floor(activity.payload.Rating) ? 'text-yellow-500' : 'text-slate-300'"
+          />
+        </div>
+        <span class="text-gray-700">
+          {{ isShowingMore ? activity.payload.ReviewText : activity.payload.ReviewText.length > 100 
+             ? activity.payload.ReviewText.substring(0, 100) + '...' 
+             : activity.payload.ReviewText }}
+        </span>
+        <span @click="isShowingMore = !isShowingMore" class="text-slate-900 font-semibold cursor-pointer" v-if="activity.payload.ReviewText.length > 100"> Read {{ isShowingMore ? 'less' : 'more' }}</span>
+      </p>
+    </div>
+
+    <!-- Book Cover (Justified Right) -->
+    <div class="flex-shrink-0 self-start">
+      <CloudinaryImage class="sm:block hidden"
+        v-if="activity.payload.CoverImage"
+        :publicId="activity.payload.CoverImage"
+        alt="Book cover"
+        :width="120"
+        :height="180"
+      />
+      <CloudinaryImage class="sm:hidden block"
+          v-if="activity.payload.CoverImage"
+          :publicId="activity.payload.CoverImage"
+          alt="Book cover"
+          :width="80"
+          :height="130"
+      />
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { useUserStore } from '@/stores/userStore';
+import CloudinaryImage from '../CloudinaryImage.vue';
+import type { IUser } from '@/types/interfaces/IUser';
+import { onMounted, ref } from 'vue';
+import type { IActivity } from '@/types/interfaces/IActivity';
+
+const props = defineProps<{ activity: IActivity }>();
+
+const userStore = useUserStore();
+
+const user = ref<IUser | null>(null);
+const isShowingMore = ref(false);
+
+onMounted(async () => {
+  user.value = await userStore.getUserById(props.activity.userId);
+});
+</script>

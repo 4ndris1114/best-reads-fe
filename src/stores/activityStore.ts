@@ -16,10 +16,10 @@ export const useActivityStore = defineStore('activity', {
 
       this.loading = true;
       try {
-        const newActivities = await this.service.fetchUserFeed();
+        const result = await this.service.fetchUserFeed();
 
-        this.activities.push(...newActivities);
-        if (newActivities.length < 20) {
+        this.activities = result;
+        if (result.length < 20) {
           this.hasMore = false;
         }
       } catch (error) {

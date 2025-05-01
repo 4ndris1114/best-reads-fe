@@ -1,5 +1,7 @@
 <template>
     <div class="flex flex-col mx-auto max-w-2xl h-[85vh] mt-[5vh] rounded-lg overflow-hidden">
+      <div class="h-3 bg-highlight" />
+      
       <!-- Scrollable content area -->
       <div class="flex-1 overflow-y-auto bg-highlight space-y-4 px-8 py-6">
         <ActivityItem
