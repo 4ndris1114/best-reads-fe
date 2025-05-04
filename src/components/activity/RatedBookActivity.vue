@@ -28,7 +28,7 @@
       </p>
       <p class="mt-1 space-y-6">
         <span @click="$router.push({ name: 'profilepage', params: { id: user.id } })" class="font-bold text-black cursor-pointer">{{ user.username }}</span>
-        <span class="text-gray-700"> rated </span>
+        <span class="text-gray-700"> {{ activity.payload.IsUpdate ? ' updated their rating of ' : ' rated ' }} </span>
         <span class="font-semibold text-accent">"{{ activity.payload.BookTitle }}"</span>
         <br />
         <div class="lg:space-x-4 md:space-x-2.5 sm:space-x-2 mt-1.5">

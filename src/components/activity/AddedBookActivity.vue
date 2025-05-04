@@ -21,10 +21,18 @@
                     class="font-bold text-black cursor-pointer">
                     {{ user.username }}
                 </span>
-                <span class="text-gray-700"> added </span>
+                <span class="text-gray-700">
+                    {{ activity.payload.IsUpdate ? ' moved ' : ' added ' }}
+                </span>
                 <span class="font-semibold text-accent">"{{ activity.payload.BookTitle }}"</span>
-                <span class="text-gray-700"> to their </span>
-                <span class="font-semibold text-accent">"{{ activity.payload.ShelfName }}"</span>
+                <span class="text-gray-700">
+                    {{ activity.payload.IsUpdate ? ' from ' : ' to ' }} their
+                </span>
+                <span class="font-semibold text-accent">"{{ activity.payload.SourceShelfName }}"</span>
+                <span class="text-gray-700">
+                    {{ activity.payload.IsUpdate ? ' to ' : '' }} their
+                </span>
+                <span class="font-semibold text-accent">"{{ activity.payload.TargetShelfName }}"</span>
                 <span class="text-gray-700"> bookshelf.</span>
             </p>
         </div>
