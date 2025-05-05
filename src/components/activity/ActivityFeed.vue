@@ -5,7 +5,7 @@
       <!-- Scrollable content area -->
       <div class="flex-1 overflow-y-auto bg-highlight space-y-7 px-8 py-6">
         <ActivityItem
-          v-if="activities"
+          v-if="activities.length > 0"
           v-for="activity in activities"
           :key="activity.id"
           :activity="activity"
