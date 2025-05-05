@@ -7,19 +7,22 @@ export const useActivityStore = defineStore('activityStore', {
     activities: [] as IActivity[],
     hasMore: true,
     loading: false,
+    skip: 0,
 
-    service: new ActivityService() as ActivityService
+    service: new ActivityService()
   }),
   actions: {
-    async fetchUserFeed() {
-      if (this.loading) return;
+    async fetchUserFeed(limit = 20) {
+      if (this.loading || !this.hasMore) return;
 
       this.loading = true;
       try {
-        const result = await this.service.fetchUserFeed();
+        const result = await this.service.fetchUserFeed(this.skip, limit);
 
-        this.activities = result;
-        if (result.length <= 20) {
+        this.activities.push(...result);
+        this.skip += result.length;
+
+        if (result.length < limit) {
           this.hasMore = false;
         }
       } catch (error) {
@@ -31,6 +34,7 @@ export const useActivityStore = defineStore('activityStore', {
     reset() {
       this.activities = [];
       this.hasMore = true;
+      this.skip = 0;
     }
   }
 });

@@ -15,7 +15,7 @@
         </div>
         <div v-if="hasMore" class="text-center">
           <button
-            @click="activityStore.fetchUserFeed"
+            @click="() => activityStore.fetchUserFeed()"
             class="bg-accent text-white px-4 py-2 rounded-lg"
           >
             Load more
