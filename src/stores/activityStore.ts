@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { ActivityService } from '@/services/ActivityService';
 import type { IActivity } from '@/types/interfaces/IActivity';
 
-export const useActivityStore = defineStore('activity', {
+export const useActivityStore = defineStore('activityStore', {
   state: () => ({
     activities: [] as IActivity[],
     hasMore: true,
@@ -19,7 +19,7 @@ export const useActivityStore = defineStore('activity', {
         const result = await this.service.fetchUserFeed();
 
         this.activities = result;
-        if (result.length < 20) {
+        if (result.length <= 20) {
           this.hasMore = false;
         }
       } catch (error) {

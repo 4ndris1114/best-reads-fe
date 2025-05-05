@@ -10,13 +10,22 @@
           :key="activity.id"
           :activity="activity"
         />
+        <div v-else class="text-center">
+          <p class="text-gray-500">No activities to show. Are you following anyone?</p>
+        </div>
+        <div v-if="hasMore" class="text-center">
+          <button
+            @click="activityStore.fetchUserFeed"
+            class="bg-accent text-white px-4 py-2 rounded-lg"
+          >
+            Load more
+          </button>
+        </div>
       </div>
       <!-- Bottom accent line -->
       <div class="h-3 bg-highlight" />
     </div>
   </template>
-  
-
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';

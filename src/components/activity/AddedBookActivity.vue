@@ -28,8 +28,8 @@
                 <span class="text-gray-700">
                     {{ activity.payload.IsUpdate ? ' from ' : ' to ' }} their
                 </span>
-                <span class="font-semibold text-accent">"{{ activity.payload.SourceShelfName }}"</span>
-                <span class="text-gray-700">
+                <span v-if="activity.payload.IsUpdate" class="font-semibold text-accent">"{{ activity.payload.SourceShelfName }}"</span>
+                <span v-if="activity.payload.IsUpdate" class="text-gray-700">
                     {{ activity.payload.IsUpdate ? ' to ' : '' }} their
                 </span>
                 <span class="font-semibold text-accent">"{{ activity.payload.TargetShelfName }}"</span>
