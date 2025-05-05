@@ -1,6 +1,6 @@
 <template>
   <div class="h-screen flex flex-col">
-    <ToastNotification :show="show" :type="toastType" :message="message" />
+    <ToastNotification />
     <Navbar />
     <!-- pt-16 because navbar is h-16 -->
     <div class="flex-1 overflow-y-hidden pt-16">

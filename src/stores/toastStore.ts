@@ -1,19 +1,18 @@
 import { defineStore } from 'pinia'
 
+let toastId = 0
+
 export const useToastStore = defineStore('toastStore', {
   state: () => ({
-    show: false,
-    message: '',
-    toastType: 'success' as 'success' | 'error',
+    toasts: [] as { id: number; message: string; toastType: 'success' | 'error' }[],
   }),
   actions: {
     triggerToast(message: string, type: 'success' | 'error' = 'success') {
-      this.message = message
-      this.toastType = type
-      this.show = true
+      const id = toastId++
+      this.toasts.push({ id, message, toastType: type })
 
       setTimeout(() => {
-        this.show = false
+        this.toasts = this.toasts.filter(toast => toast.id !== id)
       }, 3000)
     },
   },
