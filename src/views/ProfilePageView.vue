@@ -139,7 +139,6 @@
         </div>
       </div>
     </div>
-    <ToastNotification :show="showToast" :toastType="toastType" :message="toastMessage"></ToastNotification>
   </MainLayout>
 </template>
 
@@ -149,16 +148,17 @@ import { useUserStore } from '@/stores/userStore';
 import { watch, ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import MainLayout from "@/layouts/MainLayout.vue";
-import ToastNotification from "@/components/ToastNotification.vue";
 import UserBadges from '@/components/ProfileBadges.vue';
 import BookshelvesOverview from "@/components/BookshelvesOverview.vue";
 import FollowerListModal from "@/components/FollowerListModal.vue";
+import { useToastStore } from '@/stores/toastStore';
+import { storeToRefs } from 'pinia'
+
+const toastStore = useToastStore();
+const { show, toastType, message } = storeToRefs(toastStore);
 
 const userStore = useUserStore();
 const route = useRoute();
-const showToast = ref (false);
-const toastType = ref("");
-const toastMessage = ref ("");
 
 const usernameInput = ref("");
 const bioInput = ref("");
@@ -201,15 +201,6 @@ const hasChanges = computed(() =>
   bioInput.value !== user.value?.bio
 );
 
-const showToastMessage = (message: string, type: 'success' | 'error', duration: number = 3000) => {
-    toastMessage.value = message;
-    toastType.value = type;
-    showToast.value = true;
-    setTimeout(()=> {
-      showToast.value = false;
-    }, duration);
-};
-
 watch(
   () => isEditing.value,
   async (editing) => {
@@ -220,7 +211,7 @@ watch(
       try {
         const updatedUser = await userStore.editUserById(user.value!.id, toBeUpdated)
         user.value = updatedUser
-        showToastMessage("Your profile has been edited successfully.", 'success')
+        toastStore.triggerToast("Your profile has been edited successfully.", 'success')
       } catch(e) {
       }
     }
@@ -240,7 +231,7 @@ const followUser = async () => {
     if (updatedUser) {
       user.value = updatedUser;
     }
-    showToastMessage("You are now following " + user.value?.username, 'success', 1800)
+    toastStore.triggerToast("You are now following " + user.value?.username, 'success', 1800)
   } catch (err) {
     console.error("Failed to follow user:", err);
   }
@@ -258,7 +249,7 @@ const unfollowUser = async () => {
     if (updatedUser) {
       user.value = updatedUser;
     }
-    showToastMessage("You are no longer following " + user.value?.username, 'success', 1800)
+    toastStore.triggerToast("You are no longer following " + user.value?.username, 'success', 1800)
   } catch (err) {
     console.error("Failed to unfollow user:", err);
   }

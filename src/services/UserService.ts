@@ -96,8 +96,6 @@ export class UserService {
     async searchByUsername(username: string) {
       try {
         const response = await instance.get(`/user/search?query=${username}`);
-        console.log(response.data);
-        
         return response.data;
       } catch (error) {
         console.error('Error searching by username:', error);
