@@ -63,6 +63,7 @@ export const mapToIReview = (review: any): IReview => {
       id: readingProgress.id,
       bookId: readingProgress.bookId,
       currentPage: readingProgress.currentPage,
+      totalPages: readingProgress.totalPages,
       updatedAt: readingProgress.updatedAt
     } as IReadingProgress
   }

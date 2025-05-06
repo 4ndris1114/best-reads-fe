@@ -85,10 +85,10 @@ export const useUserStore = defineStore('userStore', {
       }
     },
 
-    async getReadingProgressById(progressId: string): Promise<IReadingProgress> {
+    async getReadingProgressById(progressId: string, userId: string): Promise<IReadingProgress> {
       try {
         this.loading = true;
-        const readingProgress = await this.userService.getReadingProgressById(progressId);
+        const readingProgress = await this.userService.getReadingProgressById(progressId, userId);
         if (readingProgress) {
           return readingProgress;
         } throw new Error(`Failed to retrieve reading progress ${progressId}`);
@@ -97,6 +97,19 @@ export const useUserStore = defineStore('userStore', {
         throw e;
       } finally {
         this.loading = false;
+      }
+    },
+
+    async editReadingProgressById(userId: string, progressId: string, readingProgress: IReadingProgress) {
+      try {
+        const response = await this.userService.editReadingProgressById(userId, progressId, readingProgress);
+        if (response) {
+          return response;
+        }
+        throw new Error("Error");
+      } catch (e: any) {
+        console.error("Error editing reading progress:", e);
+        throw e;
       }
     },
 
