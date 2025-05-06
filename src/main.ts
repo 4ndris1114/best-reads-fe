@@ -29,11 +29,20 @@ activityHub.start()
   });
 
 // You can also listen for incoming events here (optional)
-activityHub.on('ReceiveActivity', (activity: IActivity) => {
+activityHub.on('ReceiveActivity', async (activity: IActivity) => {
+    const userStore = useUserStore();
     const activityStore = useActivityStore();    
     const toastStore = useToastStore();
 
     if (activity.userId === userStore.loggedInUser?.id) return;
+
+    if (localStorage.getItem('activities') === null) {
+      localStorage.setItem('activities', JSON.stringify([]));
+    }
+    const activities = JSON.parse(localStorage.getItem('activities') || '[]');
+    activities.unshift(activity);
+    localStorage.setItem('activities', JSON.stringify(activities));
+
     toastStore.triggerToast('New activity on your feed!', 'success');
     activityStore.activities.unshift(mapToIActivity(activity));
 });
