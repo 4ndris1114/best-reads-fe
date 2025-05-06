@@ -1,6 +1,7 @@
 import type { IUser } from '@/types/interfaces/IUser';
 import instance from './httpClient'
 import { mapToIUser, mapToReadingProgress } from '@/utils/mappers';
+import type { IReadingProgress } from '@/types/interfaces/IReadingProgress';
 
 export class UserService {
     async login(email: String, password: String) {
@@ -53,15 +54,33 @@ export class UserService {
       }
     }
 
-    async getReadingProgressById(progressId: string) {
+    async getReadingProgressById(progressId: string, userId: string) {
       try {
-        const response = await instance.get(`/Stats/${progressId}`);
+        const response = await instance.get(`/Stats/${userId}/progress/${progressId}`);
         return response.data;
       } catch (error) {
         console.error('Error fetching reading progress:', error);
         throw error;
       }
     }
+
+    async editReadingProgressById(userId: string, progressId: string, readingProgress: IReadingProgress) {
+      try {
+        const response = await instance.put(`/Stats/${userId}/edit/${progressId}`, readingProgress, {
+          headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+          if (response.status == 200) {
+            return mapToReadingProgress(response.data);
+          } else {
+            throw new Error('Failed to edit reading progress');
+          }
+        } catch (error) {
+          console.error('Error editing reading progress:', error);
+          throw error;
+        }
+      }
 
     async editUserById(userId:string, user: IUser): Promise<IUser> {
     try {
