@@ -12,6 +12,7 @@ import router from './router'
 
 import { useUserStore } from '@/stores/userStore';
 import { useActivityStore } from './stores/activityStore'
+import { useToastStore } from './stores/toastStore'
 import type { IActivity } from './types/interfaces/IActivity'
 import { mapToIActivity } from './utils/mappers'
 
@@ -30,6 +31,10 @@ activityHub.start()
 // You can also listen for incoming events here (optional)
 activityHub.on('ReceiveActivity', (activity: IActivity) => {
     const activityStore = useActivityStore();    
+    const toastStore = useToastStore();
+
+    if (activity.userId === userStore.loggedInUser?.id) return;
+    toastStore.triggerToast('New activity on your feed!', 'success');
     activityStore.activities.unshift(mapToIActivity(activity));
 });
 
