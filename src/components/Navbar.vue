@@ -28,12 +28,12 @@
         </div>
 
         <!-- Dropdown -->
-        <div v-if="showProfileDropdown" class="absolute right-0 top-6 z-50">
-          <ProfileDropdown />
+        <div v-if="showProfileDropdown" class="absolute right-0 top-7 z-50">
+          <ProfileDropdown @close="showProfileDropdown = false" v-on-click-outside="() => showProfileDropdown = false" />
         </div>
 
-        <div v-if="showNotificationDropdown" class="absolute right-12 top-6 z-50">
-          <NotificationDropdown />
+        <div v-if="showNotificationDropdown" class="absolute right-12 top-7 z-50">
+          <NotificationDropdown @close="showNotificationDropdown = false" />
         </div>
       </div>
     </div>
@@ -45,12 +45,14 @@ import Searchbar from './Searchbar.vue';
 import ProfileDropdown from '@/components/ProfileModal.vue';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import NotificationDropdown from './NotificationDropdown.vue';
+import { vOnClickOutside } from '@vueuse/components';
+
 
 const showProfileDropdown = ref(false);
 const showNotificationDropdown = ref(false);
 
 const toggleProfileDropdown = () => {
-  showProfileDropdown.value = !showProfileDropdown.value;
+  showProfileDropdown.value = true;
 }
 
 const toggleNotificationDropdown = () => {

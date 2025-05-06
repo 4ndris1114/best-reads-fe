@@ -1,11 +1,12 @@
 <template>
-    <div class="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
+    <div v-on-click-outside="() => emit('close')" class="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
         <ul class="py-1 text-sm text-gray-700">
             <li v-for="(activity, index) in activities" :key="index">
                 <a href="#" class="block px-4 py-2 hover:bg-gray-100">
                     <!-- I hate typescript -->
                     {{ getUserName(activity.userId) }} {{ getActivityType(activity.type as unknown as number) }}
                 </a>
+                <div v-if="index !== activities.length - 1" class="border-t border-gray-200"></div>
             </li>
         </ul>
     </div>
@@ -17,6 +18,9 @@ import { useUserStore } from '@/stores/userStore';
 import type { IUser } from '@/types/interfaces/IUser';
 import type { IActivity } from '@/types/interfaces/IActivity';
 import { ActivityType, fromNumber } from '@/types/enums/ActiviyType';
+import { vOnClickOutside } from '@vueuse/components';
+
+const emit = defineEmits(['close']);
 
 const activities = ref<IActivity[]>([]);
 
