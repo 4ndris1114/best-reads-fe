@@ -19,7 +19,12 @@
 
         <button @click="toggleNotificationDropdown" class="relative !rounded-button cursor-pointer">
           <fa icon="bell" class="scale-140" />
-          <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+          <span v-if="unreadNotifications > 0"
+                class="absolute -top-1 -right-3 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-xs text-white"
+                :class="{ 'w-5.5': unreadNotifications > 9, 'w-6.5': unreadNotifications > 99 }">
+            {{ unreadNotifications }}
+          </span>
+
         </button>
 
         <!-- Profile Dropdown Trigger -->
@@ -43,16 +48,18 @@
 <script setup lang="ts">
 import Searchbar from './Searchbar.vue';
 import ProfileDropdown from '@/components/ProfileModal.vue';
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue';
 import NotificationDropdown from './NotificationDropdown.vue';
 import { vOnClickOutside } from '@vueuse/components';
+import { unreadCount } from '@/utils/notifications';
 
 
 const showProfileDropdown = ref(false);
 const showNotificationDropdown = ref(false);
+const unreadNotifications = unreadCount;
 
 const toggleProfileDropdown = () => {
-  showProfileDropdown.value = true;
+  showProfileDropdown.value = !showProfileDropdown.value;
 }
 
 const toggleNotificationDropdown = () => {

@@ -15,6 +15,7 @@ import { useActivityStore } from './stores/activityStore'
 import { useToastStore } from './stores/toastStore'
 import type { IActivity } from './types/interfaces/IActivity'
 import { mapToIActivity } from './utils/mappers'
+import { updateUnreadCount } from './utils/notifications'
 
 library.add(fas)
 const app = createApp(App).component('fa', FontAwesomeIcon)
@@ -28,30 +29,29 @@ activityHub.start()
     console.error('SignalR connection failed:', err);
   });
 
-// You can also listen for incoming events here (optional)
-activityHub.on('ReceiveActivity', async (activity: IActivity) => {
-    const userStore = useUserStore();
-    const activityStore = useActivityStore();    
-    const toastStore = useToastStore();
-
-    if (activity.userId === userStore.loggedInUser?.id) return;
-
-    if (localStorage.getItem('activities') === null) {
-      localStorage.setItem('activities', JSON.stringify([]));
-    }
-    const activities = JSON.parse(localStorage.getItem('activities') || '[]');
-    activities.unshift(activity);
-    localStorage.setItem('activities', JSON.stringify(activities));
-
-    toastStore.triggerToast('New activity on your feed!', 'success');
-    activityStore.activities.unshift(mapToIActivity(activity));
-});
-
 app.use(createPinia())
 
 const userStore = useUserStore();
+const activityStore = useActivityStore();
+const toastStore = useToastStore();
 await userStore.initAuth();
 
 app.use(router)
+
+activityHub.off('ReceiveActivity'); // remove all previous for safety
+
+activityHub.on('ReceiveActivity', async (activity: IActivity) => {
+  if (activity.userId === sessionStorage.getItem('loggedInUserId')) return;
+
+  const activities = JSON.parse(sessionStorage.getItem('activities') || '[]');
+  activities.unshift(activity);
+  sessionStorage.setItem('activities', JSON.stringify(activities));
+  sessionStorage.setItem('unreadCount', String(Number(sessionStorage.getItem('unreadCount')) + 1));
+  updateUnreadCount();
+
+  toastStore.triggerToast('New activity on your feed!', 'success');
+  activityStore.activities.unshift(mapToIActivity(activity));
+});
+
 
 app.mount('#app')

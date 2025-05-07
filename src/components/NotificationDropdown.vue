@@ -1,19 +1,24 @@
 <template>
     <div v-on-click-outside="() => emit('close')" class="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
         <ul class="py-1 text-sm text-gray-700">
-            <li v-for="(activity, index) in activities" :key="index">
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100">
+            <li v-if="activities.length > 0" v-for="(activity, index) in activities" :key="index">
+                <a @click="removeNotification(activity.id)" href="/" class="block px-4 py-2 hover:bg-gray-100">
                     <!-- I hate typescript -->
                     {{ getUserName(activity.userId) }} {{ getActivityType(activity.type as unknown as number) }}
                 </a>
                 <div v-if="index !== activities.length - 1" class="border-t border-gray-200"></div>
+            </li>
+            <li v-else>
+                <a href="#" class="block px-4 py-2 hover:bg-gray-100">
+                    You don't have any notifications!
+                </a>
             </li>
         </ul>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useUserStore } from '@/stores/userStore';
 import type { IUser } from '@/types/interfaces/IUser';
 import type { IActivity } from '@/types/interfaces/IActivity';
@@ -24,13 +29,14 @@ const emit = defineEmits(['close']);
 
 const activities = ref<IActivity[]>([]);
 
+const storedActivities = computed(() => JSON.parse(sessionStorage.getItem('activities') || '[]'));
+
 const userStore = useUserStore();
 const users = ref<IUser[]>([]);
 
 onMounted(async () => {
-    const storedActivities = JSON.parse(localStorage.getItem('activities') || '[]');
-    if (Array.isArray(storedActivities) && storedActivities.length > 0) {
-        activities.value = storedActivities;
+    if (Array.isArray(storedActivities.value) && storedActivities.value.length > 0) {
+        activities.value = storedActivities.value;
     }
     // Get the unique userIds from activities
     const userIds = Array.from(new Set(activities.value.map(notification => notification.userId)));
@@ -53,5 +59,11 @@ const getActivityType = (type: number) => {
         default:
             return '';
     }
+};
+
+const removeNotification = (notificationId: string) => {
+    activities.value = activities.value.filter(notification => notification.id !== notificationId);
+    sessionStorage.setItem('activities', JSON.stringify(activities.value));
+    sessionStorage.setItem('unreadCount', JSON.stringify(activities.value.length));
 };
 </script>
