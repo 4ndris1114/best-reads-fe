@@ -22,27 +22,27 @@
                     {{ user.username }}
                 </span>
                 <span class="text-gray-700">
-                    {{ activity.payload.IsUpdate ? ' moved ' : ' added ' }}
+                    {{ activity.payload.isUpdate ? ' moved ' : ' added ' }}
                 </span>
-                <span class="font-semibold text-accent">"{{ activity.payload.BookTitle }}"</span>
+                <span class="font-semibold text-accent">"{{ activity.payload.bookTitle }}"</span>
                 <span class="text-gray-700">
-                    {{ activity.payload.IsUpdate ? ' from ' : ' to ' }} their
+                    {{ activity.payload.isUpdate ? ' from ' : ' to ' }} their
                 </span>
-                <span v-if="activity.payload.IsUpdate" class="font-semibold text-accent">"{{ activity.payload.SourceShelfName }}"</span>
-                <span v-if="activity.payload.IsUpdate" class="text-gray-700">
-                    {{ activity.payload.IsUpdate ? ' to ' : '' }} their
+                <span v-if="activity.payload.isUpdate" class="font-semibold text-accent">"{{ activity.payload.sourceShelfName }}"</span>
+                <span v-if="activity.payload.isUpdate" class="text-gray-700">
+                    {{ activity.payload.isUpdate ? ' to ' : '' }} their
                 </span>
-                <span class="font-semibold text-accent">"{{ activity.payload.TargetShelfName }}"</span>
+                <span class="font-semibold text-accent">"{{ activity.payload.targetShelfName }}"</span>
                 <span class="text-gray-700"> bookshelf.</span>
             </p>
         </div>
 
         <!-- Book Cover Image Justified Right -->
         <div class="flex-shrink-0 self-start">
-            <CloudinaryImage class="sm:block hidden" v-if="activity.payload.CoverImage"
-                :publicId="activity.payload.CoverImage" alt="Book cover" :width="120" :height="180" />
-            <CloudinaryImage class="sm:hidden block" v-if="activity.payload.CoverImage"
-                :publicId="activity.payload.CoverImage" alt="Book cover" :width="80" :height="130" />
+            <CloudinaryImage class="sm:block hidden" v-if="activity.payload.coverImage"
+                :publicId="activity.payload.coverImage" alt="Book cover" :width="120" :height="180" />
+            <CloudinaryImage class="sm:hidden block" v-if="activity.payload.coverImage"
+                :publicId="activity.payload.coverImage" alt="Book cover" :width="80" :height="130" />
         </div>
     </div>
 </template>

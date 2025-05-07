@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
+  <div v-on-click-outside="() => emits('close')" class="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
     <ul class="py-1 text-sm text-gray-700">
       <li>
         <a :href="'/profile/'+ userStore.loggedInUser!.id" class="block px-4 py-2 hover:bg-gray-100">
@@ -21,7 +21,7 @@
       </li>
       <li>
         <button
-          @click="showLogoutModal = true"
+          @click="showLogoutModal = true; emits('close')"
           class="w-full text-red-600 text-left px-4 py-2 hover:bg-gray-100"
         >
           <fa icon="sign-out-alt" class="mr-2" />
@@ -69,11 +69,12 @@
 import { ref } from 'vue';
 import { useUserStore } from '@/stores/userStore';
 import { useRouter } from 'vue-router';
+import { vOnClickOutside } from '@vueuse/components';
 
 const userStore = useUserStore();
 const showLogoutModal = ref(false);
 const router = useRouter();
-const emits = defineEmits(['closeModal'])
+const emits = defineEmits(['close'])
 
 const confirmLogout = () => {
   userStore.logout();

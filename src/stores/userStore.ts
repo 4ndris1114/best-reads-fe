@@ -20,6 +20,7 @@ export const useUserStore = defineStore('userStore', {
         try {
           const decoded = jwtDecode<{ userId: string }>(this.token);
           this.loggedInUser = await this.getUserById(decoded.userId);
+          sessionStorage.setItem('loggedInUserId', this.loggedInUser.id);
           this.isAuthenticated = true;
         } catch (error) {
           console.error("Failed to restore session:", error);

@@ -28,39 +28,39 @@
       </p>
       <p class="mt-1 space-y-6">
         <span @click="$router.push({ name: 'profilepage', params: { id: user.id } })" class="font-bold text-black cursor-pointer">{{ user.username }}</span>
-        <span class="text-gray-700"> {{ activity.payload.IsUpdate ? ' updated their rating of ' : ' rated ' }} </span>
-        <span class="font-semibold text-accent">"{{ activity.payload.BookTitle }}"</span>
+        <span class="text-gray-700"> {{ activity.payload.isUpdate ? ' updated their rating of ' : ' rated ' }} </span>
+        <span class="font-semibold text-accent">"{{ activity.payload.bookTitle }}"</span>
         <br />
         <div class="lg:space-x-4 md:space-x-2.5 sm:space-x-2 mt-1.5">
           <fa 
-            v-for="n in Math.floor(activity.payload.Rating)"
+            v-for="n in Math.floor(activity.payload.rating)"
             :key="n"
             :icon="['fas', 'star']" 
             class="lg:scale-175 md:scale-150 sm:scale-150 cursor-pointer transition-colors duration-200"
-            :class="n <= Math.floor(activity.payload.Rating) ? 'text-yellow-500' : 'text-slate-300'"
+            :class="n <= Math.floor(activity.payload.rating) ? 'text-yellow-500' : 'text-slate-300'"
           />
         </div>
         <span class="text-gray-700">
-          {{ isShowingMore ? activity.payload.ReviewText : activity.payload.ReviewText.length > 100 
-             ? activity.payload.ReviewText.substring(0, 100) + '...' 
-             : activity.payload.ReviewText }}
+          {{ isShowingMore ? activity.payload.reviewText : activity.payload.reviewText.length > 100 
+             ? activity.payload.reviewText.substring(0, 100) + '...' 
+             : activity.payload.reviewText }}
         </span>
-        <span @click="isShowingMore = !isShowingMore" class="text-slate-900 font-semibold cursor-pointer" v-if="activity.payload.ReviewText.length > 100"> Read {{ isShowingMore ? 'less' : 'more' }}</span>
+        <span @click="isShowingMore = !isShowingMore" class="text-slate-900 font-semibold cursor-pointer" v-if="activity.payload.reviewText.length > 100"> Read {{ isShowingMore ? 'less' : 'more' }}</span>
       </p>
     </div>
 
     <!-- Book Cover (Justified Right) -->
     <div class="flex-shrink-0 self-start">
       <CloudinaryImage class="sm:block hidden"
-        v-if="activity.payload.CoverImage"
-        :publicId="activity.payload.CoverImage"
+        v-if="activity.payload.coverImage"
+        :publicId="activity.payload.coverImage"
         alt="Book cover"
         :width="120"
         :height="180"
       />
       <CloudinaryImage class="sm:hidden block"
-          v-if="activity.payload.CoverImage"
-          :publicId="activity.payload.CoverImage"
+          v-if="activity.payload.coverImage"
+          :publicId="activity.payload.coverImage"
           alt="Book cover"
           :width="80"
           :height="130"
