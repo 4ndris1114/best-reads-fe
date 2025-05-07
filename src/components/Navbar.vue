@@ -4,9 +4,9 @@
       <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <router-link to="/" class="flex items-center">
           <img src="@/assets/logo.png" alt="BestReads Logo" class="h-13 w-auto mr-2">
-          <div class="flex flex-col hover:text-black leading-tight">
-          <span class="text-3xl font-bold text-white-600">BestReads</span>
-          <span class="text-[9.5px] text-white-600 ">STORIES THAT TAKE YOU BEYOND</span>
+          <div class="flex flex-col text-[#e2d7bc] leading-tight">
+          <span class="text-3xl font-bold ">BestReads</span>
+          <span class="text-[9.5px] ">STORIES THAT TAKE YOU BEYOND</span>
           </div>
         </router-link>
 
@@ -16,7 +16,7 @@
           to="/"
           :class="[
             'font-bold text-xl px-2 py-1 rounded transition duration-200',
-            route.path === '/' ? ' bg-[#C67B2F] bg-opacity-10 text-black' : 'text-white-700 hover:text-black hover:bg-[#C67B2F]/50'
+            route.path === '/' ? ' bg-[#C67B2F] bg-opacity-10 bg-slate-800 ' : 'text-white-700 hover:bg-slate-800/50'
           ]"
         >
           Home
@@ -26,7 +26,7 @@
           to="/bookshelves"
           :class="[
             'font-bold text-xl px-2 py-1 rounded transition duration-200',
-            route.path.startsWith('/bookshelves') ? 'bg-[#C67B2F] bg-opacity-10 text-black' : 'text-white-700 hover:text-black hover:bg-[#C67B2F]/50'
+            route.path.startsWith('/bookshelves') ? 'bg-[#C67B2F] bg-opacity-10 bg-slate-800 ' : 'text-white-700  hover:bg-[#C67B2F]/50'
           ]"
         >
           My Bookshelves

@@ -4,7 +4,7 @@
       <CloudinaryImage
         :publicId="book?.coverImage || ''"
         alt="Book cover"
-        class="w-20 h-auto rounded"
+        class="w-20 h-auto rounded border-2 border-[#3D4D69]"
       />
     </router-link>
 
@@ -16,17 +16,17 @@
       </div>
       </div>
       <p class="text-sm text-white">
-        <div class="w-full h-3 bg-gray-700 rounded mt-2 overflow-hidden">
+        <div class="w-full h-3 bg-[#3D4D69] rounded mt-2 overflow-hidden">
         <div
-          class="h-full bg-green-400 transition-all duration-300"
+          class="h-full bg-lime-500 transition-all duration-300"
           :style="{ width: progressPercent + '%' }"
         ></div>
       </div>
-        {{ readingProgress.currentPage }} / {{ readingProgress.totalPages }} pages
+        {{ readingProgress.currentPage }} / {{ readingProgress.totalPages }} pages <b class="ml-1 text-[#547786] ">({{ progressPercent }}%)</b>
       </p>
       <button
         @click="isEditProgressModalOpen = true"
-        class="text-blue-500 underline text-sm mt-1"
+        class="mt-5 text-gray-300 font-semibold text-sm mt-1 bg-[#3D4D69] px-2 py-1 rounded hover:bg-[#3D4D69]/50 transition"
       >
         Update progress
       </button>
@@ -37,7 +37,7 @@
       :isEditProgressModalVisible="isEditProgressModalOpen"
       :readingProgress="readingProgress"
       @closeModal="isEditProgressModalOpen = false"
-      @updateProgress="handleProgressUpdate"
+      @progressUpdated="handleProgressUpdate"
     />
   </div>
 </template>
@@ -58,19 +58,21 @@ const props = defineProps<{
 const isEditProgressModalOpen = ref(false);
 const bookStore = useBookStore();
 const userStore = useUserStore();
+const readingProgress = ref(props.readingProgress);
 
 const book = computed(() => bookStore.books.find(b => b.id === props.readingProgress.bookId));
 
-const handleProgressUpdate = () => {
-  userStore.editReadingProgressById(userStore.loggedInUser!.id, props.readingProgress.id, props.readingProgress);
-  isEditProgressModalOpen.value = false;
-};
+
 
 const progressPercent = computed(() => {
   const { currentPage, totalPages } = props.readingProgress;
   if (!totalPages || totalPages === 0) return 0;
   return Math.min(100, Math.round((currentPage / totalPages) * 100));
 });
+
+const handleProgressUpdate = (updatedProgress: IReadingProgress) => {
+  readingProgress.value = updatedProgress;
+};
 
 </script>
 

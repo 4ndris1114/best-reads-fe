@@ -8,7 +8,7 @@
         <fa icon="pencil" class="text-primary text-2xl" />
       </div>
 
-      <h2 class="text-xl font-semibold text-center mb-2">Update Progress</h2>
+      <h2 class="text-xl font-semibold text-center mb-2">Update Your Progress</h2>
 
       <div class="text-center mb-6">
         <label for="currentPage" class="block mb-2 font-semibold">Current Page</label>
@@ -53,7 +53,7 @@ const props = defineProps<{
   readingProgress: IReadingProgress;
 }>();
 
-const emits = defineEmits(['closeModal', 'updateProgress']);
+const emits = defineEmits(['closeModal', 'progressUpdated']);
 
 const localProgress = ref({ ...props.readingProgress });
 
@@ -67,8 +67,8 @@ watch(
 
 const updateProgress = async () => {
   try {
-    await userStore.editReadingProgressById(userStore.loggedInUser!.id, localProgress.value.id, localProgress.value);
-    emits('updateProgress', localProgress.value);
+    const updatedProgress = await userStore.editReadingProgressById(userStore.loggedInUser!.id, props.readingProgress.id,  localProgress.value);
+    emits('progressUpdated', updatedProgress);
     emits('closeModal');
   } catch (error) {
     console.error('Error updating reading progress:', error);

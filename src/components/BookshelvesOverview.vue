@@ -1,6 +1,6 @@
 <template>
   <section id="bookshelves">
-    <h2 class="text-2xl font-bold mb-4">Bookshelves</h2>
+    <h2 class="text-2xl font-bold mb-4"><fa icon="bookmark" class="text-black mr-1" /> Bookshelves</h2>
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
       <div v-for="shelf in bookshelves" :key="shelf.id"
         class="bg-yellow-100 p-4 rounded drop-shadow-xl text-center">

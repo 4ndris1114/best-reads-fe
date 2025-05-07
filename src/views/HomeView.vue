@@ -7,8 +7,8 @@
           <YearSummary></YearSummary>
           <div class="lg:col-span-2 space-y-6">
             <div>
-              <h1 class="text-3xl font-bold text-[#1D1D23]">{{ timeGreeting }}, {{ loggedInUser }}!</h1>
-              <p class="font-semibold text-[#1D1D23]">See what’s new:</p>
+              <h1 class="text-4xl font-bold text-[#1D1D23]">{{ timeGreeting }}, {{ loggedInUser }}!</h1>
+              <p class="font-semibold text-xl text-[#1D1D23]">See what’s new:</p>
             </div>
           </div>
 
@@ -18,7 +18,7 @@
               <Bookshelf v-if="currentlyReadingShelf" :shelf="currentlyReadingShelf" />
             </div>
             <div>
-              <h2 class="text-xl font-bold mb-2">Track your progress:</h2>
+              <h2 class="text-xl font-bold mb-2">Track your progress</h2>
               <ReadingProgressList />
             </div>
           </div>
@@ -29,7 +29,12 @@
   :bookId="selectedProgress?.bookId || ''"
   @closeModal="isEditProgressModalVisible = false"
   v-on-click-outside="isEditProgressModalVisible = false"
-  @upgradeProgress="handleEditProgress"
+ @updateProgress="handleProgressUpdate"
+/>
+<LeaveReviewModal
+  v-if="isLeaveReviewModalOpen"
+  :bookId="readingProgress.bookId"
+  @close="isLeaveReviewModalOpen = false"
 />
       </div>
     </div>
@@ -48,6 +53,7 @@ import EditProgressModal from '@/components/EditProgressModal.vue';
 import { useUserStore } from '@/stores/userStore';
 import { useShelfStore } from '@/stores/shelfStore';
 import type { IBookshelf } from '@/types/interfaces/IBookshelf';
+import LeaveReviewModal from '@/components/LeaveReviewModal.vue';
 
 const shelfStore = useShelfStore();
 const currentlyReadingShelf = ref<IBookshelf | null>(null);
@@ -55,6 +61,7 @@ const userStore = useUserStore();
 const loggedInUser = computed(() => userStore.loggedInUser?.username);
 const userId = computed(() => userStore.loggedInUser?.id);
 const isEditProgressModalVisible = ref(false);
+const isLeaveReviewModalOpen = ref(false);
 
 onMounted(async () => {
   if (!userId.value) return;
@@ -77,12 +84,26 @@ const timeGreeting = computed(() => {
   return 'Good evening';
 });
 
-const upgradeProgress = () => {
-  isEditProgressModalVisible.value = true;
-}
-const handleEditProgress = () => {
-  isEditProgressModalVisible.value = false;
-  userStore.editReadingProgressById(userStore.loggedInUser!.id, selectedProgress.value!.id, selectedProgress.value!);
+
+const handleProgressUpdate = async (updatedProgress: IReadingProgress) => {
+  try {
+    await userStore.editReadingProgressById(
+      userStore.loggedInUser!.id,
+      updatedProgress.id,
+      updatedProgress
+    );
+
+    // Update selected progress
+    selectedProgress.value = updatedProgress;
+    isEditProgressModalVisible.value = false;
+
+    // Open review modal if book is finished
+    if (updatedProgress.currentPage >= updatedProgress.totalPages) {
+      isLeaveReviewModalOpen.value = true;
+    }
+  } catch (error) {
+    console.error('Failed to update progress:', error);
+  }
 };
 
 const readingProgressList = computed<IReadingProgress[]>(() => userStore.readingProgress);
@@ -97,9 +118,4 @@ onMounted(async () => {
     console.error('Failed to fetch reading progress:', error);
   }
 });
-
-function openModal(progress: IReadingProgress) {
-  selectedProgress.value = { ...progress }; // clone to avoid editing the store directly
-  isEditProgressModalVisible.value = true;
-}
 </script>
