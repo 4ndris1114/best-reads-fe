@@ -13,10 +13,11 @@
         <section v-if="profileUser && user.id === profileUser.id">
           <!-- Navigation Links -->
           <nav class="mt-6 space-y-4 text-black font-semibold">
-            <a href="#bio" class="block hover:font-bold hover:text-red-700">Public information</a>
-            <a href="#bookshelves" class="block hover:font-bold hover:text-red-700">Public Bookshelves</a>
-            <a href="#preferences" class="block hover:font-bold hover:text-red-700">Preferences</a>
-            <a href="#security" class="block hover:font-bold hover:text-red-700">Privacy & Security</a>
+            <a href="#bio" class="block hover:font-bold hover:text-red-700"><fa icon="circle-info" class="text-black mr-1" />Public information</a>
+            <a href="#bookshelves" class="block hover:font-bold hover:text-red-700"><fa icon="bookmark" class="text-black mr-1" />Public Bookshelves</a>
+            <a href="#preferences" class="block hover:font-bold hover:text-red-700"><fa icon="pen-nib" class="text-black mr-1" />Preferences</a>
+            <a href="#security" class="block hover:font-bold hover:text-red-700"><fa icon="shield" class="text-black mr-1" />
+              Privacy & Security</a>
           </nav>
         </section>
       </aside>
@@ -114,12 +115,14 @@
               <!-- Preferences and Security -->
               <section v-if="profileUser && user.id === profileUser.id">
                 <section id="preferences">
-                  <h4 class="text-2xl font-bold mt-10 mb-4">Preferences</h4>
+                  <h4 class="text-2xl font-bold mt-10 mb-4"><fa icon="pen-nib" class="text-black mr-1" />
+                    Preferences</h4>
                   <!-- TODO darkmode toggle -->
                 </section>
 
                 <section id="security">
-                  <h5 class="text-2xl font-bold mt-10 mb-4">Privacy and security</h5>
+                  <h5 class="text-2xl font-bold mt-10 mb-4"><fa icon="shield" class="text-black mr-1" />
+                    Privacy and security</h5>
                   <div class="flex flex-col items-start">
                   <button
                     class="bg-red-700 px-4 mb-4 py-2 font-semibold rounded hover:bg-red-850 drop-shadow-xl text-sm transition duration-300 text-white">

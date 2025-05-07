@@ -86,6 +86,9 @@
           :bookshelfId="selectedBookshelf?.id || ''" @closeModal="isRenameModalVisible = false" />
         <DeleteBookshelfModal :isVisible="isDeleteModalVisible" :bookshelfId="selectedBookshelf?.id || ''"
           @closeModal="isDeleteModalVisible = false" @deleteBookshelf="handleDeleteBookshelf" />
+        <EditProgressModal :isVisible="isEditProgressModalOpen" :readingProgress="readingProgress"
+          @closeModal="isEditProgressModalOpen = false" @progressUpdated="handleProgressUpdate" />
+        <LeaveReviewModal :isVisible="isLeaveReviewModalVisible" :book="selectedBook" @closeModal="isLeaveReviewModalVisible = false" />
       </div>
     </div>
   </div>
@@ -98,6 +101,8 @@ import BookModal from '@/components/BookModal.vue';
 import NewBookshelfModal from '@/components/NewBookshelfModal.vue';
 import RenameBookshelfModal from '@/components/RenameBookshelfModal.vue';
 import DeleteBookshelfModal from '@/components/DeleteBookshelfModal.vue';
+import EditProgressModal from '@/components/EditProgressModal.vue';
+import LeaveReviewModal from '@/components/LeaveReviewModal.vue';
 import Bookshelf from '@/components/Bookshelf.vue';
 import type { IBook } from '@/types/interfaces/IBook';
 import { useBookStore } from '@/stores/bookStore';
@@ -114,6 +119,9 @@ const isDeleteModalVisible = ref(false);
 const isRenameModalVisible = ref(false);
 const isModalVisible = ref(false);
 const isShelfVisible = ref(false);
+const isEditProgressModalOpen = ref(false);
+const isLeaveReviewModalVisible = ref(false);
+const readingProgress = ref<IReadingProgress | null>(null);
 
 const dropdownOpen = ref(false);
 const settingsOpen = ref(false);
@@ -171,6 +179,28 @@ const handleDeleteBookshelf = () => {
   isDeleteModalVisible.value = false;
   swipeToNextBookshelf(-1);
 }
+
+const handleProgressUpdate = async (updatedProgress: IReadingProgress) => {
+  try {
+    await userStore.editReadingProgressById(
+      userStore.loggedInUser!.id,
+      updatedProgress.id,
+      updatedProgress
+    );
+
+    // Update selected progress
+    selectedProgress.value = updatedProgress;
+    isEditProgressModalVisible.value = false;
+
+    // Open review modal if book is finished
+    if (updatedProgress.currentPage >= updatedProgress.totalPages) {
+      isLeaveReviewModalOpen.value = true;
+    }
+  } catch (error) {
+    console.error('Failed to update progress:', error);
+  }
+};
+
 
 const openModal = (book: IBook) => {
   selectedBook.value = book;

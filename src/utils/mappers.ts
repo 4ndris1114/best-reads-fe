@@ -2,8 +2,10 @@ import type { IBook } from "@/types/interfaces/IBook";
 import type { IBookshelf } from "@/types/interfaces/IBookshelf";
 import type { IUser } from "@/types/interfaces/IUser";
 import type { IReview } from "@/types/interfaces/IReview";
+import type { IReadingProgress } from "@/types/interfaces/IReadingProgress";
 import type { IActivity } from "@/types/interfaces/IActivity";
 import type { ActivityType } from "@/types/enums/ActiviyType";
+
 
 export const mapToIUser = (user: any): IUser => {
   return {
@@ -58,6 +60,16 @@ export const mapToIReview = (review: any): IReview => {
     updatedAt: review.updatedAt
   } as IReview;
 }
+
+  export const mapToReadingProgress = (readingProgress: any): IReadingProgress => {
+    return {
+      id: readingProgress.id,
+      bookId: readingProgress.bookId,
+      currentPage: readingProgress.currentPage,
+      totalPages: readingProgress.totalPages,
+      updatedAt: readingProgress.updatedAt
+    } as IReadingProgress
+  }
 
 export const mapToIActivity = (activity: any): IActivity => {
   return {

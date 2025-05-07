@@ -49,7 +49,6 @@ const closeModal = () => {
 };
 
 const createBookshelf = async () => {
-  console.log("User Store:", userStore.loggedInUser); // Debugging
 
   if (!newBookshelfName.value.trim()) return;
   if (!userStore.loggedInUser) {

@@ -1,13 +1,13 @@
 <template>
   <div v-if="isVisible" class="modal-overlay">
     <div class="modal-content">
-      <button @click="close" class="modal-close">Close</button>
       <h2 class="text-xl font-bold">{{ book.title }}</h2>
       <p><strong>Author:</strong> {{ book.author }}</p>
       <p><strong>ISBN:</strong> {{ book.isbn }}</p>
       <p><strong>Published Date:</strong> {{ book.publishedDate }}</p>
       <p><strong>Genres:</strong> {{ book.genres.join(", ") }}</p>
       <p><strong>Average Rating:</strong> {{ book.averageRating }}</p>
+      <button @click="close" class="modal-close">Close</button>
     </div>
   </div>
 </template>

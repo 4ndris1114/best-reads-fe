@@ -1,6 +1,6 @@
 import type { IUser } from '@/types/interfaces/IUser';
 import { UserService } from '@/services/UserService';
-
+import type { IReadingProgress } from '@/types/interfaces/IReadingProgress';
 import router from '@/router'  // Import router to perform navigation
 import { defineStore } from 'pinia';
 import {jwtDecode} from 'jwt-decode';
@@ -10,6 +10,8 @@ export const useUserStore = defineStore('userStore', {
     loggedInUser: null as IUser | null,
     token: sessionStorage.getItem('jwtToken') || null as string | null,
     isAuthenticated: false,
+    loading: false,
+    readingProgress:[] as Array<IReadingProgress>,
 
     userService: new UserService() as UserService,
   }),
@@ -69,12 +71,45 @@ export const useUserStore = defineStore('userStore', {
       }
     },
 
-    async getUsersByIds(userIds: string[]) {
+    async getAllReadingProgress(userId: string) {
       try {
-        const users = await this.userService.getUsersByIds(userIds);
-        return users;
+        this.loading = true;
+        const readingProgress = await this.userService.getAllReadingProgress(userId);
+        if(readingProgress) {
+          this.readingProgress = readingProgress;
+      } throw new Error(`Failed to retrieve reading progress for user with id ${userId}`);
       } catch (e: any) {
         console.error(e);
+        throw e;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async getReadingProgressById(progressId: string, userId: string): Promise<IReadingProgress> {
+      try {
+        this.loading = true;
+        const readingProgress = await this.userService.getReadingProgressById(progressId, userId);
+        if (readingProgress) {
+          return readingProgress;
+        } throw new Error(`Failed to retrieve reading progress ${progressId}`);
+      } catch (e: any) {
+        console.error(e);
+        throw e;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async editReadingProgressById(userId: string, progressId: string, readingProgress: IReadingProgress) {
+      try {
+        const response = await this.userService.editReadingProgressById(userId, progressId, readingProgress);
+        if (response) {
+          return response;
+        }
+        throw new Error("Error");
+      } catch (e: any) {
+        console.error("Error editing reading progress:", e);
         throw e;
       }
     },
@@ -82,7 +117,7 @@ export const useUserStore = defineStore('userStore', {
     async editUserById(userId:string, IUser: IUser) {
       try {
         const response = await this.userService.editUserById(userId, IUser);
-        if(response) {
+        if (response) {
           this.loggedInUser = response
           return response;
         }

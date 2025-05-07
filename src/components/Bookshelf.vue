@@ -8,7 +8,7 @@
 
     <!-- Books on shelf -->
     <div v-else v-for="(shelfBooks, index) in chunkedBooks" :key="index"
-      class="shelf flex justify-center items-end mb-2 border-b-9 border-[#5b3826]">
+      class="shelf flex w-full justify-center items-end mb-2 border-b-9 border-[#5b3826]">
       <div v-for="{ book, color, height } in shelfBooks" :key="book.id"
         class="book flex items-center justify-center text-s font-bold transform rotate-180 p-1 m-1 rounded-sm cursor-pointer"
         :style="{
