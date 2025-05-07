@@ -2,9 +2,9 @@
   <MainLayout>
     <div class="h-screen overflow-y-auto bg-white text-black">
       <div class="container mx-auto p-4">
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <ReadingProgressList />
-
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <ReadingChallenge></ReadingChallenge>
+          <YearSummary></YearSummary>
           <div class="lg:col-span-2 space-y-6">
             <div>
               <h1 class="text-3xl font-bold text-[#1D1D23]">{{ timeGreeting }}, {{ loggedInUser }}!</h1>
@@ -12,36 +12,25 @@
             </div>
           </div>
 
-          <!-- Left Sidebar
           <div class="space-y-6 lg:col-span-1">
-            <ReadingChallenge :completed="13" :goal="36" />
-            <YearSummary :pages="1345" :books="13" :points="1345" :reviews="12" />
-          </div>
-
-
-
-
-
-          <div class="space-y-6 lg:col-span-1">
+            <h2 class="text-2xl font-bold mb-2">You're currently reading:</h2>
             <div class="bg-[#181C20] rounded-xl p-4">
-              <BooksOnShelf shelfName="Currently Reading" />
+              <Bookshelf v-if="currentlyReadingShelf" :shelf="currentlyReadingShelf" />
             </div>
             <div>
-              <h2 class="text-xl font-bold mb-2">Track your progress</h2>
-              <div v-for="progress in readingProgressList" :key="progress.id" class="mb-4">
-                <ReadingProgress :id="progress.id" :currentPage="progress.currentPage" :totalPages="progress.totalPages" />
-                <button @click="openModal(progress)" class="text-sm text-blue-500 underline mt-1">
-                  Update progress
-                </button>
-              </div>
+              <h2 class="text-xl font-bold mb-2">Track your progress:</h2>
+              <ReadingProgressList />
             </div>
           </div>
-        </div>
-
-        <EditProgressModal v-if="selectedProgress" :visible="isModalOpen" :progressId="selectedProgress.id"
-          :currentPage="selectedProgress.currentPage" :totalPages="selectedProgress.totalPages"
-          @close="isModalOpen = false" @save="updateProgress" /> -->
-      </div>
+</div>
+<EditProgressModal
+  :isEditProgressModalVisible="isEditProgressModalVisible"
+  :readingProgress="selectedProgress ??  { id: '', bookId: '', currentPage: 0, totalPages: 0, updatedAt: new Date() }"
+  :bookId="selectedProgress?.bookId || ''"
+  @closeModal="isEditProgressModalVisible = false"
+  v-on-click-outside="isEditProgressModalVisible = false"
+  @upgradeProgress="handleEditProgress"
+/>
       </div>
     </div>
   </MainLayout>
@@ -49,19 +38,37 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-
 import MainLayout from '@/layouts/MainLayout.vue';
 import ReadingProgressList from '@/components/ReadingProgressList.vue';
-import BooksOnShelf from '@/components/BooksOnShelf.vue';
+import Bookshelf from '@/components/Bookshelf.vue';
 import ReadingChallenge from '@/components/ReadingChallenge.vue';
 import YearSummary from '@/components/YearSummary.vue';
 import type { IReadingProgress } from '@/types/interfaces/IReadingProgress';
 import EditProgressModal from '@/components/EditProgressModal.vue';
 import { useUserStore } from '@/stores/userStore';
+import { useShelfStore } from '@/stores/shelfStore';
+import type { IBookshelf } from '@/types/interfaces/IBookshelf';
 
+const shelfStore = useShelfStore();
+const currentlyReadingShelf = ref<IBookshelf | null>(null);
 const userStore = useUserStore();
 const loggedInUser = computed(() => userStore.loggedInUser?.username);
 const userId = computed(() => userStore.loggedInUser?.id);
+const isEditProgressModalVisible = ref(false);
+
+onMounted(async () => {
+  if (!userId.value) return;
+  try {
+    await shelfStore.getBookshelvesForUser(userId.value);
+    currentlyReadingShelf.value = shelfStore.bookshelves.find(
+      (shelf) => shelf.name === 'Currently Reading'
+    ) || null;
+
+    await userStore.getAllReadingProgress(userId.value);
+  } catch (error) {
+    console.error('Error loading data:', error);
+  }
+});
 
 const timeGreeting = computed(() => {
   const hour = new Date().getHours();
@@ -70,9 +77,16 @@ const timeGreeting = computed(() => {
   return 'Good evening';
 });
 
+const upgradeProgress = () => {
+  isEditProgressModalVisible.value = true;
+}
+const handleEditProgress = () => {
+  isEditProgressModalVisible.value = false;
+  userStore.editReadingProgressById(userStore.loggedInUser!.id, selectedProgress.value!.id, selectedProgress.value!);
+};
+
 const readingProgressList = computed<IReadingProgress[]>(() => userStore.readingProgress);
 
-const isModalOpen = ref(false);
 const selectedProgress = ref<IReadingProgress | null>(null);
 
 onMounted(async () => {
@@ -85,7 +99,7 @@ onMounted(async () => {
 });
 
 function openModal(progress: IReadingProgress) {
-  selectedProgress.value = progress;
-  isModalOpen.value = true;
+  selectedProgress.value = { ...progress }; // clone to avoid editing the store directly
+  isEditProgressModalVisible.value = true;
 }
 </script>
