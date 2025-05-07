@@ -46,7 +46,7 @@ export class UserService {
 
     async getAllReadingProgress(userId: string) {
       try {
-        const response = await instance.get(`/Stats/${userId}`);
+        const response = await instance.get(`/stats/${userId}`);
         return response.data.map((r:any) => mapToReadingProgress(r));
       } catch (error) {
         console.error('Error fetching reading progress:', error);
