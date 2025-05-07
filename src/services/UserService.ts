@@ -100,39 +100,33 @@ export class UserService {
       }
     }
 
-    async followUser(userId: string, followingId: string) {
+    async followUser(userId: string, friendId: string) {
       try {
-        const response = await instance.post(`/user/${userId}/follow/${followingId}`);
-        return response.data;
+        const response = await instance.post(`/user/${userId}/follow/${friendId}`);
+        return mapToIUser(response.data);
       } catch (error) {
         console.error('Error following user:', error);
         throw error;
       }
     }
 
-    async unfollowUser(userId: string, followingId: string) {
+    async unfollowUser(userId: string, friendId: string) {
       try {
-        const response = await instance.delete(`/user/${userId}/unfollow/${followingId}`);
-        return response.data;
+        const response = await instance.delete(`/user/${userId}/unfollow/${friendId}`);
+        return mapToIUser(response.data);
       } catch (error) {
         console.error('Error unfollowing user:', error);
         throw error;
       }
     }
-
-    mapToIUser(user: any): IUser {
-      return {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        profilePicture: user.profilePicture,
-        bio: user.bio,
-        bookshelves: user.bookshelves,
-        readingProgress: user.readingProgress,
-        followers: user.followers,
-        following: user.following,
-        readingStats: user.readingStats,
-        createdAt: user.createdAt,
-      } as IUser;
+    
+    async searchByUsername(username: string) {
+      try {
+        const response = await instance.get(`/user/search?query=${username}`);
+        return response.data;
+      } catch (error) {
+        console.error('Error searching by username:', error);
+        throw error;
+      }
     }
 }

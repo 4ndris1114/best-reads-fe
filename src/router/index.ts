@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import { useUserStore } from '../stores/userStore'
+import { authGuard } from '@/router/authGuard';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,14 +10,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
-      beforeEnter: async (to, from, next) => {
-        const userStore = useUserStore()
-        if (!userStore.isAuthenticated) {
-          next({ name: 'auth' })
-        } else {
-          next()
-        }
-      },
+      beforeEnter: authGuard,
     },
     {
       path: '/discover',
@@ -27,14 +21,7 @@ const router = createRouter({
       path: '/bookshelves',
       name: 'bookshelves',
       component: () => import('../views/BookshelfView.vue'),
-      beforeEnter: async (to, from, next) => {
-        const userStore = useUserStore()
-        if (!userStore.isAuthenticated) {
-          next({ name: 'auth' })
-        } else {
-          next()
-        }
-      },
+      beforeEnter: authGuard,
     },
     {
       path: '/bookdetails/:id',
@@ -44,7 +31,8 @@ const router = createRouter({
     {
       path: '/profile/:id',
       name: 'profilepage',
-      component: () => import('../views/ProfilePageView.vue')
+      component: () => import('../views/ProfilePageView.vue'),
+      beforeEnter: authGuard,
     },
     {
       path: '/login',

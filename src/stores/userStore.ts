@@ -22,6 +22,7 @@ export const useUserStore = defineStore('userStore', {
         try {
           const decoded = jwtDecode<{ userId: string }>(this.token);
           this.loggedInUser = await this.getUserById(decoded.userId);
+          sessionStorage.setItem('loggedInUserId', this.loggedInUser.id);
           this.isAuthenticated = true;
         } catch (error) {
           console.error("Failed to restore session:", error);
@@ -149,6 +150,33 @@ export const useUserStore = defineStore('userStore', {
       this.token = null;
       this.isAuthenticated = false;
       this.loggedInUser = null;
-    }
+    },
+
+    async followUser(userId: string, friendId: string) {
+      try {
+        const response = await this.userService.followUser(userId, friendId);
+        return response;
+      } catch (e) {
+        throw e;
+      }
+    },
+
+    async unfollowUser(userId: string, friendId: string) {
+      try {
+        const response = await this.userService.unfollowUser(userId, friendId);
+        return response;
+      } catch (e) {
+        throw e;
+      }
+    },
+
+    async searchByUsername(username: string) {
+      try {
+        const response = await this.userService.searchByUsername(username);
+        return response;
+      } catch (e) {
+        throw e;
+      }
+    },
   },
 });

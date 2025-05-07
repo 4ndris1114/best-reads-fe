@@ -49,31 +49,47 @@
                 <!-- Right side: Buttons -->
                 <div class="flex space-x-2">
                   <button v-if="profileUser && user.id === profileUser.id" @click="toggleEdit"
-                    class="drop-shadow-xl px-4 py-2 bg-blue-700 text-white font-semibold text-sm rounded hover:bg-blue-800 transition duration-100">
+                    class="drop-shadow-xl px-4 py-2 bg-blue-700 text-white font-semibold text-sm rounded hover:bg-blue-800 transition duration-100 cursor-pointer">
                     <fa icon="pen" class="mr-1" />
                     {{isEditing ? 'Save changes' : 'Edit profile' }}
                   </button>
 
-                  <button v-else-if="!profileUser.following.includes(user.id)" @click="followUser"
-                    class="drop-shadow-xl px-4 py-2 bg-blue-700 text-white font-semibold rounded hover:bg-blue-800 transition duration-100">
+                  <button v-else-if="isFollowing" @click="followUser" :disabled="followDisabled"
+                    class="drop-shadow-xl px-4 py-2 bg-primary text-white font-semibold rounded-full hover:bg-blue-800 transition duration-100 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                     <fa icon="user-plus" class="mr-1" />
                     Follow
                   </button>
 
-                  <button v-else @click="unfollowUser"
-                    class="drop-shadow-xl px-4 py-2 bg-red-700 text-white font-semibold rounded hover:bg-red-800 transition duration-100">
+                  <button v-else @click="unfollowUser" :disabled="followDisabled"
+                    class="drop-shadow-xl px-4 py-2 bg-primary text-white font-semibold rounded-full hover:bg-red-800 transition duration-100 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                     <fa icon="user-times" class="mr-1" />
                     Unfollow
                   </button>
                 </div>
               </div>
 
-              <!-- Followers / Following -->
               <div class="mb-8 flex space-x-5 text-gray-700">
-                <p><strong>{{ user.followers.length }}</strong> Followers</p>
-                <p><strong>{{ user.following.length }}</strong> Following</p>
+                <p @click="openFollowers" class="cursor-pointer hover:underline">
+                  <strong>{{ user.followers.length }}</strong> Followers
+                </p>
+                <p @click="openFollowing" class="cursor-pointer hover:underline">
+                  <strong>{{ user.following.length }}</strong> Following
+                </p>
               </div>
 
+              <FollowerListModal 
+                :show="showFollowerModal" 
+                title="Followers" 
+                :userIds="user.followers" 
+                @close="showFollowerModal = false"
+              />
+
+              <FollowerListModal 
+                :show="showFollowingModal" 
+                title="Following" 
+                :userIds="user.following" 
+                @close="showFollowingModal = false"
+              />
 
               <!-- Bio Section -->
               <section id="bio" class="mb-3 text-black">
@@ -126,7 +142,6 @@
         </div>
       </div>
     </div>
-    <ToastNotification :show="showToast" :toastType="toastType" :message="toastMessage"></ToastNotification>
   </MainLayout>
 </template>
 
@@ -136,20 +151,32 @@ import { useUserStore } from '@/stores/userStore';
 import { watch, ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import MainLayout from "@/layouts/MainLayout.vue";
-import ToastNotification from "@/components/ToastNotification.vue";
 import UserBadges from '@/components/ProfileBadges.vue';
 import BookshelvesOverview from "@/components/BookshelvesOverview.vue";
+import FollowerListModal from "@/components/FollowerListModal.vue";
+import { useToastStore } from '@/stores/toastStore';
+import { storeToRefs } from 'pinia'
+
+const toastStore = useToastStore();
+const { show, toastType, message } = storeToRefs(toastStore);
 
 const userStore = useUserStore();
 const route = useRoute();
-const showToast = ref (false);
-const toastType = ref("");
-const toastMessage = ref ("");
 
 const usernameInput = ref("");
 const bioInput = ref("");
 const emailInput = ref("");
 const profilePictureInput = ref("");
+
+const showFollowerModal = ref(false);
+const showFollowingModal = ref(false);
+
+const openFollowers = () => {
+  showFollowerModal.value = true;
+};
+const openFollowing = () => {
+  showFollowingModal.value = true;
+};
 
 onMounted(async () => {
   const userId = route.params.id as string;
@@ -163,8 +190,12 @@ onMounted(async () => {
   }
 });
 
-const user = ref<IUser | null>(null);
-const profileUser: IUser = userStore.loggedInUser!;
+const user = ref<IUser | null>(null); // current profile you're viewing
+const profileUser: IUser = userStore.loggedInUser!; //logged in user
+const isFollowing = computed(() => {
+  return !user.value?.followers.some(followerId => followerId === profileUser.id) || false;
+});
+const followDisabled = ref(false);
 const isEditingUsername = ref(false);
 const isEditingBio = ref(false);
 const isEditing = ref(false);
@@ -172,15 +203,6 @@ const hasChanges = computed(() =>
   usernameInput.value !== user.value?.username ||
   bioInput.value !== user.value?.bio
 );
-
-const showToastMessage = (message: string, type: 'success' | 'error') => {
-    toastMessage.value = message;
-    toastType.value = type;
-    showToast.value = true;
-    setTimeout(()=> {
-      showToast.value = false;
-    }, 3000);
-};
 
 watch(
   () => isEditing.value,
@@ -192,12 +214,49 @@ watch(
       try {
         const updatedUser = await userStore.editUserById(user.value!.id, toBeUpdated)
         user.value = updatedUser
-        showToastMessage("Your profile has been edited successfully.", 'success')
+        toastStore.triggerToast("Your profile has been edited successfully.", 'success')
       } catch(e) {
       }
     }
   }
 )
+
+const followUser = async () => {
+  if (followDisabled.value) return;
+
+  followDisabled.value = true;
+  setTimeout(() => {
+    followDisabled.value = false;
+  }, 2000); // 2 seconds cooldown
+
+  try {
+    const updatedUser = await userStore.followUser(profileUser.id, user.value!.id);
+    if (updatedUser) {
+      user.value = updatedUser;
+    }
+    toastStore.triggerToast("You are now following " + user.value?.username, 'success', 1800)
+  } catch (err) {
+    console.error("Failed to follow user:", err);
+  }
+}
+
+const unfollowUser = async () => {
+  if (followDisabled.value) return;
+
+  followDisabled.value = true;
+  setTimeout(() => {
+    followDisabled.value = false;
+  }, 2000); // 2 seconds cooldown
+  try {
+    const updatedUser = await userStore.unfollowUser(profileUser.id, user.value!.id);
+    if (updatedUser) {
+      user.value = updatedUser;
+    }
+    toastStore.triggerToast("You are no longer following " + user.value?.username, 'success', 1800)
+  } catch (err) {
+    console.error("Failed to unfollow user:", err);
+  }
+}
 
 const toggleEdit = () => {
 isEditing.value = !isEditing.value

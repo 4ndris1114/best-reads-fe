@@ -25,13 +25,13 @@
                         </div>
                         <ul v-else class="bg-white border border-black rounded-lg shadow-lg lg:text-lg md:text-md sm:text-sm xs:text-xs max-h-[22vh] overflow-y-auto">
                             <li v-for="shelf in userShelves" :key="shelf.id" @click="addBookToShelf(shelf)" class="px-4 py-2 text-left hover:bg-gray-200 cursor-pointer">
-                                {{ shelf.name }}
+                                <span v-if="book && shelf.books && shelf.books.some((bbookId: string) => bbookId === book?.id)" class="mr-1">✓</span>{{ shelf.name }}
                             </li>
                         </ul>
                     </div>
                 </div>
                 <!-- Rate the book (stars) -->
-                <div v-if="alreadyRated" class="flex flex-col items-center relative">
+                <div v-if="alreadyRated" class="flex flex-col items-center relative"> 
                     <span class="md:text-lg sm:text-md mb-4">                    <!-- Tooltip -->
                         <fa icon="info-circle" class="text-sm text-gray-600 mr-2 cursor-pointer"
                                 @click="showReviewTooltip = !showReviewTooltip" @mouseenter="showReviewTooltip = true"
@@ -115,7 +115,7 @@
                 </div>
                 <!-- Reviews -->
                 <h2 class="mt-[5vh] text-3xl text-black pb-2">Reviews</h2>
-                <div v-for="review in book.reviews.filter(review => review.isPublic || review.userId === userStore.loggedInUser?.id)" :key="review.userId" :review="review">
+                <div v-for="review in filteredReviews" :key="review.userId" :review="review">
                     <ReviewBox :review="review" @edit="clickedStar = review.ratingValue; showReviewModal = true" @delete="handleReviewDelete" />
                 </div>
             </div>
@@ -124,7 +124,6 @@
                 
             </div>
         </div>
-        <ToastNotification :show="showToast" :toastType="toastType" :message="toastMessage" />
         <MoveBookModal v-if="book" @click.self="isMoveBookModalOpen = false"
         :isOpen="isMoveBookModalOpen"
         :currentShelf="currentBasicShelf"
@@ -155,12 +154,15 @@ import type { IBook } from '@/types/interfaces/IBook';
 import type { IBookshelf } from '@/types/interfaces/IBookshelf';
 import { useUserStore } from '@/stores/userStore';
 import { useShelfStore } from '@/stores/shelfStore';
-import ToastNotification from '@/components/ToastNotification.vue';
 import { isBookInBasicShelf } from '@/utils/shelfActions';
 import MoveBookModal from '@/components/MoveBookModal.vue';
 import LeaveReviewModal from '@/components/LeaveReviewModal.vue';
 import type { IReview } from '@/types/interfaces/IReview';
+import { storeToRefs } from 'pinia'
+import { useToastStore } from '@/stores/toastStore'
 
+const toastStore = useToastStore();
+const { show, toastType, message } = storeToRefs(toastStore);
 const bookStore = useBookStore();
 const userStore = useUserStore();
 const shelfStore = useShelfStore();
@@ -177,6 +179,7 @@ const bookIdFromRoute = ref<string | null>(null);
 const book = computed<IBook | null>(() => bookStore.selectedBook);
 const userShelves = computed<IBookshelf[]>(() => userStore.loggedInUser ? userStore.loggedInUser.bookshelves : []);
 const hoveredStar = ref(0);
+const filteredReviews = computed(() => book.value?.reviews.filter((review: IReview) => review.isPublic || review.userId === userStore.loggedInUser?.id).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
 const usersReview = computed(() => book.value?.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id));
 const alreadyRated = computed(() => !!usersReview.value);
 const reviewText = computed(() => alreadyRated.value ? book.value!.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id)!.reviewText : '');
@@ -191,10 +194,6 @@ const showReviewModal = ref(false);
 const clickedStar = ref(0); 
 const showReviewTooltip = ref(false);
 
-const toastType = ref("");
-const toastMessage = ref("");
-const showToast = ref(false);
-
 const addBookToShelf = async (shelf: IBookshelf) => {
     //if the book is already on one of the user's basic bookshelves, offer user to move
     const shelfContainsBook = isBookInBasicShelf(book.value!, userShelves.value.filter((shelf) => !shelf.isMutable));
@@ -208,11 +207,11 @@ const addBookToShelf = async (shelf: IBookshelf) => {
     }
     try {
         await shelfStore.addBookToBookshelf(userStore.loggedInUser!.id, shelf.id, book.value!.id);
-        showToastMessage("Book added to shelf successfully!", "success");
+        toastStore.triggerToast("Book added to shelf successfully!", "success");
         isShelfDropdownOpen.value = false;
     } catch (error) {
         console.error('Error adding book to shelf:', error);
-        showToastMessage("This book is already added to this bookshelf", "error");
+        toastStore.triggerToast("This book is already added to this bookshelf", "error");
         isShelfDropdownOpen.value = false;
     }
 };
@@ -220,11 +219,11 @@ const addBookToShelf = async (shelf: IBookshelf) => {
 const moveBookToNewShelf = async (shelfId: string) => {
     try {
         await shelfStore.moveBookToBookshelf(userStore.loggedInUser!.id, currentBasicShelf.value!.id, book.value!.id, shelfId);
-        showToastMessage("Book moved to new shelf successfully!", "success");
+        toastStore.triggerToast("Book moved to new shelf successfully!", "success");
         isMoveBookModalOpen.value = false;
     } catch (error) {
         console.error('Error moving book to new shelf:', error);
-        showToastMessage("Error moving book to new shelf", "error");
+        toastStore.triggerToast("Error moving book to new shelf", "error");
         isMoveBookModalOpen.value = false;
     }
 }
@@ -239,7 +238,7 @@ const handleReviewSubmit = async (payload: { rating: number; reviewText: string;
                 isPublic: payload.isPublic
             } as IReview;
             await bookStore.postReview(book.value!.id, newReview);
-            showToastMessage("Review submitted successfully!", "success");         
+            toastStore.triggerToast("Review submitted successfully!", "success");         
         } else {
             const reviewId = book.value!.reviews.find((review: IReview) => review.userId === userStore.loggedInUser!.id)!.id;
             const updatedReview = {
@@ -250,11 +249,11 @@ const handleReviewSubmit = async (payload: { rating: number; reviewText: string;
                 isPublic: payload.isPublic
             } as IReview;
             await bookStore.updateReview(book.value!.id, updatedReview);
-            showToastMessage("Review updated successfully!", "success");
+            toastStore.triggerToast("Review updated successfully!", "success");
         }
     } catch (error) {
         console.error('Error submitting review:', error);
-        showToastMessage("Error submitting review", "error");
+        toastStore.triggerToast("Error submitting review", "error");
     }
     showReviewModal.value = false;
 };
@@ -262,20 +261,11 @@ const handleReviewSubmit = async (payload: { rating: number; reviewText: string;
 const handleReviewDelete = async (reviewId: string) => {
     try {
         await bookStore.deleteReview(book.value!.id, reviewId);
-        showToastMessage("Review deleted successfully!", "success");
+        toastStore.triggerToast("Review deleted successfully!", "success");
     } catch (error) {
         console.error('Error deleting review:', error);
-        showToastMessage("Error deleting review", "error");
+        toastStore.triggerToast("Error deleting review", "error");
     }
-};
-
-const showToastMessage = (message: string, type: 'success' | 'error') => {
-    toastMessage.value = message;
-    toastType.value = type;
-    showToast.value = true;
-    setTimeout(() => {
-        showToast.value = false;
-    }, 3000);
 };
 
 // Functions to update hovered state for rating

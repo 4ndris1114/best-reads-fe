@@ -38,12 +38,14 @@
 />
       </div>
     </div>
+    <ActivityFeed />
   </MainLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import MainLayout from '@/layouts/MainLayout.vue';
+import ActivityFeed from '@/components/activity/ActivityFeed.vue';
 import ReadingProgressList from '@/components/ReadingProgressList.vue';
 import Bookshelf from '@/components/Bookshelf.vue';
 import ReadingChallenge from '@/components/ReadingChallenge.vue';
@@ -118,4 +120,5 @@ onMounted(async () => {
     console.error('Failed to fetch reading progress:', error);
   }
 });
+
 </script>
