@@ -4,16 +4,35 @@
       <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <router-link to="/" class="flex items-center">
           <img src="@/assets/logo.png" alt="BestReads Logo" class="h-13 w-auto mr-2">
-          <div class="flex flex-col hover:text-slate-800 leading-tight">
+          <div class="flex flex-col hover:text-black leading-tight">
           <span class="text-3xl font-bold text-white-600">BestReads</span>
           <span class="text-[9.5px] text-white-600 ">STORIES THAT TAKE YOU BEYOND</span>
           </div>
         </router-link>
 
-           <!-- Navigation -->
-          <nav class="flex items-center gap-6 mt-2 ml-8"><router-link to="/" class="text-white-700 hover:text-slate-800 font-bold text-xl ">Home</router-link>
-            <router-link :to="`/bookshelves`" class="text-white-700 hover:text-slate-800 font-bold text-xl">My Bookshelves</router-link>
-          </nav>
+          <!-- Navigation -->
+      <nav class="flex items-center gap-6 mt-2 ml-8">
+        <router-link
+          to="/"
+          :class="[
+            'font-bold text-xl px-2 py-1 rounded transition duration-200',
+            route.path === '/' ? ' bg-[#C67B2F] bg-opacity-10 text-black' : 'text-white-700 hover:text-black hover:bg-[#C67B2F]/50'
+          ]"
+        >
+          Home
+        </router-link>
+
+        <router-link
+          to="/bookshelves"
+          :class="[
+            'font-bold text-xl px-2 py-1 rounded transition duration-200',
+            route.path.startsWith('/bookshelves') ? 'bg-[#C67B2F] bg-opacity-10 text-black' : 'text-white-700 hover:text-black hover:bg-[#C67B2F]/50'
+          ]"
+        >
+          My Bookshelves
+        </router-link>
+      </nav>
+
 
             <Searchbar />
 <!-- User actions -->
@@ -46,6 +65,8 @@
 import Searchbar from './Searchbar.vue';
 import ProfileDropdown from '@/components/ProfileModal.vue';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { useRoute } from 'vue-router';
+const route = useRoute();
 
 const showDropdown = ref(false);
 
