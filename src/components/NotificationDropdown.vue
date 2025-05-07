@@ -1,10 +1,11 @@
 <template>
     <div v-on-click-outside="() => emit('close')" class="absolute right-0 mt-2 w-64 bg-white border rounded-lg shadow-lg z-50">
         <ul class="py-1 text-sm text-gray-700">
-            <li v-if="activities.length > 0" v-for="(activity, index) in activities" :key="index"
+            <li v-if="activities.length > 0" v-for="(activity, index) in activities" :key="index" v-memo="[activity.userId, activity.type]"
                 class="flex flex-row items-center p-1">
-                <CloudinaryImage v-if="getUserImage(activity.userId) !== 'default_profile_picture.jpg'" :publicId="getUserImage(activity.userId)" alt="user profile image" :width="15" :height="30" 
-                class="ml-2"/>
+                <div class="ml-2" v-if="getUserImage(activity.userId) !== 'default_profile_picture.jpg'">
+                    <CloudinaryImage :publicId="getUserImage(activity.userId)" alt="user profile image" :width="15" :height="30" />
+                </div>
                 <img v-else src="@/assets/default_profile_picture.jpg" alt="user profile image" class="ml-2 w-10 h-10 rounded-full text-inherit object-cover" />
                 <a @click="removeNotification(activity.id)" href="/" class="block px-4 py-2 hover:bg-gray-100">
                     <!-- I hate typescript -->
@@ -57,7 +58,7 @@ const getUserName = (userId: string) => {
 
 const getUserImage = (userId: string) => {
     const user = users.value.find((user: IUser) => user.id === userId);
-    return user ? user.profilePicture : '';
+    return user ? user.profilePicture : 'default_profile_picture.jpg';
 }
 
 const getActivityType = (type: number) => {
