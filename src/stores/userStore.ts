@@ -8,7 +8,7 @@ import {jwtDecode} from 'jwt-decode';
 export const useUserStore = defineStore('userStore', {
   state: () => ({
     loggedInUser: null as IUser | null,
-    token: sessionStorage.getItem('jwtToken') || null as string | null,
+    token: (sessionStorage.getItem('jwtToken') ?? localStorage.getItem('jwtToken')) || null as string | null,
     isAuthenticated: false,
 
     userService: new UserService() as UserService,
@@ -29,10 +29,12 @@ export const useUserStore = defineStore('userStore', {
       }
     },
 
-    async login(email: string, password: string) {
+    async login(email: string, password: string, stayLoggedIn: boolean = false) {
       try {
-        const token = await this.userService.login(email, password);
-        this.assignToken(token);
+        console.log(email, password, stayLoggedIn);
+        
+        const token = await this.userService.login(email, password, stayLoggedIn);
+        this.assignToken(token, stayLoggedIn);
 
         router.push('/');
       } catch (e: any) {
@@ -93,8 +95,8 @@ export const useUserStore = defineStore('userStore', {
       }
     },
 
-    async assignToken(token: string) {
-      this.persistTokenInSessionStorage(token);
+    async assignToken(token: string, stayLoggedIn: boolean = false) {
+      this.persistTokenInSessionStorage(token, stayLoggedIn);
       this.token = token;
       this.isAuthenticated = true;
       try {
@@ -106,11 +108,16 @@ export const useUserStore = defineStore('userStore', {
       }
     },
 
-    persistTokenInSessionStorage(token: string) {
-      sessionStorage.setItem('jwtToken', token);
+    persistTokenInSessionStorage(token: string, stayLoggedIn: boolean = false) {
+      if (stayLoggedIn) {
+        localStorage.setItem('jwtToken', token);
+      } else {
+        sessionStorage.setItem('jwtToken', token);
+      }
     },
 
     clearAuthData() {
+      localStorage.removeItem('jwtToken');
       sessionStorage.removeItem('jwtToken');
       this.token = null;
       this.isAuthenticated = false;

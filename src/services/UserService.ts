@@ -3,9 +3,9 @@ import instance from './httpClient'
 import { mapToIUser } from '@/utils/mappers';
 
 export class UserService {
-    async login(email: String, password: String) {
+    async login(email: String, password: String, rememberMe: boolean = false) {
         try {
-            const response = await instance.post('/auth/login', { email, password });
+            const response = await instance.post('/auth/login', { email, password, rememberMe });
             return response.data;
         } catch (error) {
             console.error('Error during login:', error);

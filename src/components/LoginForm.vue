@@ -163,7 +163,7 @@ const handleLogin = async () => {
     isLoading.value = true;
 
     try {
-        await userStore.login(email.value, password.value);
+        await userStore.login(email.value, password.value, rememberMe.value);
         showNotification('Successfully logged in!', 'success');
     } catch (error: any) {
         if (error.response.data === "Email not found") {

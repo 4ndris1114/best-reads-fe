@@ -12,7 +12,7 @@ instance.interceptors.request.use(
     async (config) => {
         const userStore = useUserStore();
 
-        const token = userStore.token || sessionStorage.getItem('jwtToken');
+        const token = userStore.token || (sessionStorage.getItem('jwtToken') ?? localStorage.getItem('jwtToken'));
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
