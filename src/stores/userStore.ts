@@ -4,6 +4,7 @@ import type { IReadingProgress } from '@/types/interfaces/IReadingProgress';
 import router from '@/router'  // Import router to perform navigation
 import { defineStore } from 'pinia';
 import {jwtDecode} from 'jwt-decode';
+import type { IReadingChallenge } from '@/types/interfaces/IReadingChallenge';
 
 export const useUserStore = defineStore('userStore', {
   state: () => ({
@@ -178,5 +179,14 @@ export const useUserStore = defineStore('userStore', {
         throw e;
       }
     },
+
+    async updateReadingChallenge(readingChallenge: IReadingChallenge) {
+      try {
+        const response = await this.userService.updateReadingChallenge(readingChallenge, this.loggedInUser!.id);
+        return response;
+      } catch (e) {
+        throw e;
+      }
+    }
   },
 });

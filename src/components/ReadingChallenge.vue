@@ -16,7 +16,7 @@
         </div>
         <div class="flex flex-row justify-between">
           <p class="mt-2 text-sm text-gray-400">{{ currentReadingChallenge.progress }}/{{ currentReadingChallenge.goal }} 
-            ({{ currentReadingChallenge.progress / currentReadingChallenge.goal * 100 }}%)
+            ({{ Math.floor(currentReadingChallenge.progress / currentReadingChallenge.goal * 100) }}%)
           </p>
           <span @click="emits('openEditModal', currentReadingChallenge)" class="flex flex-row cursor-pointer space-x-2 mt-3">
             <fa icon="pencil" class="mt-2 text-blue-400"></fa><span class="mt-1 text-blue-400">Edit challenge</span>
@@ -39,7 +39,9 @@ import type { IReadingChallenge } from '@/types/interfaces/IReadingChallenge';
 const emits = defineEmits<{
     (e: 'openEditModal', readingChallenge: IReadingChallenge ): void;
 }>();
-const userStore = useUserStore();
-const readingChallenges = computed<IReadingChallenge[]>(() => userStore.loggedInUser?.readingChallenges || []);
-const currentReadingChallenge = computed<IReadingChallenge | null>(() => readingChallenges.value.filter(challenge => challenge.year === new Date().getFullYear())[0]);
+
+
+const props = defineProps<{
+  currentReadingChallenge: IReadingChallenge | null;
+}>();
 </script>

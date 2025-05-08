@@ -2,6 +2,7 @@ import type { IUser } from '@/types/interfaces/IUser';
 import instance from './httpClient'
 import { mapToIUser, mapToReadingProgress } from '@/utils/mappers';
 import type { IReadingProgress } from '@/types/interfaces/IReadingProgress';
+import type { IReadingChallenge } from '@/types/interfaces/IReadingChallenge';
 
 export class UserService {
     async login(email: String, password: String) {
@@ -129,4 +130,22 @@ export class UserService {
         throw error;
       }
     }
+
+    async updateReadingChallenge(readingChallenge: IReadingChallenge, userId: string) {
+      try {
+        const response = await instance.put(`/ReadingChallenge/${userId}/${readingChallenge.id}`, readingChallenge, {
+          headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+          if (response.status == 200) {
+            return response.data;
+          } else {
+            throw new Error('Failed to update reading challenge');
+          }
+        } catch (error) {
+          console.error('Error updating reading challenge:', error);
+          throw error;
+        }
+      }
 }

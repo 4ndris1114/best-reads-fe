@@ -5,7 +5,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <!-- Reading challenge and stats -->
           <div class="space-y-6 lg:col-span-3">
-            <ReadingChallenge />
+            <ReadingChallenge :currentReadingChallenge="readingChallenge" @openEditModal="(goal) => openEditChallengeModal(goal)" />
           </div>
 
           <!-- Main Content (Feed) -->
@@ -21,7 +21,7 @@
           <div class="space-y-6 lg:col-span-3">
             <div>
               <h2 class="text-2xl font-bold mb-2">You're currently reading:</h2>
-              <div class="bg-[#181C20] rounded-xl p-4">
+              <div class="bg-darkBlueBackground rounded-xl p-4">
                 <Bookshelf v-if="currentlyReadingShelf" :shelf="currentlyReadingShelf" />
               </div>
             </div>
@@ -48,6 +48,13 @@
           :bookId="readingProgress.bookId"
           @close="isLeaveReviewModalOpen = false"
         />
+
+        <EditReadingChallengeModal
+          v-if="isEditChallengeModalVisible"
+          @closeModal="isEditChallengeModalVisible = false"
+          :readingChallenge="readingChallenge"
+          @update="(readingChallenge) => handleChallengeUpdate(readingChallenge)"
+        />
       </div>
     </div>
   </MainLayout>
@@ -66,6 +73,8 @@ import { useUserStore } from '@/stores/userStore';
 import { useShelfStore } from '@/stores/shelfStore';
 import type { IBookshelf } from '@/types/interfaces/IBookshelf';
 import LeaveReviewModal from '@/components/LeaveReviewModal.vue';
+import EditReadingChallengeModal from '@/components/EditReadingChallengeModal.vue';
+import type { IReadingChallenge } from '@/types/interfaces/IReadingChallenge';
 
 const shelfStore = useShelfStore();
 const userStore = useUserStore();
@@ -75,8 +84,10 @@ const loggedInUser = computed(() => userStore.loggedInUser?.username);
 const userId = computed(() => userStore.loggedInUser?.id);
 
 const isEditProgressModalVisible = ref(false);
+const isEditChallengeModalVisible = ref(false);
 const isLeaveReviewModalOpen = ref(false);
 const selectedProgress = ref<IReadingProgress | null>(null);
+const readingChallenge = ref<IReadingChallenge | null>(userStore.loggedInUser!.readingChallenges.filter((challenge: IReadingChallenge) => challenge.year === new Date().getFullYear())[0] || null);
 
 const timeGreeting = computed(() => {
   const hour = new Date().getHours();
@@ -115,6 +126,21 @@ const handleProgressUpdate = async (updatedProgress: IReadingProgress) => {
     }
   } catch (error) {
     console.error('Failed to update progress:', error);
+  }
+};
+
+const openEditChallengeModal = (emitReadingChallenge: IReadingChallenge) => {
+  readingChallenge.value = emitReadingChallenge;
+  isEditChallengeModalVisible.value = true;
+};
+
+const handleChallengeUpdate = (updatedChallenge: IReadingChallenge) => {
+  try {
+    userStore.updateReadingChallenge(updatedChallenge);
+    readingChallenge.value = updatedChallenge;
+    isEditChallengeModalVisible.value = false;
+  } catch (error) {
+    console.error('Failed to update challenge:', error);
   }
 };
 </script>
