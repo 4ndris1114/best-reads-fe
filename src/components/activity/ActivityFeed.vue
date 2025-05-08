@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col mx-auto max-w-2xl h-[85vh] mt-[5vh] rounded-lg overflow-hidden">
+    <div class="flex flex-col mx-auto  h-[85vh] mt-[2vh] rounded-lg overflow-hidden">
       <div class="h-3 bg-highlight" />
 
       <!-- Scrollable content area -->
