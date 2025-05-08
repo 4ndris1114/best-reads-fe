@@ -5,6 +5,7 @@ import type { IReview } from "@/types/interfaces/IReview";
 import type { IReadingProgress } from "@/types/interfaces/IReadingProgress";
 import type { IActivity } from "@/types/interfaces/IActivity";
 import type { ActivityType } from "@/types/enums/ActiviyType";
+import type { IReadingChallenge } from "@/types/interfaces/IReadingChallenge";
 
 
 export const mapToIUser = (user: any): IUser => {
@@ -19,6 +20,7 @@ export const mapToIUser = (user: any): IUser => {
     followers: user.followers,
     following: user.following,
     readingStats: user.readingStats,
+    readingChallenges: user.readingChallenges,
     createdAt: user.createdAt,
   } as IUser;
 }
@@ -79,4 +81,14 @@ export const mapToIActivity = (activity: any): IActivity => {
     createdAt: activity.createdAt,
     payload: activity.payload
   } as IActivity;
+}
+
+export const mapToIReadingChallenge = (readingChallenge: any): IReadingChallenge => {
+  return {
+    id: readingChallenge.id,
+    year: readingChallenge.year,
+    goal: readingChallenge.goal,
+    progress: readingChallenge.progress,
+    updatedAt: readingChallenge.updatedAt
+  } as IReadingChallenge
 }
