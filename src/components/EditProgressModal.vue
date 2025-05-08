@@ -3,9 +3,9 @@
     class="fixed drop-shadow-lg inset-0 bg-black/[var(--bg-opacity)] [--bg-opacity:50%] flex justify-center items-center z-50"
     @click.self="emits('closeModal')"
   >
-    <div class="relative bg-white p-6 pt-10 rounded-lg w-[300px] border border-primary shadow-lg">
+    <div class="relative bg-white p-6 pt-10 rounded-lg w-[300px] border-t-4 border-blue-700 shadow-lg">
       <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2 shadow-md">
-        <fa icon="pencil" class="text-primary text-2xl" />
+        <fa icon="pencil" class="text-blue-700 text-2xl" />
       </div>
 
       <h2 class="text-xl font-semibold text-center mb-2">Update Your Progress</h2>
