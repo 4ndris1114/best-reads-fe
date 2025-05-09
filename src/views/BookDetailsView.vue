@@ -25,7 +25,7 @@
                         </div>
                         <ul v-else class="bg-white border border-black rounded-lg shadow-lg lg:text-lg md:text-md sm:text-sm xs:text-xs max-h-[22vh] overflow-y-auto">
                             <li v-for="shelf in userShelves" :key="shelf.id" @click="addBookToShelf(shelf)" class="px-4 py-2 text-left hover:bg-gray-200 cursor-pointer">
-                                <span v-if="book && shelf.books && shelf.books.some((bbook) => bbook.id === book.id)" class="mr-1">✓</span>{{ shelf.name }}
+                                <span v-if="book && shelf.books && shelf.books.some((bbook) => bbook.id === book!.id)" class="mr-1">✓</span>{{ shelf.name }}
                             </li>
                         </ul>
                     </div>

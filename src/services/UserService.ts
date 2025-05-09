@@ -131,6 +131,24 @@ export class UserService {
     }
   }
 
+  async createReadingChallenge(readingChallenge: IReadingChallenge, userId: string): Promise<IReadingChallenge> {
+    try {
+      const response = await instance.post(`/ReadingChallenge/${userId}`, readingChallenge, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.status == 200) {
+        return mapToIReadingChallenge(response.data);
+      } else {
+        throw new Error('Failed to create reading challenge');
+      }
+    } catch (error) {
+      console.error('Error creating reading challenge:', error);
+      throw error;
+    }
+  }
+
   async updateReadingChallenge(readingChallenge: IReadingChallenge, userId: string): Promise<IReadingChallenge> {
     try {
       const response = await instance.put(`/ReadingChallenge/${userId}/${readingChallenge.id}`, readingChallenge, {

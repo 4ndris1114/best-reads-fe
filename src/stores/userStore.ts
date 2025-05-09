@@ -180,6 +180,15 @@ export const useUserStore = defineStore('userStore', {
       }
     },
 
+    async createReadingChallenge(readingChallenge: IReadingChallenge): Promise<IReadingChallenge> {
+      try {
+        const response = await this.userService.createReadingChallenge(readingChallenge, this.loggedInUser!.id);
+        return response;
+      } catch (e) {
+        throw e;
+      }
+    },
+
     async updateReadingChallenge(readingChallenge: IReadingChallenge): Promise<IReadingChallenge> {
       try {
         const response = await this.userService.updateReadingChallenge(readingChallenge, this.loggedInUser!.id);

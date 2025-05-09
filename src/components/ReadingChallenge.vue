@@ -66,6 +66,8 @@ import type { IReadingChallenge } from '@/types/interfaces/IReadingChallenge';
 import EditReadingChallengeModal from './EditReadingChallengeModal.vue';
 import DeleteChallengeModal from './DeleteChallengeModal.vue';
 import { useShelfStore } from '@/stores/shelfStore';
+import type { IBookshelf } from '@/types/interfaces/IBookshelf';
+import type { IBookshelfBook } from '@/types/interfaces/IBookshelfBook';
 
 const userStore = useUserStore();
 const toastStore = useToastStore();
@@ -108,19 +110,23 @@ const handleChallengeDelete = async () => {
 
 const handleChallengeCreate = async (newChallenge: IReadingChallenge) => {
   try {
+    const booksReadThisYear = shelfStore.bookshelves
+    .find((shelf: IBookshelf) => shelf.name === 'Read')
+    ?.books.filter((book: IBookshelfBook) => new Date(book.updatedAt).getFullYear() === new Date().getFullYear()).length || 0;
+    
     const challengeToCreate = {
       ...newChallenge,
       year: new Date().getFullYear(),
-      // HERE
-    }
+      progress: booksReadThisYear
+    } as IReadingChallenge;
     
-    const result = await userStore.createReadingChallenge(newChallenge);
+    const result = await userStore.createReadingChallenge(challengeToCreate);
     if (result) {
       toastStore.triggerToast('Challenge created successfully', 'success');
     } else {
       toastStore.triggerToast('Failed to create challenge', 'error');
     }
-    readingChallenge.value = newChallenge;
+    readingChallenge.value = result;
     isEditChallengeModalVisible.value = false;
   } catch (error) {
     console.error('Failed to create challenge:', error);
