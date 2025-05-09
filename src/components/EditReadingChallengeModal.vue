@@ -8,7 +8,7 @@
 
             <h2 class="text-xl font-semibold text-center mb-2">Update Your Goal</h2>
 
-            <div class="text-center mb-6">
+            <div class="mb-6">
                 <label for="currentPage" class="block mb-2 font-semibold">Current Goal:</label>
                 <input id="currentPage" type="number" v-model.number="localReadingChallenge.goal"
                     class="w-full px-3 py-2 border border-gray-300 rounded" min="0" />
