@@ -5,6 +5,6 @@ import type { IBook } from "@/types/interfaces/IBook";
 // If the book is in any of these shelves, it returns the shelf it is already in.
 export const isBookInBasicShelf = (book: IBook, shelves: IBookshelf[]): IBookshelf | undefined => {
     return shelves.find(shelf => {
-        return shelf.books.some(id => id === book.id);
+        return shelf.books.some(bookRef => bookRef.id === book.id);
     });
 }

@@ -6,6 +6,7 @@ import type { IReadingProgress } from "@/types/interfaces/IReadingProgress";
 import type { IActivity } from "@/types/interfaces/IActivity";
 import type { ActivityType } from "@/types/enums/ActiviyType";
 import type { IReadingChallenge } from "@/types/interfaces/IReadingChallenge";
+import type { IBookshelfBook } from "@/types/interfaces/IBookshelfBook";
 
 
 export const mapToIUser = (user: any): IUser => {
@@ -29,9 +30,16 @@ export const mapToIBookshelf = (bookshelf: any): IBookshelf => {
   return {
     id: bookshelf.id,
     name: bookshelf.name,
-    books: bookshelf.books,
+    books: bookshelf.books.map((bookshelfBook: any) => mapToIBookshelfBook(bookshelfBook)),
     isMutable: bookshelf.isMutable
   } as IBookshelf;
+}
+
+export const mapToIBookshelfBook = (bookshelfBook: any): IBookshelfBook => {
+  return {
+    id: bookshelfBook.id,
+    updatedAt: bookshelfBook.updatedAt
+  } as IBookshelfBook;
 }
 
 export const mapToIBook = (book: any): IBook => {

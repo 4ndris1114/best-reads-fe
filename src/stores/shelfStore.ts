@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { ShelfService } from '@/services/ShelfService.ts';
 import type { IBookshelf } from '@/types/interfaces/IBookshelf';
 import { useUserStore } from './userStore';
+import type { IBookshelfBook } from '@/types/interfaces/IBookshelfBook';
 
 export const useShelfStore = defineStore('shelfStore', {
   state: () => ({
@@ -36,28 +37,32 @@ export const useShelfStore = defineStore('shelfStore', {
     async addBookToBookshelf(userId: string, bookshelfId: string, bookId: string) {
       try {
         const response = await this.service.addBookToBookshelf(userId, bookshelfId, bookId);
-        this.bookshelves.find(bookshelf => bookshelf.id === bookshelfId)!.books.push(bookId);
+    
+        const bookshelf = this.bookshelves.find(bookshelf => bookshelf.id === bookshelfId);
+        if (bookshelf && !bookshelf.books.some(book => book.id === bookId)) {
+          bookshelf.books.push({ id: bookId, updatedAt: new Date().toISOString() } as unknown as IBookshelfBook);
+        }
       } catch (error) {
         console.error('Error adding book to bookshelf:', error);
         throw error;
       }
-    },
+    },    
 
     async moveBookToBookshelf(userId: string, sourceShelfId: string, bookId: string, targetShelfId: string) {
       try {
         const response = await this.service.moveBookToBookshelf(userId, sourceShelfId, bookId, targetShelfId);
-
+    
         if (response === bookId) {
           // Remove book from source shelf
           const sourceShelf = this.bookshelves.find(bookshelf => bookshelf.id === sourceShelfId);
           if (sourceShelf) {
-            sourceShelf.books = sourceShelf.books.filter(id => id !== bookId);
+            sourceShelf.books = sourceShelf.books.filter(book => book.id !== bookId);
           }
-
+    
           // Add book to target shelf
           const targetShelf = this.bookshelves.find(bookshelf => bookshelf.id === targetShelfId);
-          if (targetShelf && !targetShelf.books.includes(bookId)) {
-            targetShelf.books.push(bookId);
+          if (targetShelf && !targetShelf.books.some(book => book.id === bookId)) {
+            targetShelf.books.push({ id: bookId, updatedAt: new Date().toISOString() } as unknown as IBookshelfBook);
           }
         }
       } catch (error) {
@@ -65,7 +70,6 @@ export const useShelfStore = defineStore('shelfStore', {
         throw error;
       }
     },
-
 
     async deleteBookshelf(userId: string, bookshelfId: string) {
       try {
