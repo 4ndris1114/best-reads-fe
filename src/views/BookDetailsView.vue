@@ -131,6 +131,7 @@
         :bookId="book!.id"
         @move="moveBookToNewShelf"
         @close="isMoveBookModalOpen = false"
+        @remove="removeBookFromShelf"
         />
         <LeaveReviewModal
             :isOpen="showReviewModal"
@@ -162,7 +163,6 @@ import { storeToRefs } from 'pinia'
 import { useToastStore } from '@/stores/toastStore'
 
 const toastStore = useToastStore();
-const { show, toastType, message } = storeToRefs(toastStore);
 const bookStore = useBookStore();
 const userStore = useUserStore();
 const shelfStore = useShelfStore();
@@ -224,6 +224,18 @@ const moveBookToNewShelf = async (shelfId: string) => {
     } catch (error) {
         console.error('Error moving book to new shelf:', error);
         toastStore.triggerToast("Error moving book to new shelf", "error");
+        isMoveBookModalOpen.value = false;
+    }
+}
+
+const removeBookFromShelf = async () => {
+    try {
+        await shelfStore.removeBookFromBookshelf(userStore.loggedInUser!.id, currentBasicShelf.value!.id, book.value!.id);
+        toastStore.triggerToast("Book removed from shelf successfully!", "success");
+        isMoveBookModalOpen.value = false;
+    } catch (error) {
+        console.error('Error removing book from shelf:', error);
+        toastStore.triggerToast("Error removing book from shelf", "error");
         isMoveBookModalOpen.value = false;
     }
 }

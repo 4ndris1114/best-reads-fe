@@ -16,7 +16,8 @@
           >
             Move to "{{ shelf.name }}"
           </button>
-          <button @click="close" class="w-full px-4 py-2 text-left bg-red-100 hover:bg-gray-200 rounded-lg cursor-pointer">Keep it there!</button>
+          <button @click="close" class="w-full px-4 py-2 text-left bg-green-100 hover:bg-gray-200 rounded-lg cursor-pointer">Keep it on "{{ currentShelf?.name }}"</button>
+          <button @click="emit('remove', bookId)" class="w-full px-4 py-2 text-left bg-red-100 hover:bg-gray-200 rounded-lg cursor-pointer">Remove it from "{{ currentShelf?.name }}"!</button>
         </div>
       </div>
     </div>
@@ -34,6 +35,7 @@
   
   const emit = defineEmits<{
     (e: 'move', targetShelfId: string): void
+    (e: 'remove', bookId: string): void
     (e: 'close'): void
   }>()
   
