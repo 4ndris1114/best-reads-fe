@@ -26,10 +26,20 @@
           </span>
         </div>
       </div>
-      <div v-else>
-        <p class="text-xl font-semibold">You don't have an active reading challenge</p>
-      
-      </div>
+      <div v-else class="flex flex-col items-center justify-center text-center py-8 space-y-4">
+  <div class="text-6xl">📚</div>
+  <p class="text-xl font-semibold">No active reading challenge</p>
+  <p class="text-sm text-gray-400 max-w-[220px]">
+    Set a goal and track your reading progress through the year!
+  </p>
+  <button
+    @click="isEditChallengeModalVisible = true"
+    class="mt-2 px-4 py-2 bg-accent hover:opacity-90 text-white text-sm font-medium rounded-xl transition cursor-pointer"
+  >
+    Create Challenge
+  </button>
+</div>
+
     </div>
   </div>
   <EditReadingChallengeModal
@@ -37,6 +47,7 @@
     :readingChallenge="readingChallenge"
     @closeModal="isEditChallengeModalVisible = false"
     @update="handleChallengeUpdate"
+    @create="handleChallengeCreate"
   />
   <DeleteChallengeModal
     v-if="isDeleteChallengeModalVisible"
@@ -54,9 +65,11 @@ import { useToastStore } from '@/stores/toastStore';
 import type { IReadingChallenge } from '@/types/interfaces/IReadingChallenge';
 import EditReadingChallengeModal from './EditReadingChallengeModal.vue';
 import DeleteChallengeModal from './DeleteChallengeModal.vue';
+import { useShelfStore } from '@/stores/shelfStore';
 
 const userStore = useUserStore();
 const toastStore = useToastStore();
+const shelfStore = useShelfStore();
 
 const isEditChallengeModalVisible = ref(false);
 const isDeleteChallengeModalVisible = ref(false);
@@ -90,6 +103,27 @@ const handleChallengeDelete = async () => {
     isDeleteChallengeModalVisible.value = false;
   } catch (error) {
     console.error('Failed to delete challenge:', error);
+  }
+};
+
+const handleChallengeCreate = async (newChallenge: IReadingChallenge) => {
+  try {
+    const challengeToCreate = {
+      ...newChallenge,
+      year: new Date().getFullYear(),
+      // HERE
+    }
+    
+    const result = await userStore.createReadingChallenge(newChallenge);
+    if (result) {
+      toastStore.triggerToast('Challenge created successfully', 'success');
+    } else {
+      toastStore.triggerToast('Failed to create challenge', 'error');
+    }
+    readingChallenge.value = newChallenge;
+    isEditChallengeModalVisible.value = false;
+  } catch (error) {
+    console.error('Failed to create challenge:', error);
   }
 };
 </script>

@@ -19,9 +19,9 @@
                     class="w-24 px-3 py-2 bg-gray-400 text-white font-semibold rounded hover:bg-gray-500 transition">
                     Cancel
                 </button>
-                <button @click="emits('update', localReadingChallenge)"
+                <button @click="readingChallenge ? emits('update', localReadingChallenge) : emits('create', localReadingChallenge)"
                     class="w-24 px-3 py-2 bg-red-600 text-white font-semibold rounded hover:bg-red-700 transition">
-                    Update
+                    {{ readingChallenge ? 'Update' : 'Create'}}
                 </button>
             </div>
         </div>
