@@ -41,5 +41,6 @@ const localReadingChallenge = ref<IReadingChallenge | null>({ ...props.readingCh
 const emits = defineEmits<{
     (e: 'closeModal'): void;
     (e: 'update', payload: IReadingChallenge): void;
+    (e: 'create', payload: IReadingChallenge): void;
 }>();
 </script>
