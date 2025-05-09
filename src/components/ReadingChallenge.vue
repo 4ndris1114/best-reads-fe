@@ -49,20 +49,28 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useUserStore } from '@/stores/userStore';
+import { useToastStore } from '@/stores/toastStore';
+
 import type { IReadingChallenge } from '@/types/interfaces/IReadingChallenge';
 import EditReadingChallengeModal from './EditReadingChallengeModal.vue';
 import DeleteChallengeModal from './DeleteChallengeModal.vue';
 
 const userStore = useUserStore();
+const toastStore = useToastStore();
 
 const isEditChallengeModalVisible = ref(false);
 const isDeleteChallengeModalVisible = ref(false);
 
 const readingChallenge = ref<IReadingChallenge | null>(userStore.loggedInUser!.readingChallenges.filter((challenge: IReadingChallenge) => challenge.year === new Date().getFullYear())[0] || null);
 
-const handleChallengeUpdate = (updatedChallenge: IReadingChallenge) => {
+const handleChallengeUpdate = async (updatedChallenge: IReadingChallenge) => {
   try {
-    userStore.updateReadingChallenge(updatedChallenge);
+    const result = await userStore.updateReadingChallenge(updatedChallenge);
+    if (result) {
+      toastStore.triggerToast('Challenge updated successfully', 'success');
+    } else {
+      toastStore.triggerToast('Failed to update challenge', 'error');
+    }
     readingChallenge.value = updatedChallenge;
     isEditChallengeModalVisible.value = false;
   } catch (error) {
@@ -70,9 +78,14 @@ const handleChallengeUpdate = (updatedChallenge: IReadingChallenge) => {
   }
 };
 
-const handleChallengeDelete = () => {
+const handleChallengeDelete = async () => {
   try {
-    userStore.deleteReadingChallenge(readingChallenge.value!.id);
+    const wasDeleted = await userStore.deleteReadingChallenge(readingChallenge.value!.id);
+    if (wasDeleted) {
+      toastStore.triggerToast('Challenge deleted successfully', 'success');
+    } else {
+      toastStore.triggerToast('Failed to delete challenge', 'error');
+    }
     readingChallenge.value = null;
     isDeleteChallengeModalVisible.value = false;
   } catch (error) {
