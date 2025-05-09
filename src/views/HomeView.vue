@@ -5,7 +5,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <!-- Reading challenge and stats -->
           <div class="space-y-6 lg:col-span-3">
-            <ReadingChallenge :currentReadingChallenge="readingChallenge" @openEditModal="(goal) => openEditChallengeModal(goal)" />
+            <ReadingChallenge />
           </div>
 
           <!-- Main Content (Feed) -->
@@ -48,13 +48,6 @@
           :bookId="readingProgress.bookId"
           @close="isLeaveReviewModalOpen = false"
         />
-
-        <EditReadingChallengeModal
-          v-if="isEditChallengeModalVisible"
-          @closeModal="isEditChallengeModalVisible = false"
-          :readingChallenge="readingChallenge"
-          @update="(readingChallenge) => handleChallengeUpdate(readingChallenge)"
-        />
       </div>
     </div>
   </MainLayout>
@@ -73,8 +66,6 @@ import { useUserStore } from '@/stores/userStore';
 import { useShelfStore } from '@/stores/shelfStore';
 import type { IBookshelf } from '@/types/interfaces/IBookshelf';
 import LeaveReviewModal from '@/components/LeaveReviewModal.vue';
-import EditReadingChallengeModal from '@/components/EditReadingChallengeModal.vue';
-import type { IReadingChallenge } from '@/types/interfaces/IReadingChallenge';
 
 const shelfStore = useShelfStore();
 const userStore = useUserStore();
@@ -87,7 +78,6 @@ const isEditProgressModalVisible = ref(false);
 const isEditChallengeModalVisible = ref(false);
 const isLeaveReviewModalOpen = ref(false);
 const selectedProgress = ref<IReadingProgress | null>(null);
-const readingChallenge = ref<IReadingChallenge | null>(userStore.loggedInUser!.readingChallenges.filter((challenge: IReadingChallenge) => challenge.year === new Date().getFullYear())[0] || null);
 
 const timeGreeting = computed(() => {
   const hour = new Date().getHours();
@@ -126,21 +116,6 @@ const handleProgressUpdate = async (updatedProgress: IReadingProgress) => {
     }
   } catch (error) {
     console.error('Failed to update progress:', error);
-  }
-};
-
-const openEditChallengeModal = (emitReadingChallenge: IReadingChallenge) => {
-  readingChallenge.value = emitReadingChallenge;
-  isEditChallengeModalVisible.value = true;
-};
-
-const handleChallengeUpdate = (updatedChallenge: IReadingChallenge) => {
-  try {
-    userStore.updateReadingChallenge(updatedChallenge);
-    readingChallenge.value = updatedChallenge;
-    isEditChallengeModalVisible.value = false;
-  } catch (error) {
-    console.error('Failed to update challenge:', error);
   }
 };
 </script>
