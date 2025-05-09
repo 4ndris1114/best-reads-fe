@@ -10,6 +10,8 @@ export const useShelfStore = defineStore('shelfStore', {
     bookshelves: useUserStore().loggedInUser ? useUserStore().loggedInUser!.bookshelves : [] as IBookshelf[],
     selectedBookshelf: null,
     loading: false,
+
+    userStore: useUserStore(),
     service: new ShelfService() as ShelfService
   }),
   actions: {
@@ -28,7 +30,6 @@ export const useShelfStore = defineStore('shelfStore', {
       try {
         const newBookshelf = { id:"", name: bookshelfName, books: [], isMutable: true } as IBookshelf;
         const createdBookshelf = await this.service.createBookshelf(userId, newBookshelf);
-        this.bookshelves.push(createdBookshelf);
       } catch (error) {
         console.error('Error creating bookshelf:', error);
       }
@@ -42,6 +43,7 @@ export const useShelfStore = defineStore('shelfStore', {
         if (bookshelf && !bookshelf.books.some(book => book.id === bookId)) {
           bookshelf.books.push({ id: bookId, updatedAt: new Date().toISOString() } as unknown as IBookshelfBook);
         }
+        this.userStore.loggedInUser = await this.userStore.getUserById(userId);
       } catch (error) {
         console.error('Error adding book to bookshelf:', error);
         throw error;
@@ -56,6 +58,7 @@ export const useShelfStore = defineStore('shelfStore', {
         if (bookshelf) {
           bookshelf.books = bookshelf.books.filter(book => book.id !== bookId);
         }
+        this.userStore.loggedInUser = await this.userStore.getUserById(userId);
       } catch (error) {
         console.error('Error removing book from bookshelf:', error);
         throw error;
@@ -79,6 +82,7 @@ export const useShelfStore = defineStore('shelfStore', {
             targetShelf.books.push({ id: bookId, updatedAt: new Date().toISOString() } as unknown as IBookshelfBook);
           }
         }
+        this.userStore.loggedInUser = await this.userStore.getUserById(userId);
       } catch (error) {
         console.error('Error moving book to bookshelf:', error);
         throw error;
