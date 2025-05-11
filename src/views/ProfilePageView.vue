@@ -10,7 +10,7 @@
         <img :src="'../src/assets/' + user?.profilePicture" alt="Profile Picture"
           class="w-32 h-32 rounded-full object-cover border mb-4" />
 
-        <section v-if="profileUser && user.id === profileUser.id">
+        <section v-if="loggedInUser && user.id === loggedInUser.id">
           <!-- Navigation Links -->
           <nav class="mt-6 space-y-4 text-black font-semibold">
             <a href="#bio" class="block hover:font-bold hover:text-red-700"><fa icon="circle-info" class="text-black mr-1" />Public information</a>
@@ -48,7 +48,7 @@
                 </div>
                 <!-- Right side: Buttons -->
                 <div class="flex space-x-2">
-                  <button v-if="profileUser && user.id === profileUser.id" @click="toggleEdit"
+                  <button v-if="loggedInUser && user.id === loggedInUser.id" @click="toggleEdit"
                     class="drop-shadow-xl px-4 py-2 bg-blue-700 text-white font-semibold text-sm rounded hover:bg-blue-800 transition duration-100 cursor-pointer">
                     <fa icon="pen" class="mr-1" />
                     {{isEditing ? 'Save changes' : 'Edit profile' }}
@@ -113,7 +113,7 @@
               <BookshelvesOverview :bookshelves="user.bookshelves" />
 
               <!-- Preferences and Security -->
-              <section v-if="profileUser && user.id === profileUser.id">
+              <section v-if="loggedInUser && user.id === loggedInUser.id">
                 <section id="preferences">
                   <h4 class="text-2xl font-bold mt-10 mb-4"><fa icon="pen-nib" class="text-black mr-1" />
                     Preferences</h4>
@@ -187,9 +187,9 @@ onMounted(async () => {
 });
 
 const user = ref<IUser | null>(null); // current profile you're viewing
-const profileUser: IUser = userStore.loggedInUser!; //logged in user
+const loggedInUser: IUser = userStore.loggedInUser!; //logged in user
 const isFollowing = computed(() => {
-  return !user.value?.followers.some(followerId => followerId === profileUser.id) || false;
+  return !user.value?.followers.some(followerId => followerId === loggedInUser.id) || false;
 });
 const followDisabled = ref(false);
 const isEditing = ref(false);
@@ -220,7 +220,7 @@ const followUser = async () => {
   }, 2000); // 2 seconds cooldown
 
   try {
-    const updatedUser = await userStore.followUser(profileUser.id, user.value!.id);
+    const updatedUser = await userStore.followUser(loggedInUser.id, user.value!.id);
     if (updatedUser) {
       user.value = updatedUser;
     }
@@ -238,7 +238,7 @@ const unfollowUser = async () => {
     followDisabled.value = false;
   }, 2000); // 2 seconds cooldown
   try {
-    const updatedUser = await userStore.unfollowUser(profileUser.id, user.value!.id);
+    const updatedUser = await userStore.unfollowUser(loggedInUser.id, user.value!.id);
     if (updatedUser) {
       user.value = updatedUser;
     }
