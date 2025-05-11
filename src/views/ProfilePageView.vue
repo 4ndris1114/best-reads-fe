@@ -155,18 +155,14 @@ import UserBadges from '@/components/ProfileBadges.vue';
 import BookshelvesOverview from "@/components/BookshelvesOverview.vue";
 import FollowerListModal from "@/components/FollowerListModal.vue";
 import { useToastStore } from '@/stores/toastStore';
-import { storeToRefs } from 'pinia'
 
 const toastStore = useToastStore();
-const { show, toastType, message } = storeToRefs(toastStore);
 
 const userStore = useUserStore();
 const route = useRoute();
 
 const usernameInput = ref("");
 const bioInput = ref("");
-const emailInput = ref("");
-const profilePictureInput = ref("");
 
 const showFollowerModal = ref(false);
 const showFollowingModal = ref(false);
@@ -196,13 +192,7 @@ const isFollowing = computed(() => {
   return !user.value?.followers.some(followerId => followerId === profileUser.id) || false;
 });
 const followDisabled = ref(false);
-const isEditingUsername = ref(false);
-const isEditingBio = ref(false);
 const isEditing = ref(false);
-const hasChanges = computed(() =>
-  usernameInput.value !== user.value?.username ||
-  bioInput.value !== user.value?.bio
-);
 
 watch(
   () => isEditing.value,
@@ -234,7 +224,7 @@ const followUser = async () => {
     if (updatedUser) {
       user.value = updatedUser;
     }
-    toastStore.triggerToast("You are now following " + user.value?.username, 'success', 1800)
+    toastStore.triggerToast("You are now following " + user.value?.username, 'success')
   } catch (err) {
     console.error("Failed to follow user:", err);
   }
@@ -252,7 +242,7 @@ const unfollowUser = async () => {
     if (updatedUser) {
       user.value = updatedUser;
     }
-    toastStore.triggerToast("You are no longer following " + user.value?.username, 'success', 1800)
+    toastStore.triggerToast("You are no longer following " + user.value?.username, 'success')
   } catch (err) {
     console.error("Failed to unfollow user:", err);
   }
