@@ -73,7 +73,9 @@ const totalBooks = ref(0);
 const styledBooks = ref<{ book: IBook, color: string, height: number }[]>([]);
 
 onMounted(async () => {
-  const bookPromises = props.shelf.books.map(async (bookId: string) => {
+  const bookPromises = props.shelf.books.map(async (shelfBook: { id: string }) => {
+    const bookId = shelfBook.id;
+
     let book = bookStore.books.find((b: IBook) => b.id === bookId);
     if (!book) {
       try {
@@ -86,13 +88,12 @@ onMounted(async () => {
     return book;
   });
 
-  books.value = (await Promise.all(bookPromises)).filter((b) => b !== null) as IBook[];
+  books.value = (await Promise.all(bookPromises)).filter((b): b is IBook => b !== null);
 
   totalBooks.value = books.value.length;
   assignColorsAndHeights();
   await nextTick();
   adjustBookTitleSizes();
-
 });
 
 const adjustBookTitleSizes = () => {

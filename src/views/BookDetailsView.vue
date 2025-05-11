@@ -25,7 +25,7 @@
                         </div>
                         <ul v-else class="bg-white border border-black rounded-lg shadow-lg lg:text-lg md:text-md sm:text-sm xs:text-xs max-h-[22vh] overflow-y-auto">
                             <li v-for="shelf in userShelves" :key="shelf.id" @click="addBookToShelf(shelf)" class="px-4 py-2 text-left hover:bg-gray-200 cursor-pointer">
-                                <span v-if="book && shelf.books && shelf.books.some((bbookId: string) => bbookId === book?.id)" class="mr-1">✓</span>{{ shelf.name }}
+                                <span v-if="book && shelf.books && shelf.books.some((bbook) => bbook.id === book!.id)" class="mr-1">✓</span>{{ shelf.name }}
                             </li>
                         </ul>
                     </div>
@@ -131,6 +131,7 @@
         :bookId="book!.id"
         @move="moveBookToNewShelf"
         @close="isMoveBookModalOpen = false"
+        @remove="removeBookFromShelf"
         />
         <LeaveReviewModal
             :isOpen="showReviewModal"
@@ -162,7 +163,6 @@ import { storeToRefs } from 'pinia'
 import { useToastStore } from '@/stores/toastStore'
 
 const toastStore = useToastStore();
-const { show, toastType, message } = storeToRefs(toastStore);
 const bookStore = useBookStore();
 const userStore = useUserStore();
 const shelfStore = useShelfStore();
@@ -224,6 +224,18 @@ const moveBookToNewShelf = async (shelfId: string) => {
     } catch (error) {
         console.error('Error moving book to new shelf:', error);
         toastStore.triggerToast("Error moving book to new shelf", "error");
+        isMoveBookModalOpen.value = false;
+    }
+}
+
+const removeBookFromShelf = async () => {
+    try {
+        await shelfStore.removeBookFromBookshelf(userStore.loggedInUser!.id, currentBasicShelf.value!.id, book.value!.id);
+        toastStore.triggerToast("Book removed from shelf successfully!", "success");
+        isMoveBookModalOpen.value = false;
+    } catch (error) {
+        console.error('Error removing book from shelf:', error);
+        toastStore.triggerToast("Error removing book from shelf", "error");
         isMoveBookModalOpen.value = false;
     }
 }

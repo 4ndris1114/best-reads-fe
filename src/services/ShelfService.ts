@@ -50,6 +50,20 @@ export class ShelfService {
     }
   }
 
+  async removeBookFromBookshelf(userId: string, bookshelfId: string, bookId: string): Promise<void> {
+    try {
+      const response = await instance.delete(`/bookshelf/${userId}/${bookshelfId}/books/${bookId}`);
+      if (response.status == 204) {
+        return response.data;
+      } else {
+        throw new Error('Failed to remove book from bookshelf');
+      }
+    } catch (error) {
+      console.error('Error removing book from bookshelf:', error);
+      throw error;
+    }
+  }
+
   async moveBookToBookshelf(userId: string, sourceShelfId: string, bookId: string, targetShelfId: string): Promise<string> {
     try {
       const response = await instance.put(`/bookshelf/${userId}/${sourceShelfId}/move/${bookId}/to/${targetShelfId}`);

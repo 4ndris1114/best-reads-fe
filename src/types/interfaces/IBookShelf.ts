@@ -1,6 +1,8 @@
+import type { IBookshelfBook } from "./IBookshelfBook";
+
 export interface IBookshelf {
     id: string;
     name: string;
-    books: string[];
+    books: IBookshelfBook[];
     isMutable: boolean
 }
