@@ -19,7 +19,7 @@
     transformations?: string[];
   }>();
   
-  const cloudName = 'diq8jilor';
+  const cloudName = import.meta.env.VITE_CLOUDNIARY_CLOUD_NAME;
   
   const defaultTransformations = computed(() => [
     `w_${props.width ?? 300}`,

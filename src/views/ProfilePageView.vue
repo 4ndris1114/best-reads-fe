@@ -7,8 +7,11 @@
       <!-- Static Left Sidebar -->
       <aside class="ml-65 mr-10 mt-13 bg-white text-black">
         <!-- Profile picture -->
-        <img :src="'../src/assets/' + user?.profilePicture" alt="Profile Picture"
-          class="w-32 h-32 rounded-full object-cover border mb-4" />
+        <div class="relative">
+          <img :src="'../src/assets/' + user?.profilePicture" alt="Profile Picture"
+            class="w-32 h-32 rounded-full object-cover border mb-4" />
+            <fa @click="showImageUploadModal = true" icon="pencil" class="absolute top-0 right-11 bg-black text-white rounded-full p-1 scale-125" />
+        </div>
 
         <section v-if="loggedInUser && user.id === loggedInUser.id">
           <!-- Navigation Links -->
@@ -142,6 +145,8 @@
         </div>
       </div>
     </div>
+    <UploadImageWidget @uploaded="handleImageUpload" @close="showImageUploadModal = false" v-if="showImageUploadModal" />
+
   </MainLayout>
 </template>
 
@@ -155,6 +160,7 @@ import UserBadges from '@/components/ProfileBadges.vue';
 import BookshelvesOverview from "@/components/BookshelvesOverview.vue";
 import FollowerListModal from "@/components/FollowerListModal.vue";
 import { useToastStore } from '@/stores/toastStore';
+import UploadImageWidget from "@/components/UploadImageWidget.vue";
 
 const toastStore = useToastStore();
 
@@ -164,6 +170,7 @@ const route = useRoute();
 const usernameInput = ref("");
 const bioInput = ref("");
 
+const showImageUploadModal = ref(false);
 const showFollowerModal = ref(false);
 const showFollowingModal = ref(false);
 
