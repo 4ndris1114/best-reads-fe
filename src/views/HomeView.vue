@@ -1,26 +1,31 @@
 <template>
   <MainLayout>
-    <div class="h-screen overflow-y-auto bg-white text-black">
-      <div class="container mx-auto p-4">
+    <div class="h-screen bg-white text-black">
+      <div class="container mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <ReadingChallenge></ReadingChallenge>
           <YearSummary></YearSummary>
-          <div class="lg:col-span-2 space-y-6">
+          <div class="lg:col-span-2  p-4 space-y-6">
             <div>
               <h1 class="text-4xl font-bold text-[#1D1D23]">{{ timeGreeting }}, {{ loggedInUser }}!</h1>
               <p class="font-semibold text-xl text-[#1D1D23]">See what’s new:</p>
             </div>
           </div>
-
-          <div class="space-y-6 lg:col-span-1">
+  <div class="bg-primary h-screen overflow-y-auto p-4 mb-4">
+          <div class="space-y-6 lg:col-span-1 ">
             <h2 class="text-2xl font-bold mb-2">You're currently reading:</h2>
             <div class="bg-[#181C20] rounded-xl p-4">
               <Bookshelf v-if="currentlyReadingShelf" :shelf="currentlyReadingShelf" />
             </div>
             <div>
-              <h2 class="text-xl font-bold mb-2">Track your progress</h2>
-              <ReadingProgressList />
+              <template v-if="currentlyReadingShelf && currentlyReadingShelf.books.length > 0">
+                <h2 class="text-xl font-bold rounded-xl mb-2">Track your progress</h2>
+                <div class="mb-4">
+                <ReadingProgressList  @reviewRequested="openReviewModal" />
+                </div>
+              </template>
             </div>
+          </div>
           </div>
 </div>
 <EditProgressModal
@@ -33,7 +38,7 @@
 />
 <LeaveReviewModal
   v-if="isLeaveReviewModalOpen"
-  :bookId="readingProgress.bookId"
+  :bookId="selectedProgress?.bookId"
   @close="isLeaveReviewModalOpen = false"
 />
       </div>
@@ -62,8 +67,16 @@ const currentlyReadingShelf = ref<IBookshelf | null>(null);
 const userStore = useUserStore();
 const loggedInUser = computed(() => userStore.loggedInUser?.username);
 const userId = computed(() => userStore.loggedInUser?.id);
+const readingProgressList = computed<IReadingProgress[]>(() => userStore.readingProgress);
+const selectedProgress = ref<IReadingProgress | null>(null);
 const isEditProgressModalVisible = ref(false);
 const isLeaveReviewModalOpen = ref(false);
+
+const openReviewModal = (progress: IReadingProgress) => {
+  selectedProgress.value = progress;
+  isLeaveReviewModalOpen.value = true;
+};
+
 
 onMounted(async () => {
   if (!userId.value) return;
@@ -108,10 +121,6 @@ const handleProgressUpdate = async (updatedProgress: IReadingProgress) => {
   }
 };
 
-const readingProgressList = computed<IReadingProgress[]>(() => userStore.readingProgress);
-
-const selectedProgress = ref<IReadingProgress | null>(null);
-
 onMounted(async () => {
   if (!userId.value) return;
   try {
@@ -122,3 +131,4 @@ onMounted(async () => {
 });
 
 </script>
+<style scoped></style>
