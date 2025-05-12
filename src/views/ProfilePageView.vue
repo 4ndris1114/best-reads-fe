@@ -8,9 +8,8 @@
       <aside class="ml-65 mr-10 mt-13 bg-white text-black">
         <!-- Profile picture -->
         <div class="relative">
-          <img :src="'../src/assets/' + user?.profilePicture" alt="Profile Picture"
-            class="w-32 h-32 rounded-full object-cover border mb-4" />
-            <fa @click="showImageUploadModal = true" icon="pencil" class="absolute top-0 right-11 bg-black text-white rounded-full p-1 scale-125" />
+          <CloudinaryImage class="w-48 h-48 rounded-full object-cover border mb-4" :publicId="user.profilePicture" alt="Profile Picture" :width="150" :height="150" />
+            <fa v-if="loggedInUser && user.id === loggedInUser.id" @click="showImageUploadModal = true" icon="pencil" class="absolute top-0 right-8 bg-black text-white rounded-full p-1 scale-125" />
         </div>
 
         <section v-if="loggedInUser && user.id === loggedInUser.id">
@@ -161,6 +160,7 @@ import BookshelvesOverview from "@/components/BookshelvesOverview.vue";
 import FollowerListModal from "@/components/FollowerListModal.vue";
 import { useToastStore } from '@/stores/toastStore';
 import UploadImageWidget from "@/components/UploadImageWidget.vue";
+import CloudinaryImage from "@/components/CloudinaryImage.vue";
 
 const toastStore = useToastStore();
 
@@ -275,6 +275,11 @@ const handleImageUpload = async (file: File) => {
       method: "POST",
       body: formData,
     });
+
+    loggedInUser.profilePicture = loggedInUser.id + "." +file.type.split("/")[1];
+    await userStore.editUserById(loggedInUser.id, loggedInUser)
+
+    toastStore.triggerToast("Your profile picture has been updated successfully. It might take a minute to see it updated.", 'success')
 
     const data = await res.json();
     console.log("Uploaded image URL:", data.secure_url);
