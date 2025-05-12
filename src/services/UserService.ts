@@ -176,4 +176,14 @@ export class UserService {
       throw error;
     }
   }
+
+  async getCloudinarySignature(userId: string): Promise<{ timestamp: string; signature: string }> {
+    try {
+      const response = await instance.get(`/cloudinary/${userId}/generate-signature`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching cloudinary signature:', error);
+      throw error;
+    }
+  }
 }

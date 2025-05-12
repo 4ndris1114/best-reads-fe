@@ -206,5 +206,14 @@ export const useUserStore = defineStore('userStore', {
         throw e;
       }
     },
+
+    async getCloudinarySignature(userId: string): Promise<{ timestamp: string; signature: string }> {
+      try {
+        const response = await this.userService.getCloudinarySignature(userId);
+        return response;
+      } catch (e) {
+        throw e;
+      }
+    },
   },
 });
