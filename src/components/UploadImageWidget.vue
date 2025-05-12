@@ -48,7 +48,7 @@
   const selectedFile = ref(null);
   const previewUrl = ref(null);
   
-  const emit = defineEmits(['uploaded', 'close']);
+  const emit = defineEmits(['upload', 'close']);
   
   function triggerFileDialog() {
     fileInput.value?.click();
@@ -64,7 +64,7 @@
   
   function upload() {
     if (!selectedFile.value) return;
-    emit('uploaded', selectedFile.value);
+    emit('upload', selectedFile.value);
     close();
   }
   
@@ -73,12 +73,11 @@
   }
   
   onMounted(() => {
-    // Open dialog automatically on mount
+    // Open dialog automatically on mount -- should we?
     triggerFileDialog();
   });
   </script>
   
   <style scoped>
-  /* Optional: Add fade-in animation */
   </style>
   

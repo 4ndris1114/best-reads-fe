@@ -145,7 +145,7 @@
         </div>
       </div>
     </div>
-    <UploadImageWidget @uploaded="handleImageUpload" @close="showImageUploadModal = false" v-if="showImageUploadModal" />
+    <UploadImageWidget @upload="handleImageUpload" @close="showImageUploadModal = false" v-if="showImageUploadModal" />
 
   </MainLayout>
 </template>
@@ -254,6 +254,34 @@ const unfollowUser = async () => {
     console.error("Failed to unfollow user:", err);
   }
 }
+
+const handleImageUpload = async (file: File) => {
+  try {
+    // get cloduinary signature from BE
+    const signature: { timestamp: string; signature: string } = await userStore.getCloudinarySignature(loggedInUser.id);
+    
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("api_key", import.meta.env.VITE_CLOUDINARY_API_KEY);
+    formData.append("timestamp", signature.timestamp);
+    formData.append("signature", signature.signature);
+    formData.append("folder", "users");
+    formData.append("overwrite", "true");
+    formData.append("public_id", loggedInUser.id);
+    
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+    
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    console.log("Uploaded image URL:", data.secure_url);
+  } catch (error) {
+    console.error("Image upload failed:", error);
+  }
+};
 
 const toggleEdit = () => {
 isEditing.value = !isEditing.value
