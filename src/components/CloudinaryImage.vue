@@ -18,6 +18,7 @@ const props = defineProps<{
   height?: number;
   transformations?: string[];
   class?: string;
+  isUserImage?: boolean;
 }>();
 
 const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
@@ -32,7 +33,7 @@ const defaultTransformations = computed(() => [
 ]);
 
 const imageUrl = computed(() =>
-  `https://res.cloudinary.com/${cloudName}/image/upload/${defaultTransformations.value.join(',')}/users/${props.publicId}`
+  `https://res.cloudinary.com/${cloudName}/image/upload/${defaultTransformations.value.join(',')}/${props.isUserImage ? 'users' : ''}/${props.publicId}`
 );
 
 const onError = (event: Event) => {

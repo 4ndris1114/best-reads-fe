@@ -8,7 +8,7 @@
       <aside class="ml-65 mr-10 mt-13 bg-white text-black">
         <!-- Profile picture -->
         <div class="relative">
-          <CloudinaryImage class="w-48 h-48 rounded-full object-cover border mb-4" :publicId="user.profilePicture" alt="Profile Picture" :width="150" :height="150" />
+          <CloudinaryImage class="w-48 h-48 rounded-full object-cover border mb-4" :publicId="user.profilePicture" :isUserImage="true" alt="Profile Picture" :width="150" :height="150" />
             <fa v-if="loggedInUser && user.id === loggedInUser.id" @click="showImageUploadModal = true" icon="pencil" class="absolute top-0 right-8 bg-black text-white rounded-full p-1 scale-125" />
         </div>
 
