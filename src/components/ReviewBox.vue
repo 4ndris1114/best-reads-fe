@@ -80,7 +80,6 @@
   import type { IUser } from '@/types/interfaces/IUser';
   import { vOnClickOutside } from '@vueuse/components'
   import CloudinaryImage from '../CloudinaryImage.vue';
-import CloudinaryImage from './CloudinaryImage.vue';
   
   const props = defineProps({
     review: {
