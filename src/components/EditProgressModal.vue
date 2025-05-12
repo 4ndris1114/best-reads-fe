@@ -26,13 +26,13 @@
       <div class="flex justify-center gap-6">
         <button
           @click="emits('closeModal')"
-          class="w-24 px-3 py-2 bg-gray-400 text-white font-semibold rounded hover:bg-gray-500 transition"
+          class="w-24 px-3 py-2 bg-gray-400 cursor-pointer text-white font-semibold rounded hover:bg-gray-500 transition"
         >
           Cancel
         </button>
         <button
           @click="updateProgress"
-          class="w-24 px-3 py-2 bg-red-600 text-white font-semibold rounded hover:bg-red-700 transition"
+          class="w-24 px-3 py-2 bg-red-600 text-white cursor-pointer font-semibold rounded hover:bg-red-700 transition"
         >
           Update
         </button>
