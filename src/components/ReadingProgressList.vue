@@ -1,7 +1,7 @@
 <template>
 <div>
     <div v-for="progress in readingProgressList" :key="progress.id" class="mb-4">
-      <ReadingProgressItem :readingProgress="progress" @reviewRequested="(progress) => $emit('reviewRequested', progress)"/>
+      <ReadingProgressItem :readingProgress="progress" @reviewRequested="(clickedStar, progress) => $emit('reviewRequested', clickedStar, progress)"/>
   </div>
 </div>
 </template>
@@ -25,7 +25,7 @@ const fetchAllProgress = async () => {
 }
 
 defineEmits<{
-  (e: 'reviewRequested', progress: IReadingProgress): void;
+  (e: 'reviewRequested', clickedStar: number, progress: IReadingProgress): void;
 }>();
 
 onMounted(async () => {

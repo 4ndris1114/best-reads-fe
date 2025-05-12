@@ -12,7 +12,7 @@
       <div class="flex items-center justify-between">
       <h2 class="text-xl font-semibold text-white">{{ book?.title || 'Untitled' }}</h2>
       <div class="flex justify-end scale-50">
-        <RatingStars></RatingStars>
+        <RatingStars @reviewRequested="(clickedStar) => emit('reviewRequested', clickedStar, readingProgress)"></RatingStars>
       </div>
       </div>
       <p class="text-sm text-white">
@@ -63,7 +63,7 @@ const readingProgress = ref(props.readingProgress);
 const book = computed(() => bookStore.books.find(b => b.id === props.readingProgress.bookId));
 
 const emit = defineEmits<{
-  (e: 'reviewRequested', progress: IReadingProgress): void;
+  (e: 'reviewRequested', clickedStar: number, progress: IReadingProgress): void;
 }>();
 
 const progressPercent = computed(() => {
