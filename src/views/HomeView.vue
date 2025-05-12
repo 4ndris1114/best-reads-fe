@@ -170,6 +170,10 @@ const handleReviewSubmit = async (payload: { rating: number; reviewText: string;
         console.error('Error submitting review:', error);
         toastStore.triggerToast("Error submitting review", "error");
     }
+    starClicked.value = 0;
+    selectedProgress.value = null;
+    bookToBeRated.value = null;
+    bookStore.selectedBook = null;
     isLeaveReviewModalOpen.value = false;
 };
 

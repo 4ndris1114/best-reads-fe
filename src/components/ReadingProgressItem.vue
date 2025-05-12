@@ -75,7 +75,7 @@ const progressPercent = computed(() => {
 const handleProgressUpdate = (updatedProgress: IReadingProgress) => {
   readingProgress.value = updatedProgress;
   if (updatedProgress.currentPage >= updatedProgress.totalPages) {
-    emit('reviewRequested', updatedProgress);
+    emit('reviewRequested', 3, updatedProgress);
   }
 };
 </script>
