@@ -12,14 +12,14 @@
       <div class="flex-1 min-w-[200px]">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-y-1">
           <h3 @click="$router.push({ name: 'profilepage', params: { id: user.id } })" class="text-lg font-semibold text-gray-900 cursor-pointer">{{ user.username }}</h3>
-          <div 
-            v-if="review.ratingValue" 
+          <div
+            v-if="review.ratingValue"
             class="flex items-center space-x-0.5"
           >
-            <fa 
+            <fa
               v-for="n in 5"
               :key="n"
-              :icon="['fas', 'star']" 
+              :icon="['fas', 'star']"
               class="transition-colors duration-200"
               :class="[
                 'cursor-pointer',
@@ -40,7 +40,9 @@
           </div>
         </div>
         <p class="text-xs text-gray-500 mt-1">
-          {{ review.createdAt.toLocaleString().split('T')[0] }}
+          {{ new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
+     .format(new Date(review.createdAt))
+     .replace(/\//g, '-') }}
         </p>
       </div>
     </div>
@@ -49,8 +51,8 @@
       {{ review.reviewText }}
     </p>
         <!-- Private Badge -->
-    <div 
-      v-if="!review.isPublic" 
+    <div
+      v-if="!review.isPublic"
       class="absolute bottom-2 right-2 bg-red-100 text-red-700 text-xs font-semibold px-2 py-1 rounded-full shadow-sm"
     >
       Private
@@ -72,7 +74,7 @@
   </div>
 </template>
 
-  
+
   <script setup lang="ts">
   import type { IReview } from '@/types/interfaces/IReview';
   import { onMounted, ref } from 'vue';
@@ -80,7 +82,7 @@
   import type { IUser } from '@/types/interfaces/IUser';
   import { vOnClickOutside } from '@vueuse/components'
   import CloudinaryImage from './CloudinaryImage.vue';
-  
+
   const props = defineProps({
     review: {
       type: Object as () => IReview,
@@ -92,7 +94,7 @@
     (e: 'edit'): void,
     (e: 'delete', reviewId: string): void
   }>();
-  
+
   const userStore = useUserStore();
   const user = ref<IUser>();
 
@@ -102,13 +104,12 @@
   const closeDropdown = () => {
     dropdownOpen.value = false;
   };
-  
+
   onMounted(async () => {
     user.value = await userStore.getUserById(props.review.userId);
   });
   </script>
-  
+
   <style scoped>
   /* Add hover effect or transitions here if needed */
   </style>
-  

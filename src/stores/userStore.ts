@@ -78,7 +78,7 @@ export const useUserStore = defineStore('userStore', {
         const readingProgress = await this.userService.getAllReadingProgress(userId);
         if(readingProgress) {
           this.readingProgress = readingProgress;
-      } throw new Error(`Failed to retrieve reading progress for user with id ${userId}`);
+        }
       } catch (e: any) {
         console.error(e);
         throw e;

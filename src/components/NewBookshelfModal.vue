@@ -62,7 +62,7 @@ const createBookshelf = async () => {
     emit('bookshelfCreated');
     newBookshelfName.value = '';
     closeModal();
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to create bookshelf:', error.message);
   } finally {
     isLoading.value = false;

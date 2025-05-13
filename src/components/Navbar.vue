@@ -16,7 +16,7 @@
           to="/"
           :class="[
             'font-bold text-xl px-2 py-1 rounded transition duration-200',
-            route.path === '/' ? 'text-[#825221] bg-[#e2d7bc]/50 bg-opacity-10' : 'text-white hover:bg-[#e2d7bc]/30'
+            route.path === '/' ? 'text-[#3a281d] bg-[#e2d7bc]/50 bg-opacity-10' : 'text-white hover:bg-[#e2d7bc]/30'
           ]"
         >
           Home
@@ -26,7 +26,7 @@
           to="/bookshelves"
           :class="[
             'font-bold text-xl px-2 py-1 rounded transition duration-200',
-            route.path.startsWith('/bookshelves') ? 'text-[#825221] bg-[#e2d7bc]/50 bg-opacity-10' : 'text-white hover:bg-[#e2d7bc]/30'
+            route.path.startsWith('/bookshelves') ? 'text-[#3a281d] bg-[#e2d7bc]/50 bg-opacity-10' : 'text-white hover:bg-[#e2d7bc]/30'
           ]"
         >
           My Bookshelves

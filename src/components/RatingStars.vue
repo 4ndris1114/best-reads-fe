@@ -8,19 +8,11 @@
                         :class="n <= hoveredStar ? 'text-yellow-500' : 'text-slate-300'"
                         @mouseover="setHovered(n)"
                         @mouseleave="resetHovered"
-                        @click="clickedStar = n; showReviewModal = true" />
+                        @click="clickedStar = n; showReviewModal = true; emit('reviewRequested', clickedStar)"/>
                     </div>
-<LeaveReviewModal
-            :isOpen="showReviewModal"
-            :ratingValue="clickedStar"
-            :reviewText="reviewText"
-            :isPublic="isPublic"
-            @submit="handleReviewSubmit"
-            @close="showReviewModal = false"
-        />
+
 </template>
 <script lang="ts" setup>
-import LeaveReviewModal from '@/components/LeaveReviewModal.vue';
 import { ref } from 'vue';
 
 const hoveredStar = ref(0);
@@ -33,6 +25,10 @@ const setHovered = (index: number) => {
 const resetHovered = () => {
   hoveredStar.value = 0;
 };
+
+const emit = defineEmits<{
+  (e: 'reviewRequested', rating: number): void;
+}>();
 </script>
 <style scoped>
 </style>
