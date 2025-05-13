@@ -25,36 +25,25 @@
         </span>
       </div>
   
-      <div class="space-y-2">
-        <div class="flex space-x-2">
-          <input
-            v-model="newComment"
-            type="text"
-            placeholder="Write a comment..."
-            class="border rounded p-1 flex-1 outline-slate-500"
-          />
-          <button @click="submitComment" class="bg-accent text-white px-3 py-1 rounded cursor-pointer">
-            Post
-          </button>
-        </div>
-        <div v-if="areCommentsVisible"
-          v-for="comment in activity.comments"
-          :key="comment.id"
-          class="text-sm text-gray-800 border-b pb-1">
-          <strong>{{ comment.userId }}:</strong> {{ comment.content }}
-        </div>
-      </div>
+        <CommentSection
+          :comments="activity.comments"
+          :activityId="activity.id"
+          :visible="areCommentsVisible"
+          @update:visible="areCommentsVisible = $event"
+        />
     </div>
   </template>
   
   <script setup lang="ts">
-  import { ref, computed } from 'vue';
+  import { ref, computed, onMounted } from 'vue';
   import AddedBookActivity from '@/components/activity/AddedBookActivity.vue';
   import RatedBookActivity from '@/components/activity/RatedBookActivity.vue';
   import { ActivityType, fromNumber } from '@/types/enums/ActiviyType';
   import { useActivityStore } from '@/stores/activityStore';
   import { useUserStore } from '@/stores/userStore';
-import type { IComment } from '@/types/IComment';
+  import type { IComment } from '@/types/IComment';
+  import CommentSection from './CommentSection.vue';
+import type { IActivity } from '@/types/interfaces/IActivity';
   
   const props = defineProps<{ activity: any }>();
   
@@ -68,6 +57,7 @@ import type { IComment } from '@/types/IComment';
 
   const areCommentsVisible = ref(false);
   const newComment = ref('');
+  const stubbedComments = ref<IComment[]>(props.activity.comments.slice(0, 5) || []);
   
   const activityComponent = computed(() => {
     const activityType = fromNumber(props.activity.type);
@@ -101,13 +91,6 @@ import type { IComment } from '@/types/IComment';
   const toggleComments = () => {
     areCommentsVisible.value = !areCommentsVisible.value;
   }
-  
-  const submitComment = async () => {
-    if (newComment.value.trim() !== '') {
-      await activityStore.addComment(props.activity.id, newComment.value.trim());
-      areCommentsVisible.value = true;
-      newComment.value = '';
-    }
-  }
+
   </script>
   
