@@ -34,6 +34,7 @@ import { ref, onMounted, computed, nextTick, watch } from 'vue';
 import type { IBookshelf } from '@/types/interfaces/IBookshelf';
 import type { IBook } from '@/types/interfaces/IBook';
 import { useBookStore } from '../stores/bookStore';
+import type { IBookshelfBook } from '@/types/interfaces/IBookshelfBook';
 
 const chunkedBooks = computed(() => {
   const chunks = [];
@@ -77,14 +78,15 @@ watch(() => props.shelf.books, async () => {
 const styledBooks = ref<{ book: IBook, color: string, height: number }[]>([]);
 
 const getBooksAndStyles = async () => {
-  const bookPromises = props.shelf.books.map(async (bookId: string) => {
-    let book = bookStore.books.find((b: IBook) => b.id === bookId);
+  const bookPromises = props.shelf.books.map(async (bb: IBookshelfBook) => {
+
+    let book = bookStore.books.find((b: IBook) => b.id === bb.id);
     if (!book) {
       try {
-        book = await bookStore.getBookById(bookId);
+        book = await bookStore.getBookById(bb.id);
         if (book) bookStore.books.push(book);
       } catch (error) {
-        console.error(`Error fetching book ${bookId}`, error);
+        console.error(`Error fetching book ${bb.id}`, error);
       }
     }
     return book;
