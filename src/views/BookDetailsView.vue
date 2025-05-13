@@ -10,14 +10,14 @@
                 <CloudinaryImage :publicId="book.coverImage" alt="Book cover" :width="300" :height="450" />
                 <!-- Bookshelves button and dropdown -->
                 <div class="relative">
-                    <button class="bg-highlight text-white px-4 sm:py-2 py-1 rounded-lg focous-none shadow-lg cursor-pointer min-w-full flex items-center lg:text-lg md:text-sm sm:text-xs justify-center" 
+                    <button class="bg-highlight text-white px-4 sm:py-2 py-1 rounded-lg focous-none shadow-lg cursor-pointer min-w-full flex items-center lg:text-lg md:text-sm sm:text-xs justify-center"
                         @click="toggleShelvesDropdown">
                         <!-- Conditional? What if its at already want to read? -->
                         <span class="sm:block hidden">Add to bookshelf <fa icon="circle-plus" class="ml-2" /></span>
                         <span class="sm:hidden block text-xs">Add <fa icon="circle-plus" class="ml-2" /></span>
                     </button>
                     <div v-if="isShelfDropdownOpen" class="absolute lg:top-11 md:top-9 sm:top-8 right-0 z-50 w-full text-center">
-                        <div v-if="!userStore.isAuthenticated" 
+                        <div v-if="!userStore.isAuthenticated"
                             @click="$router.push('/login')"
                             class="bg-white border border-black rounded-lg shadow-lg lg:text-lg md:text-md sm:text-sm xs:text-xs">
                             <a href="/login" class="py-2 text-left cursor-pointer underline text-blue-600">Log in</a>
@@ -31,7 +31,7 @@
                     </div>
                 </div>
                 <!-- Rate the book (stars) -->
-                <div v-if="alreadyRated" class="flex flex-col items-center relative"> 
+                <div v-if="alreadyRated" class="flex flex-col items-center relative">
                     <span class="md:text-lg sm:text-md mb-4">                    <!-- Tooltip -->
                         <fa icon="info-circle" class="text-sm text-gray-600 mr-2 cursor-pointer"
                                 @click="showReviewTooltip = !showReviewTooltip" @mouseenter="showReviewTooltip = true"
@@ -43,10 +43,10 @@
                         Click on the stars to change your rating for this book.
                     </div>
                     <div class="flex lg:space-x-5 md:space-x-2 sm:space-x-1 xs:space-x-0">
-                        <fa 
+                        <fa
                         v-for="n in 5"
                         :key="n"
-                        :icon="['fas', 'star']" 
+                        :icon="['fas', 'star']"
                         class="lg:scale-200 md:scale-150 sm:scale-125 cursor-pointer transition-colors duration-200"
                         :class="(hoveredStar || book.reviews.find(review => review.userId === userStore.loggedInUser!.id)!.ratingValue) >= n ? 'text-yellow-500' : 'text-slate-300'"
                         @mouseover="setHovered(n)"
@@ -66,10 +66,10 @@
                         Click on the stars to rate this book.
                     </div>
                     <div class="flex lg:space-x-5 md:space-x-2 sm:space-x-1 xs:space-x-0">
-                        <fa 
+                        <fa
                         v-for="n in 5"
                         :key="n"
-                        :icon="['fas', 'star']" 
+                        :icon="['fas', 'star']"
                         class="lg:scale-200 md:scale-150 sm:scale-125 cursor-pointer transition-colors duration-200"
                         :class="n <= hoveredStar ? 'text-yellow-500' : 'text-slate-300'"
                         @mouseover="setHovered(n)"
@@ -83,10 +83,10 @@
                 <div class="flex flex-row items-center space-x-[3vw] relative">
                     <h1 class="lg:text-4xl md:text-3xl sm:text-2xl text-xl text-highlight font-bold max-w-[25vw]">{{ book.title }}</h1>
                     <div v-if="book.averageRating" class="sm:block hidden absolute top-2 right-0 lg:space-x-4 md:space-x-2">
-                        <fa 
+                        <fa
                         v-for="n in 5"
                         :key="n"
-                        :icon="['fas', 'star']" 
+                        :icon="['fas', 'star']"
                         class="lg:scale-200 md:scale-150 cursor-pointer transition-colors duration-200"
                         :class="n <= Math.floor(book.averageRating) ? 'text-yellow-500' : 'text-slate-300'"
                         />
@@ -96,7 +96,7 @@
                 <p class="text-2xl text-gray-500">{{ book.author }}</p>
                 <span class="block sm:hidden text-lg"> <fa :icon="['fas', 'star']" class="text-yellow-500"></fa>({{ book.averageRating }})</span>
 
-                <p v-if="!isShowingMore" class="pt-[3vh] text-justify">{{ book.description.length > 500 ? book.description.substring(0, 500).trim() + "..." : book.description }} 
+                <p v-if="!isShowingMore" class="pt-[3vh] text-justify">{{ book.description.length > 500 ? book.description.substring(0, 500).trim() + "..." : book.description }}
                     <a v-if="book.description.length > 500" href="#" class="pl-2 text-highlight underline"
                     @click="isShowingMore = true">Show more</a>
                 </p>
@@ -108,8 +108,8 @@
                 </p>
                 <!-- Genres -->
                 <div class="text-sm text-gray-500 list-disc list-inside flex flex-row space-x-2 mt-6">
-                    <div 
-                    v-for="genre in book.genres" 
+                    <div
+                    v-for="genre in book.genres"
                     :key="genre"
                     class="bg-primary w-fit p-2 rounded-full text-white">{{ genre }}</div>
                 </div>
@@ -121,7 +121,7 @@
             </div>
             <div class="border-l-4 border-black h-screen w-[25vw] p-4 sticky top-0">
                 <h1 class="text-3xl text-center text-highlight font-extrabold">Readers also liked</h1>
-                
+
             </div>
         </div>
         <MoveBookModal v-if="book" @click.self="isMoveBookModalOpen = false"
@@ -191,13 +191,13 @@ const isMoveBookModalOpen = ref(false);
 const currentBasicShelf = ref<IBookshelf | null>(null);
 
 const showReviewModal = ref(false);
-const clickedStar = ref(0); 
+const clickedStar = ref(0);
 const showReviewTooltip = ref(false);
 
 const addBookToShelf = async (shelf: IBookshelf) => {
     //if the book is already on one of the user's basic bookshelves, offer user to move
     const shelfContainsBook = isBookInBasicShelf(book.value!, userShelves.value.filter((shelf) => !shelf.isMutable));
-    
+
     if (!shelf.isMutable && shelfContainsBook) {
         //render a modal that asks user to move book to another bookshelf
         currentBasicShelf.value = shelfContainsBook;
@@ -250,7 +250,7 @@ const handleReviewSubmit = async (payload: { rating: number; reviewText: string;
                 isPublic: payload.isPublic
             } as IReview;
             await bookStore.postReview(book.value!.id, newReview);
-            toastStore.triggerToast("Review submitted successfully!", "success");         
+            toastStore.triggerToast("Review submitted successfully!", "success");
         } else {
             const reviewId = book.value!.reviews.find((review: IReview) => review.userId === userStore.loggedInUser!.id)!.id;
             const updatedReview = {

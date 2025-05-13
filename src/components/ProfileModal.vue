@@ -21,7 +21,7 @@
       </li>
       <li>
         <button
-          @click="showLogoutModal = true"
+          @click="showLogoutModal = true;"
           class="w-full text-red-600 text-left px-4 py-2 hover:bg-gray-100"
         >
           <fa icon="sign-out-alt" class="mr-2" />

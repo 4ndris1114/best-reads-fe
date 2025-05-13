@@ -88,7 +88,7 @@ export const useUserStore = defineStore('userStore', {
         const readingProgress = await this.userService.getAllReadingProgress(userId);
         if(readingProgress) {
           this.readingProgress = readingProgress;
-      }
+        }
       } catch (e: any) {
         console.error(e);
         throw e;

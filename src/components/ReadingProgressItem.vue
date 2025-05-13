@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center gap-6 bg-primary p-4 rounded shadow">
+  <div class="flex items-center gap-6 bg-[#181c20] p-4 rounded shadow">
     <router-link :to="'/bookdetails/' + readingProgress.bookId">
       <CloudinaryImage
         :publicId="book?.coverImage || ''"
@@ -12,21 +12,21 @@
       <div class="flex items-center justify-between">
       <h2 class="text-xl font-semibold text-white">{{ book?.title || 'Untitled' }}</h2>
       <div class="flex justify-end scale-50">
-        <RatingStars></RatingStars>
+        <RatingStars @reviewRequested="(clickedStar) => emit('reviewRequested', clickedStar, readingProgress)"></RatingStars>
       </div>
       </div>
       <p class="text-sm text-white">
         <div class="w-full h-3 bg-[#3D4D69] rounded mt-2 overflow-hidden">
         <div
-          class="h-full bg-lime-500 transition-all duration-300"
-          :style="{ width: progressPercent + '%' }"
+          class="h-full bg-lime-500 transition-all rounded duration-300"
+          :style="{ width: readingProgress.currentPage / readingProgress.totalPages * 100 + '%' }"
         ></div>
       </div>
-        {{ readingProgress.currentPage }} / {{ readingProgress.totalPages }} pages <b class="ml-1 text-[#547786] ">({{ progressPercent }}%)</b>
+        {{ readingProgress.currentPage }} / {{ readingProgress.totalPages }} pages <b class="ml-1 text-[#547786] ">({{ Math.floor(readingProgress.currentPage / readingProgress.totalPages * 100) }}%)</b>
       </p>
       <button
         @click="isEditProgressModalOpen = true"
-        class="mt-5 text-gray-300 font-semibold text-sm mt-1 bg-[#3D4D69] px-2 py-1 rounded hover:bg-[#3D4D69]/50 transition"
+        class="mt-5 text-gray-300 font-semibold cursor-pointer text-sm mt-1 bg-[#3D4D69] px-2 py-1 rounded hover:bg-[#3D4D69]/50 transition"
       >
         Update progress
       </button>
@@ -62,18 +62,15 @@ const readingProgress = ref(props.readingProgress);
 
 const book = computed(() => bookStore.books.find(b => b.id === props.readingProgress.bookId));
 
-
-
-const progressPercent = computed(() => {
-  const { currentPage, totalPages } = props.readingProgress;
-  if (!totalPages || totalPages === 0) return 0;
-  return Math.min(100, Math.round((currentPage / totalPages) * 100));
-});
+const emit = defineEmits<{
+  (e: 'reviewRequested', clickedStar: number, progress: IReadingProgress): void;
+}>();
 
 const handleProgressUpdate = (updatedProgress: IReadingProgress) => {
   readingProgress.value = updatedProgress;
+  if (updatedProgress.currentPage >= updatedProgress.totalPages) {
+    emit('reviewRequested', 3, updatedProgress);
+  }
 };
-
 </script>
-
 <style scoped></style>
