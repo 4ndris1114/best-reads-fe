@@ -86,7 +86,6 @@ const userId = computed(() => userStore.loggedInUser?.id);
 const selectedProgress = ref<IReadingProgress | null>(null);
 const isEditProgressModalVisible = ref(false);
 
-
 const isLeaveReviewModalOpen = ref(false);
 const starClicked = ref(0);
 const bookToBeRated = ref<IBook | null>(null);

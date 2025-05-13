@@ -1,3 +1,4 @@
+import type { IComment } from "../IComment";
 import type { ActivityType } from "../enums/ActiviyType";
 
 export interface IActivity {
@@ -6,4 +7,6 @@ export interface IActivity {
     type: ActivityType;
     createdAt: string;
     payload: any;
+    likes: string[];
+    comments: IComment[];
 }

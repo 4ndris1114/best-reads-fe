@@ -45,6 +45,21 @@ export class UserService {
     }
   }
 
+  async getUsersByIds(userIds: string[]) {
+    try {
+      const response = await instance.get(`/user/batch`, {
+        params: {
+          ids: userIds.join(',')
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching users by IDs:', error);
+      throw error;
+    }
+  }
+  
+
   async getAllReadingProgress(userId: string) {
     try {
       const response = await instance.get(`/stats/${userId}`);
