@@ -75,7 +75,6 @@ const loggedInUser = computed(() => userStore.loggedInUser?.username);
 const userId = computed(() => userStore.loggedInUser?.id);
 
 const isEditProgressModalVisible = ref(false);
-const isEditChallengeModalVisible = ref(false);
 const isLeaveReviewModalOpen = ref(false);
 const selectedProgress = ref<IReadingProgress | null>(null);
 
