@@ -55,7 +55,6 @@
   @submit="handleReviewSubmit"
 />
       </div>
-    </div>
   </MainLayout>
 </template>
 
@@ -106,6 +105,17 @@ const openReviewModal = async (clickedStar: number, progress: IReadingProgress) 
   await userStore.getAllReadingProgress(userStore.loggedInUser!.id);
   await shelfStore.getBookshelvesForUser(userStore.loggedInUser!.id);
 };
+
+const timeGreeting = computed(() => {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) {
+    return 'Good morning';
+  } else if (hour >= 12 && hour < 18) {
+    return 'Good afternoon';
+  } else {
+    return 'Good evening';
+  }
+})
 
 onMounted(async () => {
   if (!userId.value) return;
