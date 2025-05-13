@@ -1,15 +1,16 @@
 <template>
-    <div class="bg-white p-4 rounded-lg shadow-md space-y-4">
+    <div class="bg-white p-4 rounded-lg shadow-md space-y-2">
       <!-- Dynamic Activity Component -->
       <component :is="activityComponent" :activity="activity" />
   
       <!-- Like + Comment Section -->
-      <div class="flex items-center justify-between text-sm text-gray-600">
+      <div class="flex items-center justify-between text-lg text-gray-600">
         <div class="flex items-center space-x-3">
           <button @click="toggleLike" class="hover:text-red-500 cursor-pointer">
-            {{ activity.likes?.length || 0 }} likes
+            <span v-if="isLiked"><fa  :icon="'heart'" class="text-red-500" /> {{ activity.likes?.length || 0 }}</span>
+            <span v-else><fa :icon="'heart'" /> {{ activity.likes?.length || 0 }}</span>
           </button>
-          <span>{{ activity.comments?.length || 0 }} comments</span>
+          <span><fa :icon="['fas', 'comment']" class="ml-2"/> {{ activity.comments?.length || 0 }} </span>
         </div>
       </div>
   
@@ -43,10 +44,14 @@
   import RatedBookActivity from '@/components/activity/RatedBookActivity.vue';
   import { ActivityType, fromNumber } from '@/types/enums/ActiviyType';
   import { useActivityStore } from '@/stores/activityStore';
+  import { useUserStore } from '@/stores/userStore';
   
   const props = defineProps<{ activity: any }>();
   
   const activityStore = useActivityStore();
+  const userStore = useUserStore();
+
+  const isLiked = ref(props.activity.likes?.includes(userStore.loggedInUser?.id) || false);
   const newComment = ref('');
   
   const activityComponent = computed(() => {
@@ -62,8 +67,13 @@
     }
   });
   
-  function toggleLike() {
-    activityStore.toggleLike(props.activity.id);
+  const toggleLike = async () => {
+    try {
+      await activityStore.toggleLike(props.activity.id, isLiked.value, userStore.loggedInUser!.id);
+      isLiked.value = !isLiked.value;
+    } catch (error) {
+      console.error('Failed to toggle like:', error);
+    }
   }
   
   function submitComment() {
