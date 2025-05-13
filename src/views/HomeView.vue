@@ -73,11 +73,10 @@ import type { IReview } from '@/types/interfaces/IReview';
 const shelfStore = useShelfStore();
 const bookStore = useBookStore();
 const toastStore = useToastStore();
-const currentlyReadingShelf = ref<IBookshelf | null>(null);
 const userStore = useUserStore();
+const currentlyReadingShelf = computed<IBookshelf | null>(() => shelfStore.bookshelves.find((shelf) => shelf.name === 'Currently Reading') || null);
 const loggedInUser = computed(() => userStore.loggedInUser?.username);
 const userId = computed(() => userStore.loggedInUser?.id);
-const readingProgressList = computed<IReadingProgress[]>(() => userStore.readingProgress);
 const selectedProgress = ref<IReadingProgress | null>(null);
 const isEditProgressModalVisible = ref(false);
 
@@ -91,22 +90,20 @@ const alreadyRated = computed(() => !!usersReview.value);
 const reviewText = computed(() => alreadyRated.value ? bookToBeRated.value!.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id)!.reviewText : '');
 const isPublic = computed(() => alreadyRated.value ? bookToBeRated.value!.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id)!.isPublic : true);
 
-const openReviewModal = (clickedStar: number, progress: IReadingProgress) => {
+const openReviewModal = async (clickedStar: number, progress: IReadingProgress) => {
   starClicked.value = clickedStar;
   selectedProgress.value = progress;
   bookToBeRated.value = bookStore.books.find((book) => book.id === progress.bookId) || null;
   bookStore.selectedBook = bookToBeRated.value;
   isLeaveReviewModalOpen.value = true;
+  await userStore.getAllReadingProgress(userStore.loggedInUser!.id);
+  await shelfStore.getBookshelvesForUser(userStore.loggedInUser!.id);
 };
-
 
 onMounted(async () => {
   if (!userId.value) return;
   try {
     await shelfStore.getBookshelvesForUser(userId.value);
-    currentlyReadingShelf.value = shelfStore.bookshelves.find(
-      (shelf) => shelf.name === 'Currently Reading'
-    ) || null;
 
     await userStore.getAllReadingProgress(userId.value);
   } catch (error) {

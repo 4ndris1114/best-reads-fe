@@ -19,10 +19,10 @@
         <div class="w-full h-3 bg-[#3D4D69] rounded mt-2 overflow-hidden">
         <div
           class="h-full bg-lime-500 transition-all rounded duration-300"
-          :style="{ width: progressPercent + '%' }"
+          :style="{ width: readingProgress.currentPage / readingProgress.totalPages * 100 + '%' }"
         ></div>
       </div>
-        {{ readingProgress.currentPage }} / {{ readingProgress.totalPages }} pages <b class="ml-1 text-[#547786] ">({{ progressPercent }}%)</b>
+        {{ readingProgress.currentPage }} / {{ readingProgress.totalPages }} pages <b class="ml-1 text-[#547786] ">({{ Math.floor(readingProgress.currentPage / readingProgress.totalPages * 100) }}%)</b>
       </p>
       <button
         @click="isEditProgressModalOpen = true"
@@ -65,12 +65,6 @@ const book = computed(() => bookStore.books.find(b => b.id === props.readingProg
 const emit = defineEmits<{
   (e: 'reviewRequested', clickedStar: number, progress: IReadingProgress): void;
 }>();
-
-const progressPercent = computed(() => {
-  const { currentPage, totalPages } = props.readingProgress;
-  if (!totalPages || totalPages === 0) return 0;
-  return Math.min(100, Math.round((currentPage / totalPages) * 100));
-});
 
 const handleProgressUpdate = (updatedProgress: IReadingProgress) => {
   readingProgress.value = updatedProgress;

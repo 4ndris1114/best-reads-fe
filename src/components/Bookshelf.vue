@@ -1,7 +1,7 @@
 <template>
   <div class="flex w-[700px] flex-col w-full h-full flex-grow">
     <!-- Empty state -->
-    <div v-if="styledBooks.length === 0" class="flex flex-col items-center w-auto mt-20 justify-center text-white text-2xl flex-grow h-full">
+    <div v-if="chunkedBooks.length === 0" class="flex flex-col items-center w-auto mt-20 justify-center text-white text-2xl flex-grow h-full">
       Add your first book.
       <div class="w-[700px] h-[300px] mt-2 border-b-8 border-[#5b3826] rounded-sm"></div>
     </div>
@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, nextTick } from 'vue';
+import { ref, onMounted, computed, nextTick, watch } from 'vue';
 import type { IBookshelf } from '@/types/interfaces/IBookshelf';
 import type { IBook } from '@/types/interfaces/IBook';
 import { useBookStore } from '../stores/bookStore';
@@ -69,10 +69,14 @@ const colorUsage = ref<Record<string, number>>({
 
 const totalBooks = ref(0);
 
+watch(() => props.shelf.books, async () => {
+  await getBooksAndStyles();
+});
+
 // Store color and height for each book
 const styledBooks = ref<{ book: IBook, color: string, height: number }[]>([]);
 
-onMounted(async () => {
+const getBooksAndStyles = async () => {
   const bookPromises = props.shelf.books.map(async (bookId: string) => {
     let book = bookStore.books.find((b: IBook) => b.id === bookId);
     if (!book) {
@@ -92,8 +96,7 @@ onMounted(async () => {
   assignColorsAndHeights();
   await nextTick();
   adjustBookTitleSizes();
-
-});
+}
 
 const adjustBookTitleSizes = () => {
   const books = document.querySelectorAll('.book');
@@ -116,6 +119,7 @@ const adjustBookTitleSizes = () => {
 };
 
 const assignColorsAndHeights = () => {
+  styledBooks.value = [];
   let lastColor = '';
   let repeatCount = 0;
 
