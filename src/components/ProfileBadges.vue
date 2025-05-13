@@ -13,9 +13,8 @@
 </template>
 
 <script lang="ts" setup>
-import type { IReadingStats } from '@/types/interfaces/IReadingstats';
 
 defineProps<{
-  readingStats: IReadingStats;
+  readingStats: ReadingStats;
 }>();
 </script>

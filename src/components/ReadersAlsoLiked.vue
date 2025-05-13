@@ -39,47 +39,46 @@ const shelfStore = useShelfStore();
 
 const props = defineProps<{
   genres: string[];
-  bookId: string; // or `number` if it's a number
 }>();
 
-// const addBookToShelf = async (shelf: IBookshelf) => {
-//     //if the book is already on one of the user's basic bookshelves, offer user to move
-//     const shelfContainsBook = isBookInBasicShelf(book.value!, userShelves.value.filter((shelf) => !shelf.isMutable));
+const addBookToShelf = async (shelf: IBookshelf) => {
+    //if the book is already on one of the user's basic bookshelves, offer user to move
+    const shelfContainsBook = isBookInBasicShelf(book.value!, userShelves.value.filter((shelf) => !shelf.isMutable));
 
-//     if (!shelf.isMutable && shelfContainsBook) {
-//         //render a modal that asks user to move book to another bookshelf
-//         currentBasicShelf.value = shelfContainsBook;
-//         isMoveBookModalOpen.value = true;
-//         isShelfDropdownOpen.value = false;
-//         return;
-//     }
-//     try {
-//         await shelfStore.addBookToBookshelf(userStore.loggedInUser!.id, shelf.id, book.value!.id);
-//         toastStore.triggerToast("Book added to shelf successfully!", "success");
-//         isShelfDropdownOpen.value = false;
-//     } catch (error) {
-//         console.error('Error adding book to shelf:', error);
-//         toastStore.triggerToast("This book is already added to this bookshelf", "error");
-//         isShelfDropdownOpen.value = false;
-//     }
-// };
+    if (!shelf.isMutable && shelfContainsBook) {
+        //render a modal that asks user to move book to another bookshelf
+        currentBasicShelf.value = shelfContainsBook;
+        isMoveBookModalOpen.value = true;
+        isShelfDropdownOpen.value = false;
+        return;
+    }
+    try {
+        await shelfStore.addBookToBookshelf(userStore.loggedInUser!.id, shelf.id, book.value!.id);
+        toastStore.triggerToast("Book added to shelf successfully!", "success");
+        isShelfDropdownOpen.value = false;
+    } catch (error) {
+        console.error('Error adding book to shelf:', error);
+        toastStore.triggerToast("This book is already added to this bookshelf", "error");
+        isShelfDropdownOpen.value = false;
+    }
+};
 
 onMounted(() => {
   bookStore.fetchBooks();
 });
 
 const relatedBooks = computed<IBook[]>(() => {
-  if (!props.genres || !bookStore.books.length) return [];
+  if (!props.genres || props.genres.length === 0) return [];
 
   return bookStore.books.filter(book =>
-    book.id !== props.bookId &&
-    book.genres?.some(genre =>
-      props.genres.some(input =>
-        genre.toLowerCase().includes(input.toLowerCase())
+    book.genres?.some(bookGenre =>
+      props.genres.some(inputGenre =>
+        bookGenre.toLowerCase().includes(inputGenre.toLowerCase())
       )
     )
   );
 });
+
 </script>
 
 <style scoped>
