@@ -1,9 +1,12 @@
 <template>
   <div class="p-4 bg-gray-50 rounded-xl shadow-md relative">
     <div v-if="user" class="flex flex-wrap items-center gap-4">
-      <img @click="$router.push({ name: 'profilepage', params: { id: user.id } })"
+      <CloudinaryImage @click="$router.push({ name: 'profilepage', params: { id: user.id } })"
         class="w-16 h-16 rounded-full object-cover cursor-pointer"
-        :src="'../src/assets/' + user.profilePicture"
+        :publicId="user.profilePicture"
+        :width="50"
+        :height="50"
+        :isUserImage="true"
         alt="User Avatar"
       />
       <div class="flex-1 min-w-[200px]">
@@ -78,6 +81,7 @@
   import { useUserStore } from '@/stores/userStore';
   import type { IUser } from '@/types/interfaces/IUser';
   import { vOnClickOutside } from '@vueuse/components'
+  import CloudinaryImage from './CloudinaryImage.vue';
 
   const props = defineProps({
     review: {

@@ -1,31 +1,82 @@
 <template>
-  <MainLayout>
-    <div v-if="!book">
-      <p class="text-red-500">Uh-oh, we couldn't find that book.</p>
-      <router-link to="/" class="text-blue-500 underline">Back to home</router-link>
-    </div>
-    <div v-else class="flex flex-row h-full overflow-y-auto">
-      <!-- Book cover, button, rating -->
-      <div class="flex flex-col md:space-y-6 sm:space-y-4 space-y-3 items-center w-[25vw] pt-[6vh] ml-[5vw]">
-        <CloudinaryImage :publicId="book.coverImage" alt="Book cover" :width="300" :height="450" />
-        <!-- Bookshelves button and dropdown -->
-        <div class="relative">
-          <button
-            class="bg-highlight text-white px-4 sm:py-2 py-1 rounded-lg focous-none shadow-lg cursor-pointer min-w-full flex items-center lg:text-lg md:text-sm sm:text-xs justify-center"
-            @click="toggleShelvesDropdown">
-            <!-- Conditional? What if its at already want to read? -->
-            <span class="sm:block hidden">Add to bookshelf
-              <fa icon="circle-plus" class="ml-2" />
-            </span>
-            <span class="sm:hidden block text-xs">Add
-              <fa icon="circle-plus" class="ml-2" />
-            </span>
-          </button>
-          <div v-if="isShelfDropdownOpen" class="absolute lg:top-11 md:top-9 sm:top-8 right-0 z-50 w-full text-center">
-            <div v-if="!userStore.isAuthenticated" @click="$router.push('/login')"
-              class="bg-white border border-black rounded-lg shadow-lg lg:text-lg md:text-md sm:text-sm xs:text-xs">
-              <a href="/login" class="py-2 text-left cursor-pointer underline text-blue-600">Log in</a>
-              to add to a bookshelf
+    <MainLayout>
+        <div v-if="!book">
+            <p class="text-red-500">Uh-oh, we couldn't find that book.</p>
+            <router-link to="/" class="text-blue-500 underline">Back to home</router-link>
+        </div>
+        <div v-else class="flex flex-row h-full overflow-y-auto">
+            <!-- Book cover, button, rating -->
+            <div class="flex flex-col md:space-y-6 sm:space-y-4 space-y-3 items-center w-[25vw] pt-[6vh] ml-[5vw]">
+                <CloudinaryImage :publicId="book.coverImage" alt="Book cover" :width="300" :height="450" />
+                <!-- Bookshelves button and dropdown -->
+                <div class="relative">
+                    <button class="bg-highlight text-white px-4 sm:py-2 py-1 rounded-lg focous-none shadow-lg cursor-pointer min-w-full flex items-center lg:text-lg md:text-sm sm:text-xs justify-center" 
+                        @click="toggleShelvesDropdown">
+                        <!-- Conditional? What if its at already want to read? -->
+                        <span class="sm:block hidden">Add to bookshelf <fa icon="circle-plus" class="ml-2" /></span>
+                        <span class="sm:hidden block text-xs">Add <fa icon="circle-plus" class="ml-2" /></span>
+                    </button>
+                    <div v-if="isShelfDropdownOpen" class="absolute lg:top-11 md:top-9 sm:top-8 right-0 z-50 w-full text-center">
+                        <div v-if="!userStore.isAuthenticated" 
+                            @click="$router.push('/login')"
+                            class="bg-white border border-black rounded-lg shadow-lg lg:text-lg md:text-md sm:text-sm xs:text-xs">
+                            <a href="/login" class="py-2 text-left cursor-pointer underline text-blue-600">Log in</a>
+                            to add to a bookshelf
+                        </div>
+                        <ul v-else class="bg-white border border-black rounded-lg shadow-lg lg:text-lg md:text-md sm:text-sm xs:text-xs max-h-[22vh] overflow-y-auto">
+                            <li v-for="shelf in userShelves" :key="shelf.id" @click="addBookToShelf(shelf)" class="px-4 py-2 text-left hover:bg-gray-200 cursor-pointer">
+                                <span v-if="book && shelf.books && shelf.books.some((bbook) => bbook.id === book!.id)" class="mr-1">✓</span>{{ shelf.name }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Rate the book (stars) -->
+                <div v-if="alreadyRated" class="flex flex-col items-center relative"> 
+                    <span class="md:text-lg sm:text-md mb-4">                    <!-- Tooltip -->
+                        <fa icon="info-circle" class="text-sm text-gray-600 mr-2 cursor-pointer"
+                                @click="showReviewTooltip = !showReviewTooltip" @mouseenter="showReviewTooltip = true"
+                                @mouseleave="showReviewTooltip = false" />
+                                You rated this book:
+                    </span>
+                    <div v-if="showReviewTooltip"
+                        class="absolute top-1/2 left-0 w-64 p-3 text-sm text-white bg-gray-800 rounded-lg shadow-lg z-10">
+                        Click on the stars to change your rating for this book.
+                    </div>
+                    <div class="flex lg:space-x-5 md:space-x-2 sm:space-x-1 xs:space-x-0">
+                        <fa 
+                        v-for="n in 5"
+                        :key="n"
+                        :icon="['fas', 'star']" 
+                        class="lg:scale-200 md:scale-150 sm:scale-125 cursor-pointer transition-colors duration-200"
+                        :class="(hoveredStar || book.reviews.find(review => review.userId === userStore.loggedInUser!.id)!.ratingValue) >= n ? 'text-yellow-500' : 'text-slate-300'"
+                        @mouseover="setHovered(n)"
+                        @mouseleave="resetHovered"
+                        @click="clickedStar = n; showReviewModal = true" />
+                    </div>
+                </div>
+                <div v-else class="flex flex-col items-center relative">
+                    <span class="md:text-lg sm:text-md mb-4">                    <!-- Tooltip -->
+                        <fa icon="info-circle" class="text-sm text-gray-600 mr-2 cursor-pointer"
+                                @click="showReviewTooltip = !showReviewTooltip" @mouseenter="showReviewTooltip = true"
+                                @mouseleave="showReviewTooltip = false" />
+                                Rate this book:
+                    </span>
+                    <div v-if="showReviewTooltip"
+                        class="absolute top-1/2 left-0 w-64 p-3 text-sm text-white bg-gray-800 rounded-lg shadow-lg z-10">
+                        Click on the stars to rate this book.
+                    </div>
+                    <div class="flex lg:space-x-5 md:space-x-2 sm:space-x-1 xs:space-x-0">
+                        <fa 
+                        v-for="n in 5"
+                        :key="n"
+                        :icon="['fas', 'star']" 
+                        class="lg:scale-200 md:scale-150 sm:scale-125 cursor-pointer transition-colors duration-200"
+                        :class="n <= hoveredStar ? 'text-yellow-500' : 'text-slate-300'"
+                        @mouseover="setHovered(n)"
+                        @mouseleave="resetHovered"
+                        @click="clickedStar = n; showReviewModal = true" />
+                    </div>
+                </div>
             </div>
             <ul v-else
               class="bg-white border border-black rounded-lg shadow-lg lg:text-lg md:text-md sm:text-sm xs:text-xs max-h-[22vh] overflow-y-auto">
@@ -125,13 +176,24 @@
 
       </div>
     </div>
-    <MoveBookModal v-if="book" @click.self="isMoveBookModalOpen = false" :isOpen="isMoveBookModalOpen"
-      :currentShelf="currentBasicShelf"
-      :targetShelves="userShelves.filter(s => !s.isMutable && s.id !== currentBasicShelf?.id)" :bookId="book!.id"
-      @move="moveBookToNewShelf" @close="isMoveBookModalOpen = false" />
-    <LeaveReviewModal :isOpen="showReviewModal" :ratingValue="clickedStar" :reviewText="reviewText" :isPublic="isPublic"
-      @submit="handleReviewSubmit" @close="showReviewModal = false" />
-  </MainLayout>
+        <MoveBookModal v-if="book" @click.self="isMoveBookModalOpen = false"
+        :isOpen="isMoveBookModalOpen"
+        :currentShelf="currentBasicShelf"
+        :targetShelves="userShelves.filter(s => !s.isMutable && s.id !== currentBasicShelf?.id)"
+        :bookId="book!.id"
+        @move="moveBookToNewShelf"
+        @close="isMoveBookModalOpen = false"
+        @remove="removeBookFromShelf"
+        />
+        <LeaveReviewModal
+            :isOpen="showReviewModal"
+            :ratingValue="clickedStar"
+            :reviewText="reviewText"
+            :isPublic="isPublic"
+            @submit="handleReviewSubmit"
+            @close="showReviewModal = false"
+        />
+    </MainLayout>
 </template>
 
 <script setup lang="ts">
@@ -153,7 +215,6 @@ import { storeToRefs } from 'pinia'
 import { useToastStore } from '@/stores/toastStore'
 
 const toastStore = useToastStore();
-const { show, toastType, message } = storeToRefs(toastStore);
 const bookStore = useBookStore();
 const userStore = useUserStore();
 const shelfStore = useShelfStore();
@@ -215,6 +276,18 @@ const moveBookToNewShelf = async (shelfId: string) => {
     } catch (error) {
         console.error('Error moving book to new shelf:', error);
         toastStore.triggerToast("Error moving book to new shelf", "error");
+        isMoveBookModalOpen.value = false;
+    }
+}
+
+const removeBookFromShelf = async () => {
+    try {
+        await shelfStore.removeBookFromBookshelf(userStore.loggedInUser!.id, currentBasicShelf.value!.id, book.value!.id);
+        toastStore.triggerToast("Book removed from shelf successfully!", "success");
+        isMoveBookModalOpen.value = false;
+    } catch (error) {
+        console.error('Error removing book from shelf:', error);
+        toastStore.triggerToast("Error removing book from shelf", "error");
         isMoveBookModalOpen.value = false;
     }
 }

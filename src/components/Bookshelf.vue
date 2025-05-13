@@ -90,7 +90,7 @@ const getBooksAndStyles = async () => {
     return book;
   });
 
-  books.value = (await Promise.all(bookPromises)).filter((b) => b !== null) as IBook[];
+  books.value = (await Promise.all(bookPromises)).filter((b): b is IBook => b !== null);
 
   totalBooks.value = books.value.length;
   assignColorsAndHeights();

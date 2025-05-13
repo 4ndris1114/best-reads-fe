@@ -7,10 +7,12 @@
       <!-- Static Left Sidebar -->
       <aside class="ml-65 mr-10 mt-13 bg-white text-black">
         <!-- Profile picture -->
-        <img :src="'../src/assets/' + user?.profilePicture" alt="Profile Picture"
-          class="w-32 h-32 rounded-full object-cover border mb-4" />
+        <div class="relative">
+          <CloudinaryImage class="w-48 h-48 rounded-full object-cover border mb-4" :publicId="user.profilePicture" :isUserImage="true" alt="Profile Picture" :width="150" :height="150" />
+            <fa v-if="loggedInUser && user.id === loggedInUser.id" @click="showImageUploadModal = true" icon="pencil" class="absolute top-0 right-8 bg-black text-white rounded-full p-1 scale-125" />
+        </div>
 
-        <section v-if="profileUser && user.id === profileUser.id">
+        <section v-if="loggedInUser && user.id === loggedInUser.id">
           <!-- Navigation Links -->
           <nav class="mt-6 space-y-4 text-black font-semibold">
             <a href="#bio" class="block hover:font-bold hover:text-red-700"><fa icon="circle-info" class="text-black mr-1" />Public information</a>
@@ -48,7 +50,7 @@
                 </div>
                 <!-- Right side: Buttons -->
                 <div class="flex space-x-2">
-                  <button v-if="profileUser && user.id === profileUser.id" @click="toggleEdit"
+                  <button v-if="loggedInUser && user.id === loggedInUser.id" @click="toggleEdit"
                     class="drop-shadow-xl px-4 py-2 bg-blue-700 text-white font-semibold text-sm rounded hover:bg-blue-800 transition duration-100 cursor-pointer">
                     <fa icon="pen" class="mr-1" />
                     {{isEditing ? 'Save changes' : 'Edit profile' }}
@@ -113,7 +115,7 @@
               <BookshelvesOverview :bookshelves="user.bookshelves" />
 
               <!-- Preferences and Security -->
-              <section v-if="profileUser && user.id === profileUser.id">
+              <section v-if="loggedInUser && user.id === loggedInUser.id">
                 <section id="preferences">
                   <h4 class="text-2xl font-bold mt-10 mb-4"><fa icon="pen-nib" class="text-black mr-1" />
                     Preferences</h4>
@@ -142,6 +144,8 @@
         </div>
       </div>
     </div>
+    <UploadImageWidget @upload="handleImageUpload" @close="showImageUploadModal = false" v-if="showImageUploadModal" />
+
   </MainLayout>
 </template>
 
@@ -155,19 +159,18 @@ import UserBadges from '@/components/ProfileBadges.vue';
 import BookshelvesOverview from "@/components/BookshelvesOverview.vue";
 import FollowerListModal from "@/components/FollowerListModal.vue";
 import { useToastStore } from '@/stores/toastStore';
-import { storeToRefs } from 'pinia'
+import UploadImageWidget from "@/components/UploadImageWidget.vue";
+import CloudinaryImage from "@/components/CloudinaryImage.vue";
 
 const toastStore = useToastStore();
-const { show, toastType, message } = storeToRefs(toastStore);
 
 const userStore = useUserStore();
 const route = useRoute();
 
 const usernameInput = ref("");
 const bioInput = ref("");
-const emailInput = ref("");
-const profilePictureInput = ref("");
 
+const showImageUploadModal = ref(false);
 const showFollowerModal = ref(false);
 const showFollowingModal = ref(false);
 
@@ -191,18 +194,12 @@ onMounted(async () => {
 });
 
 const user = ref<IUser | null>(null); // current profile you're viewing
-const profileUser: IUser = userStore.loggedInUser!; //logged in user
+const loggedInUser: IUser = userStore.loggedInUser!; //logged in user
 const isFollowing = computed(() => {
-  return !user.value?.followers.some(followerId => followerId === profileUser.id) || false;
+  return !user.value?.followers.some(followerId => followerId === loggedInUser.id) || false;
 });
 const followDisabled = ref(false);
-const isEditingUsername = ref(false);
-const isEditingBio = ref(false);
 const isEditing = ref(false);
-const hasChanges = computed(() =>
-  usernameInput.value !== user.value?.username ||
-  bioInput.value !== user.value?.bio
-);
 
 watch(
   () => isEditing.value,
@@ -230,11 +227,11 @@ const followUser = async () => {
   }, 2000); // 2 seconds cooldown
 
   try {
-    const updatedUser = await userStore.followUser(profileUser.id, user.value!.id);
+    const updatedUser = await userStore.followUser(loggedInUser.id, user.value!.id);
     if (updatedUser) {
       user.value = updatedUser;
     }
-    toastStore.triggerToast("You are now following " + user.value?.username, 'success', 1800)
+    toastStore.triggerToast("You are now following " + user.value?.username, 'success')
   } catch (err) {
     console.error("Failed to follow user:", err);
   }
@@ -248,15 +245,48 @@ const unfollowUser = async () => {
     followDisabled.value = false;
   }, 2000); // 2 seconds cooldown
   try {
-    const updatedUser = await userStore.unfollowUser(profileUser.id, user.value!.id);
+    const updatedUser = await userStore.unfollowUser(loggedInUser.id, user.value!.id);
     if (updatedUser) {
       user.value = updatedUser;
     }
-    toastStore.triggerToast("You are no longer following " + user.value?.username, 'success', 1800)
+    toastStore.triggerToast("You are no longer following " + user.value?.username, 'success')
   } catch (err) {
     console.error("Failed to unfollow user:", err);
   }
 }
+
+const handleImageUpload = async (file: File) => {
+  try {
+    // get cloduinary signature from BE
+    const signature: { timestamp: string; signature: string } = await userStore.getCloudinarySignature(loggedInUser.id);
+    
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("api_key", import.meta.env.VITE_CLOUDINARY_API_KEY);
+    formData.append("timestamp", signature.timestamp);
+    formData.append("signature", signature.signature);
+    formData.append("folder", "users");
+    formData.append("overwrite", "true");
+    formData.append("public_id", loggedInUser.id);
+    
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+    
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      method: "POST",
+      body: formData,
+    });
+
+    loggedInUser.profilePicture = loggedInUser.id + "." +file.type.split("/")[1];
+    await userStore.editUserById(loggedInUser.id, loggedInUser)
+
+    toastStore.triggerToast("Your profile picture has been updated successfully. It might take a minute to see it updated.", 'success')
+
+    const data = await res.json();
+    console.log("Uploaded image URL:", data.secure_url);
+  } catch (error) {
+    console.error("Image upload failed:", error);
+  }
+};
 
 const toggleEdit = () => {
 isEditing.value = !isEditing.value
