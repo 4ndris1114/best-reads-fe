@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ActivityService } from '@/services/ActivityService';
 import type { IActivity } from '@/types/interfaces/IActivity';
+import type { IComment } from '@/types/IComment';
 
 export const useActivityStore = defineStore('activityStore', {
   state: () => ({
@@ -57,6 +58,21 @@ export const useActivityStore = defineStore('activityStore', {
         }
       } catch (error) {
         console.error('Failed to toggle like:', error);
+        throw error;
+      }
+    },
+
+    async addComment(activityId: string, commentContent: string) {
+      try {
+        const newComment = await this.service.addComment(activityId, commentContent);
+        this.activities = this.activities.map((activity: IActivity) => {
+          if (activity.id === activityId) {
+            activity.comments.push(newComment);
+          }
+          return activity;
+        });
+      } catch (error) {
+        console.error('Failed to add comment:', error);
         throw error;
       }
     },
