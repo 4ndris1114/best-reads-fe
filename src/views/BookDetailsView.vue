@@ -103,25 +103,26 @@
                     class="bg-primary w-fit p-2 rounded-full text-white">{{ genre }}</div>
                 </div>
 
-                <p v-if="!isShowingMore" class="pt-[3vh] text-justify">{{ book.description.length > 500 ? book.description.substring(0, 500).trim() + "..." : book.description }}
+                <div v-if="!isShowingMore" class="pt-[3vh] text-justify">{{ book.description.length > 500 ? book.description.substring(0, 500).trim() + "..." : book.description }}
                     <a v-if="book.description.length > 500" href="#" class="pl-2 text-highlight underline"
                     @click="isShowingMore = true">Show more</a>
-                </p>
-                <p v-else class="pt-[3vh] text-justify">{{ book.description }}
+                    </div>
+                <div v-else class="pt-[3vh] text-justify">{{ book.description }}
                     <a href="#" class="pl-2 text-highlight underline"
                     @click="isShowingMore = false">Show less</a>
                     <br />
                     <div v-if="book.publishedDate" class="pt-[3vh] text-sm text-gray-500">Published: {{ book.publishedDate.toString().split('T')[0] }}</div>
-                </p>
+                </div>
 
                 <!-- Reviews -->
-                <h2 class="mt-[5vh] text-3xl text-black pb-2">Reviews</h2>
+                <h2 v-if="filteredReviews!.length > 0" class="mt-[5vh] text-3xl text-black pb-2">Reviews</h2>
+                <h2 v-else class="mt-[5vh] text-xl text-black pb-2 italic">This book hasn't been reviewed by any user yet.</h2>
                 <div v-for="review in filteredReviews" :key="review.userId" :review="review">
                     <ReviewBox :review="review" @edit="clickedStar = review.ratingValue; showReviewModal = true" @delete="handleReviewDelete" />
                 </div>
             </div>
             <div class="h-screen w-[25vw] p-4 sticky bg-gray-100 top-0">
-              <ReadersAlsoLiked :genres = "book.genres"></ReadersAlsoLiked>
+              <ReadersAlsoLiked :genres="book.genres" :bookId="book.id" />
             </div>
         </div>
         <MoveBookModal v-if="book" @click.self="isMoveBookModalOpen = false"
@@ -160,6 +161,7 @@ import MoveBookModal from '@/components/MoveBookModal.vue';
 import LeaveReviewModal from '@/components/LeaveReviewModal.vue';
 import type { IReview } from '@/types/interfaces/IReview';
 import { useToastStore } from '@/stores/toastStore'
+import { storeToRefs } from 'pinia'
 import ReadersAlsoLiked from '@/components/ReadersAlsoLiked.vue'
 
 const toastStore = useToastStore();

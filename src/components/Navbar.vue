@@ -1,6 +1,6 @@
 <template>
     <!-- Header -->
-    <header class="fixed top-0 w-full bg-primary text-white shadow-sm z-50">
+    <header class="fixed top-0 w-full bg-darkBlueBackground text-white shadow-sm z-50">
       <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <router-link to="/" class="flex items-center">
           <img src="@/assets/logo.png" alt="BestReads Logo" class="h-13 w-auto mr-2">

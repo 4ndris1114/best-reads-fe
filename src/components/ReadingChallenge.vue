@@ -1,20 +1,21 @@
 <template>
-  <div class="flex flex-col gap-6 w-[300px] text-white">
+  <div class="flex flex-col gap-6 w-[300px] text-white ">
     <!-- Main Challenge -->
-    <div class="bg-darkBlueBackground rounded-2xl px-6 py-5">
+
+    <div class="bg-primary border-t-7 border-darkBlueBackground rounded-2xl px-6 pb-5">
       <div v-if="readingChallenge">
-        <p class="text-3xl font-semibold">Reading challenge</p>
+        <p class="text-3xl mt-2 font-semibold">Reading challenge</p>
         <div class="mt-3 flex flex-row space-x-4 items-center">
           <p class="text-4xl font-bold leading-none">{{ readingChallenge.progress }}</p>
-          <p class="text-lg text-[#A3A3A3]">books read in {{ readingChallenge.year }}</p>
+          <p class="text-lg text-[#8192B0] ">books read in {{ readingChallenge.year }}</p>
         </div>
-        <div class="mt-4 w-full bg-[#2F2F39] h-3 rounded-full">
+        <div class="mt-4 w-full bg-darkBlueBackground h-3 rounded-full">
           <div
             class="bg-white h-3 rounded-full"
             :style="{ width: readingChallenge.progress / readingChallenge.goal * 100 + '%' }"
           ></div>
         </div>
-        <p class="mt-2 text-sm text-gray-400">{{ readingChallenge.progress }}/{{ readingChallenge.goal }} 
+        <p class="mt-2 text-sm text-[#8192B0] ">{{ readingChallenge.progress }}/{{ readingChallenge.goal }}
           ({{ Math.floor(readingChallenge.progress / readingChallenge.goal * 100) }}%)
         </p>
         <div class="flex flex-row justify-end mt-3 space-x-5">
@@ -113,13 +114,13 @@ const handleChallengeCreate = async (newChallenge: IReadingChallenge) => {
     const booksReadThisYear = shelfStore.bookshelves
     .find((shelf: IBookshelf) => shelf.name === 'Read')
     ?.books.filter((book: IBookshelfBook) => new Date(book.updatedAt).getFullYear() === new Date().getFullYear()).length || 0;
-    
+
     const challengeToCreate = {
       ...newChallenge,
       year: new Date().getFullYear(),
       progress: booksReadThisYear
     } as IReadingChallenge;
-    
+
     const result = await userStore.createReadingChallenge(challengeToCreate);
     if (result) {
       toastStore.triggerToast('Challenge created successfully', 'success');
