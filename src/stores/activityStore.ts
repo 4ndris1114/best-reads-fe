@@ -64,7 +64,14 @@ export const useActivityStore = defineStore('activityStore', {
 
     async addComment(activityId: string, commentContent: string) {
       try {
-        return await this.service.addComment(activityId, commentContent);
+        const newComment = await this.service.addComment(activityId, commentContent);
+        this.activities = this.activities.map((activity: IActivity) => {
+          if (activity.id === activityId) {
+            activity.comments.unshift(newComment);
+          }
+          return activity;
+        });
+        return newComment;
       } catch (error) {
         console.error('Failed to add comment:', error);
         throw error;

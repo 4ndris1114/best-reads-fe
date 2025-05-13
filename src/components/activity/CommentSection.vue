@@ -20,37 +20,52 @@
         <strong class="text-lg">Comments:</strong>
   
         <div
-          v-for="comment in stubbedComments"
-          :key="comment.id"
-          class="text-sm text-gray-800 border-b pb-1"
-        >
-          <strong>{{ getUserName(comment.userId) }}:</strong> {{ comment.content }}
+        v-for="comment in stubbedComments"
+        :key="comment.id"
+        class="flex items-start space-x-3 py-2 border-b border-gray-200">
+        <!-- Profile Picture -->
+        <CloudinaryImage
+            :publicId="getUserProfilePicture(comment.userId)"
+            :is-user-image="true"
+            :width="40"
+            :height="40"
+            class="w-10 h-10 rounded-full object-cover"
+        />
+
+        <!-- Comment Content -->
+        <div class="flex flex-col text-sm text-gray-800">
+            <span class="font-bold">{{ getUserName(comment.userId) }}</span>
+            <span class="">{{ comment.content }}</span>
+        </div>
         </div>
   
         <div
           v-if="stubbedComments.length < comments.length"
-          class="text-sm text-gray-600 cursor-pointer"
+          class="text-sm text-gray-600 cursor-pointer mt-1"
           @click="loadMoreComments"
         >
-          Load more comments
+          Load more comments...
         </div>
         <div
           v-else
-          class="text-sm text-gray-600 cursor-pointer"
+          class="text-sm text-gray-600 cursor-pointer mt-1"
           @click="toggleComments"
         >
-          Hide comments
+          Hide comments...
         </div>
       </div>
     </div>
   </template>
   
   <script setup lang="ts">
-  import { ref, watch } from 'vue';
+  import { onMounted, ref, watch } from 'vue';
   import { useUserStore } from '@/stores/userStore';
   import { useActivityStore } from '@/stores/activityStore';
   import { useToastStore } from '@/stores/toastStore';
   import type { IComment } from '@/types/IComment';
+import type { IUser } from '@/types/interfaces/IUser';
+import CloudinaryImage from '../CloudinaryImage.vue';
+import { get } from 'http';
   
   const props = defineProps<{
     comments: IComment[];
@@ -64,6 +79,7 @@
   const activityStore = useActivityStore();
   const toastStore = useToastStore();
   
+  const commentUsers = ref<IUser[]>([]);
   const comments = ref<IComment[]>([...props.comments].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
   const areCommentsVisible = ref(props.visible);
   const newComment = ref('');
@@ -77,10 +93,13 @@
   watch(
     (comments.value),
     (newComments) => {
-        console.log("newComments", newComments);
-      stubbedComments.value = newComments.slice(0, stubbedComments.value.length);
+      stubbedComments.value = newComments.slice(0, stubbedComments.value.length+1);
     }
   );
+
+  onMounted(async () => {
+    commentUsers.value = await userStore.getUsersByIds(comments.value.map(comment => {return comment.userId;}))
+  })
   
   const toggleComments = () => {
     areCommentsVisible.value = !areCommentsVisible.value;
@@ -98,8 +117,6 @@
   const submitComment = async () => {
     if (newComment.value.trim() !== '') {
       const addedComment = await activityStore.addComment(props.activityId, newComment.value.trim());
-      console.log("addedComment", addedComment);
-      
       comments.value.unshift(addedComment);
       toastStore.triggerToast('Comment posted successfully', 'success');
       newComment.value = '';
@@ -108,9 +125,14 @@
     }
   };
   
-  const getUserName = async (userId: string) => {
-    const user = await userStore.getUserById(userId);
-    return user.username;
+  const getUserName = (userId: string) => {
+    const user = commentUsers.value.find((user: IUser) => user.id === userId);
+    return user ? user.username : 'Unknown User';
+  };
+
+  const getUserProfilePicture = (userId: string) => {
+    const user = commentUsers.value.find((user: IUser) => user.id === userId);
+    return user ? user.profilePicture : '';
   };
   </script>
   
