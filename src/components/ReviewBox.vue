@@ -111,5 +111,4 @@
   </script>
 
   <style scoped>
-  /* Add hover effect or transitions here if needed */
   </style>

@@ -1,15 +1,15 @@
 <template>
   <MainLayout>
     <div class="min-h-screen overflow-y-auto bg-white text-black">
-      <div class="w-full px-12 py-8">
+      <div class="w-full ">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <!-- Reading challenge and stats -->
-          <div class="space-y-6 lg:col-span-3">
+          <div class="space-y-6 py-8 px-8 bg-[#CACACB] lg:col-span-3">
             <ReadingChallenge />
           </div>
 
           <!-- Main Content (Feed) -->
-          <div class="lg:col-span-6 space-y-4">
+          <div class="lg:col-span-6 py-8 space-y-4">
             <div>
               <h1 class="text-4xl font-bold text-[#1D1D23]">{{ timeGreeting }}, {{ loggedInUser }}!</h1>
               <p class="font-semibold text-xl text-[#1D1D23]">See what’s new:</p>
@@ -18,7 +18,7 @@
           </div>
 
           <!-- Currently reading and progress tracking -->
-          <div class="space-y-6 lg:col-span-3">
+          <div class="space-y-6 py-8 px-8 bg-[#CACACB] lg:col-span-3">
             <div>
               <h2 class="text-2xl font-bold mb-2">You're currently reading:</h2>
               <div class="bg-[#181C20] rounded-xl p-4">
@@ -84,9 +84,9 @@ const currentlyReadingShelf = computed<IBookshelf | null>(() => shelfStore.books
 const loggedInUser = computed(() => userStore.loggedInUser?.username);
 const userId = computed(() => userStore.loggedInUser?.id);
 const selectedProgress = ref<IReadingProgress | null>(null);
+
 const isEditProgressModalVisible = ref(false);
-
-
+const isEditChallengeModalVisible = ref(false);
 const isLeaveReviewModalOpen = ref(false);
 const starClicked = ref(0);
 const bookToBeRated = ref<IBook | null>(null);

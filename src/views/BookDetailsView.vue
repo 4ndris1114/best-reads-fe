@@ -4,9 +4,9 @@
             <p class="text-red-500">Uh-oh, we couldn't find that book.</p>
             <router-link to="/" class="text-blue-500 underline">Back to home</router-link>
         </div>
-        <div v-else class="flex flex-row h-full overflow-y-auto">
+        <div v-else class="flex flex-row ml-20 h-full overflow-y-auto">
             <!-- Book cover, button, rating -->
-            <div class="flex flex-col md:space-y-6 sm:space-y-4 space-y-3 items-center w-[25vw] pt-[6vh] ml-[5vw]">
+            <div class="flex flex-col md:space-y-6 mr-5 sm:space-y-4 space-y-3 items-center w-[25vw] pt-[6vh] ml-[5vw]">
                 <CloudinaryImage :publicId="book.coverImage" alt="Book cover" :width="300" :height="450" />
                 <!-- Bookshelves button and dropdown -->
                 <div class="relative">
@@ -95,6 +95,13 @@
                 </div>
                 <p class="text-2xl text-gray-500">{{ book.author }}</p>
                 <span class="block sm:hidden text-lg"> <fa :icon="['fas', 'star']" class="text-yellow-500"></fa>({{ book.averageRating }})</span>
+                <!-- Genres -->
+                <div class="text-sm text-gray-500 list-disc list-inside flex flex-row space-x-2 mt-2">
+                    <div
+                    v-for="genre in book.genres"
+                    :key="genre"
+                    class="bg-primary w-fit p-2 rounded-full text-white">{{ genre }}</div>
+                </div>
 
                 <p v-if="!isShowingMore" class="pt-[3vh] text-justify">{{ book.description.length > 500 ? book.description.substring(0, 500).trim() + "..." : book.description }}
                     <a v-if="book.description.length > 500" href="#" class="pl-2 text-highlight underline"
@@ -106,22 +113,15 @@
                     <br />
                     <div v-if="book.publishedDate" class="pt-[3vh] text-sm text-gray-500">Published: {{ book.publishedDate.toString().split('T')[0] }}</div>
                 </p>
-                <!-- Genres -->
-                <div class="text-sm text-gray-500 list-disc list-inside flex flex-row space-x-2 mt-6">
-                    <div
-                    v-for="genre in book.genres"
-                    :key="genre"
-                    class="bg-primary w-fit p-2 rounded-full text-white">{{ genre }}</div>
-                </div>
+
                 <!-- Reviews -->
                 <h2 class="mt-[5vh] text-3xl text-black pb-2">Reviews</h2>
                 <div v-for="review in filteredReviews" :key="review.userId" :review="review">
                     <ReviewBox :review="review" @edit="clickedStar = review.ratingValue; showReviewModal = true" @delete="handleReviewDelete" />
                 </div>
             </div>
-            <div class="border-l-4 border-black h-screen w-[25vw] p-4 sticky top-0">
-                <h1 class="text-3xl text-center text-highlight font-extrabold">Readers also liked</h1>
-
+            <div class="h-screen w-[25vw] p-4 sticky bg-gray-100 top-0">
+              <ReadersAlsoLiked :genres = "book.genres"></ReadersAlsoLiked>
             </div>
         </div>
         <MoveBookModal v-if="book" @click.self="isMoveBookModalOpen = false"
@@ -159,8 +159,8 @@ import { isBookInBasicShelf } from '@/utils/shelfActions';
 import MoveBookModal from '@/components/MoveBookModal.vue';
 import LeaveReviewModal from '@/components/LeaveReviewModal.vue';
 import type { IReview } from '@/types/interfaces/IReview';
-import { storeToRefs } from 'pinia'
 import { useToastStore } from '@/stores/toastStore'
+import ReadersAlsoLiked from '@/components/ReadersAlsoLiked.vue'
 
 const toastStore = useToastStore();
 const bookStore = useBookStore();

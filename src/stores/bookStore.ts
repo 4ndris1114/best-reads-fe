@@ -27,7 +27,7 @@ export const useBookStore = defineStore('bookStore', {
                 this.loading = false;
             }
         },
-        async getBookById(bookId: string): Promise<IBook> {
+        async getBookById(bookId: string) {
           try {
             this.loading = true;
             const book = await this.service.getBookById(bookId);
@@ -38,8 +38,8 @@ export const useBookStore = defineStore('bookStore', {
               return book;
             }
           } catch (error) {
-            console.error('Error fetching book:', error);
-            throw error;
+            console.log("Fetching book with ID:", bookId);
+            if (!bookId) return;
           } finally {
             this.loading = false;
           }
