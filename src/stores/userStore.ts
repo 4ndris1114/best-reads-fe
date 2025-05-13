@@ -72,6 +72,16 @@ export const useUserStore = defineStore('userStore', {
       }
     },
 
+    async getUsersByIds(userIds: string[]) {
+      try {
+        const users = await this.userService.getUsersByIds(userIds);
+        return users;
+      } catch (e: any) {
+        console.error(e);
+        throw e;
+      }
+    },
+
     async getAllReadingProgress(userId: string) {
       try {
         this.loading = true;
