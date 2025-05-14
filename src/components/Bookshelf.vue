@@ -1,10 +1,18 @@
 <template>
-  <div class="flex w-[700px] flex-col w-full h-full flex-grow">
-    <!-- Empty state -->
-    <div v-if="chunkedBooks.length === 0" class="flex flex-col items-center w-auto mt-20 justify-center text-white text-2xl flex-grow h-full">
-      Add your first book.
-      <div class="w-[700px] h-[300px] mt-2 border-b-8 border-[#5b3826] rounded-sm"></div>
-    </div>
+<div class="flex flex-col w-full flex-grow max-w-5xl mx-auto px-4">
+  <!-- Empty state -->
+  <div
+    v-if="chunkedBooks.length === 0"
+    class="flex flex-col items-center justify-center text-center flex-grow h-full py-12 space-y-4 text-white"
+  >
+    <div class="text-6xl">📚</div>
+    <p class="text-xl font-semibold">No books on your bookshelf</p>
+    <p class="text-sm text-gray-400 max-w-xs">
+      Add your first book to get started!
+    </p>
+    <div class="w-full max-w-3xl h-48 border-b-8 border-accent rounded-md"></div>
+  </div>
+
 
     <!-- Books on shelf -->
     <div v-else v-for="(shelfBooks, index) in chunkedBooks" :key="index"
@@ -34,6 +42,7 @@ import { ref, onMounted, computed, nextTick, watch } from 'vue';
 import type { IBookshelf } from '@/types/interfaces/IBookshelf';
 import type { IBook } from '@/types/interfaces/IBook';
 import { useBookStore } from '../stores/bookStore';
+import type { IBookshelfBook } from '@/types/interfaces/IBookshelfBook';
 
 const chunkedBooks = computed(() => {
   const chunks = [];
@@ -77,14 +86,15 @@ watch(() => props.shelf.books, async () => {
 const styledBooks = ref<{ book: IBook, color: string, height: number }[]>([]);
 
 const getBooksAndStyles = async () => {
-  const bookPromises = props.shelf.books.map(async (bookId: string) => {
-    let book = bookStore.books.find((b: IBook) => b.id === bookId);
+  const bookPromises = props.shelf.books.map(async (bb: IBookshelfBook) => {
+
+    let book = bookStore.books.find((b: IBook) => b.id === bb.id);
     if (!book) {
       try {
-        book = await bookStore.getBookById(bookId);
+        book = await bookStore.getBookById(bb.id);
         if (book) bookStore.books.push(book);
       } catch (error) {
-        console.error(`Error fetching book ${bookId}`, error);
+        console.error(`Error fetching book ${bb.id}`, error);
       }
     }
     return book;

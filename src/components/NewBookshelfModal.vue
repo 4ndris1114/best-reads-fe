@@ -1,6 +1,6 @@
 <template>
   <div v-if="isShelfVisible"
-       class="fixed inset-0 bg-gray-800 bg-opacity-95 flex justify-center items-center z-50"
+       class="fixed inset-0  bg-black/[var(--bg-opacity)] [--bg-opacity:50%] flex justify-center items-center z-50"
        @click.self="closeModal"> <!-- Close modal when clicking outside -->
     <div class="bg-white p-8 rounded-lg w-96 relative"> <!-- Increased modal size -->
       <!-- Close Button Positioned Top Right -->
