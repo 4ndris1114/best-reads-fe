@@ -38,7 +38,6 @@ export const useShelfStore = defineStore('shelfStore', {
     async addBookToBookshelf(userId: string, bookshelfId: string, bookId: string) {
       try {
         const response = await this.service.addBookToBookshelf(userId, bookshelfId, bookId);
-    
         const bookshelf = this.bookshelves.find(bookshelf => bookshelf.id === bookshelfId);
         if (bookshelf && !bookshelf.books.some(book => book.id === bookId)) {
           bookshelf.books.push({ id: bookId, updatedAt: new Date().toISOString() } as unknown as IBookshelfBook);
@@ -46,14 +45,13 @@ export const useShelfStore = defineStore('shelfStore', {
         this.userStore.loggedInUser = await this.userStore.getUserById(userId);
       } catch (error) {
         console.error('Error adding book to bookshelf:', error);
-        throw error;
       }
     },
 
     async removeBookFromBookshelf(userId: string, bookshelfId: string, bookId: string) {
       try {
         await this.service.removeBookFromBookshelf(userId, bookshelfId, bookId);
-    
+
         const bookshelf = this.bookshelves.find(bookshelf => bookshelf.id === bookshelfId);
         if (bookshelf) {
           bookshelf.books = bookshelf.books.filter(book => book.id !== bookId);
@@ -68,14 +66,14 @@ export const useShelfStore = defineStore('shelfStore', {
     async moveBookToBookshelf(userId: string, sourceShelfId: string, bookId: string, targetShelfId: string) {
       try {
         const response = await this.service.moveBookToBookshelf(userId, sourceShelfId, bookId, targetShelfId);
-    
+
         if (response === bookId) {
           // Remove book from source shelf
           const sourceShelf = this.bookshelves.find(bookshelf => bookshelf.id === sourceShelfId);
           if (sourceShelf) {
             sourceShelf.books = sourceShelf.books.filter(book => book.id !== bookId);
           }
-    
+
           // Add book to target shelf
           const targetShelf = this.bookshelves.find(bookshelf => bookshelf.id === targetShelfId);
           if (targetShelf && !targetShelf.books.some(book => book.id === bookId)) {
