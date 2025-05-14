@@ -4,21 +4,21 @@
       <div class="w-full ">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <!-- Reading challenge and stats -->
-          <div class="space-y-6 py-8 px-8 bg-gray-100 lg:col-span-3">
+          <div class="space-y-6 py-8 px-8 bg-gray-100 lg:col-span-3 flex justify-center">
             <ReadingChallenge />
           </div>
 
           <!-- Main Content (Feed) -->
-          <div class="lg:col-span-6 py-8 space-y-4">
+          <div class="lg:col-span-6 py-1 space-y-2">
             <div>
               <h1 class="text-4xl mt-6 mb-2 font-bold text-[#1D1D23]">{{ timeGreeting }}, {{ loggedInUser }}!</h1>
-              <p class="mb-10 text-2xl text-gray-400">See what’s new:</p>
+              <p class="mb-5 text-2xl text-gray-400">See what’s new:</p>
             </div>
             <ActivityFeed />
           </div>
 
           <!-- Currently reading and progress tracking -->
-<div class="space-y-6 py-8 px-8 bg-gray-100 lg:col-span-3 overflow-y-auto max-h-screen">
+          <div class="space-y-6 py-8 px-8 bg-gray-100 lg:col-span-3 overflow-y-auto max-h-screen">
             <div>
               <h2 class="text-2xl font-bold mb-2">You're currently reading:</h2>
               <div class="bg-darkBlueBackground border-t-7 border-primary rounded-xl p-4">
@@ -85,11 +85,9 @@ const loggedInUser = computed(() => userStore.loggedInUser?.username);
 const userId = computed(() => userStore.loggedInUser?.id);
 const selectedProgress = ref<IReadingProgress | null>(null);
 const isEditProgressModalVisible = ref(false);
-const isEditChallengeModalVisible = ref(false);
 const isLeaveReviewModalOpen = ref(false);
 const starClicked = ref(0);
 const bookToBeRated = ref<IBook | null>(null);
-const filteredReviews = computed(() => bookToBeRated.value?.reviews.filter((review: IReview) => review.isPublic || review.userId === userStore.loggedInUser?.id).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
 const usersReview = computed(() => bookToBeRated.value?.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id));
 const alreadyRated = computed(() => !!usersReview.value);
 const reviewText = computed(() => alreadyRated.value ? bookToBeRated.value!.reviews.find((review: IReview) => review.userId === userStore.loggedInUser?.id)!.reviewText : '');
