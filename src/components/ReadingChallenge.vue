@@ -22,7 +22,7 @@
           <span @click="isEditChallengeModalVisible = true" class="flex flex-row cursor-pointer space-x-1.5">
             <fa icon="pencil" class="mt-2 text-blue-400"></fa><span class="mt-1 text-blue-400">Edit</span>
           </span>
-          <span @click="isDeleteChallengeModalVisible = true" class="flex flex-row curcor pointer space-x-1.5">
+          <span @click="isDeleteChallengeModalVisible = true" class="flex flex-row cursor-pointer space-x-1.5">
             <fa icon="trash" class="mt-2 text-red-400"></fa><span class="mt-1 text-red-400">Delete</span>
           </span>
         </div>
