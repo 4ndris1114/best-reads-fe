@@ -59,6 +59,19 @@ export const useBookStore = defineStore('bookStore', {
           }
         },
 
+        async searchAndAddFromOpenLibraryByTitle(query: string): Promise<IBook | null> {
+          try {
+            this.loading = true;
+            const book = await this.service.searchAndAddFromOpenLibraryByTitle(query);
+            return book;
+          } catch (error) {
+            console.error('Error searching and adding from Open Library:', error);
+            throw error;
+          } finally {
+            this.loading = false;
+          }
+        },
+
         async selectBook(bookId: string) {
           const bookToBeSelected = this.books.find(book => book.id === bookId);
           if (!bookToBeSelected) {

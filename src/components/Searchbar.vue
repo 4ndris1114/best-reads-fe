@@ -75,9 +75,50 @@
                     Start typing to search for {{ searchType === 'books' ? 'books' : 'users' }}.
                 </li>
                 <!-- No results -->
-                <li v-else-if="(searchType === 'books' && bookSearchResults.length === 0) || (searchType === 'users' && userSearchResults.length === 0)"
-                    class="text-center text-gray-500 text-sm py-4">
-                    No results found.
+                <li
+                v-else-if="(searchType === 'books' && bookSearchResults.length === 0) || (searchType === 'users' && userSearchResults.length === 0)"
+                class="text-center text-gray-500 text-sm py-4 flex flex-col items-center gap-2"
+                >
+                <span v-if="!isExternalLoading && openLibrarySearchResults.length === 0 && !couldntFind">
+                No results found in our database. Search externally?
+                </span>
+
+                <div class="flex flex-wrap gap-2 justify-center mt-2" v-if="!isExternalLoading && openLibrarySearchResults.length === 0 && !couldntFind">
+                <button @click="handleOpenLibrarySearch('title')" class="bg-accent text-white px-4 py-1 rounded hover:opacity-90 text-sm cursor-pointer">
+                    Search by Title
+                </button>
+                <button @click="handleOpenLibrarySearch('author')" class="bg-accent text-white px-4 py-1 rounded hover:opacity-90 text-sm cursor-pointer">
+                    Search by Author
+                </button>
+                </div>
+                <div v-else-if="couldntFind" class="flex flex-wrap gap-2 justify-center mt-2 text-red-500">
+                    We can't find this book.
+                </div>
+
+                <div v-if="isExternalLoading" class="py-4 text-sm text-gray-500 flex justify-center items-center gap-2">
+                <span>Searching OpenLibrary...</span>
+                <svg class="animate-spin h-4 w-4 text-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                </svg>
+                </div>
+
+                <!-- External Results -->
+                <template v-if="openLibrarySearchResults.length > 0">
+                <li v-for="book in openLibrarySearchResults" :key="book.id"
+                    @click="$router.push({ name: 'bookdetails', params: { id: book.id } })"
+                    class="flex w-full items-center text-left gap-4 px-4 py-3 hover:bg-gray-100 cursor-pointer">
+                    <CloudinaryImage :publicId="imageCache.get(book.coverImage) ?? book.coverImage" :alt="book.title" :width="45" :height="70" />
+                    <div class="flex-1">
+                    <h3 class="font-semibold text-sm text-gray-900">{{ book.title }}</h3>
+                    <p class="text-xs text-gray-600">by {{ book.author }}</p>
+                    <div class="flex items-center gap-1 mt-1">
+                        <fa icon="star" v-for="n in Math.floor(book.averageRating || 0)" :key="n" class="text-yellow-400 text-xs" />
+                        <span class="text-xs text-gray-500">({{ book.averageRating ?? 'N/A' }})</span>
+                    </div>
+                    </div>
+                </li>
+                </template>
                 </li>
             </ul>
         </div>
@@ -105,8 +146,11 @@ const debouncedQuery = ref<string>('');
 const searchType = ref<string>('books');
 const isRecommendationsOpen = ref<boolean>(false);
 const imageCache = shallowRef(new Map<string, string>());
+const isExternalLoading = ref(false);
+const couldntFind = ref(false);
 
 const bookSearchResults = ref<IBookSearchResult[]>([]);
+const openLibrarySearchResults = ref<IBook[]>([]);
 const userSearchResults = ref<Partial<IUser>[]>([]);
 
 // Debounced input handling
@@ -116,6 +160,14 @@ const handleSearchInput = debounce((value: string) => {
 
 watch(searchQuery, (newVal) => {
   handleSearchInput(newVal);
+});
+
+watch(couldntFind, (newVal) => {
+  if (newVal) {
+    setTimeout(() => {
+      couldntFind.value = false;
+    }, 3000);
+  }
 });
 
 // Watch debounced query and search in DB
@@ -170,6 +222,36 @@ const preloadImage = async (url: string) => {
 watch(bookSearchResults, (books) => {
   books.forEach(book => preloadImage(book.coverImage));
 });
+
+const handleOpenLibrarySearch = async (type: string) => {
+  isExternalLoading.value = true;
+  openLibrarySearchResults.value = [];
+
+  try {
+    switch (type) {
+      case 'title':
+        try {
+            const foundByTitle = await bookStore.searchAndAddFromOpenLibraryByTitle(debouncedQuery.value);
+            if (foundByTitle) {
+            openLibrarySearchResults.value = [foundByTitle];
+            }
+        } catch (error) {
+            couldntFind.value = true;
+        }
+        break;
+      case 'author':
+        // const foundByAuthor = await bookStore.searchAndAddFromOpenLibraryByAuthor(debouncedQuery.value);
+        // if (Array.isArray(foundByAuthor)) {
+        //   openLibrarySearchResults.value = foundByAuthor;
+        // }
+        break;
+    }
+  } catch (error) {
+    console.error('External search failed:', error);
+  } finally {
+    isExternalLoading.value = false;
+  }
+};
 
 // Helpers
 const toggleRecommendations = () => {
