@@ -1,5 +1,6 @@
 <template>
-  <div class="flex flex-col w-[60vw] h-[60vh] mx-auto px-4">
+  <div class="flex flex-col w-[60vw] mx-auto px-4 overflow-x-hidden"
+  :class="{ 'h-[40vh]': isAtHome, 'h-[60vh]': !isAtHome }">
     <!-- Empty state -->
     <div v-if="books.length === 0"
       class="flex flex-col items-center justify-center text-center flex-grow py-12 space-y-4 text-white">
@@ -11,7 +12,8 @@
 
     <!-- Bookshelf rows -->
     <div v-else v-for="(shelfBooks, index) in chunkedBooks" :key="index"
-      class="flex justify-center items-end w-full mb-2 border-b-8 border-[#5b3826]">
+      class="flex justify-center items-end mb-2 border-b-8 border-[#5b3826]"
+      :class="{ 'w-fit': isAtHome, 'w-full': !isAtHome }">
       <div v-for="{ book, color, height } in shelfBooks" :key="book.id"
         class="flex items-center justify-center rotate-180 p-1 m-1 rounded-sm cursor-pointer font-bold text-xs text-center leading-none uppercase writing-vertical"
         :style="{
@@ -37,8 +39,8 @@ import type { IBookshelfBook } from '@/types/interfaces/IBookshelfBook';
 
 const chunkedBooks = computed(() => {
   const chunks = [];
-  for (let i = 0; i < styledBooks.value.length; i += 10) {
-    chunks.push(styledBooks.value.slice(i, i + 10));
+  for (let i = 0; i < styledBooks.value.length; i += props.isAtHome ? 4 : 10) {
+    chunks.push(styledBooks.value.slice(i, i + props.isAtHome ? 4 : 10));
   }
   return chunks;
 });
@@ -50,6 +52,10 @@ const props = defineProps({
   shelf: {
     type: Object as () => IBookshelf,
     required: true,
+  },
+  isAtHome: {
+    type: Boolean,
+    default: false
   }
 });
 
