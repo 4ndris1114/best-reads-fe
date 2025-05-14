@@ -56,7 +56,7 @@
                         :key="user.id"
                         class="flex items-center gap-4 px-4 py-3 hover:bg-gray-100 cursor-pointer"
                     >
-                        <CloudinaryImage class="w-10 h-10 rounded-full object-cover" :publicId="user.profilePicture ? user.profilePicture : 'default_profile_picture.jpg'" :isUserImage="true" :alt="user.username" :width="45" :height="45" />
+                        <CloudinaryImage class="w-10 h-10 rounded-full object-cover" :publicId="user.profilePicture ? user.profilePicture : 'default_profile_picture'" :isUserImage="true" :alt="user.username" :width="45" :height="45" />
                         <div class="flex-1">
                             <h3 class="font-semibold text-sm text-gray-900">{{ user.username }}</h3>
                             <p v-if="user.bio" class="text-xs text-gray-600">
@@ -127,6 +127,7 @@
 <script setup lang="ts">
 import { useBookStore } from '@/stores/bookStore';
 import { useUserStore } from '@/stores/userStore';
+import { useRouter } from 'vue-router';
 import type { IBook } from '@/types/interfaces/IBook';
 import { ref, shallowRef, watch, watchEffect } from 'vue';
 import { vOnClickOutside } from '@vueuse/components';

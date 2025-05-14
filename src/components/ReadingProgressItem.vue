@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center gap-6 bg-[#181c20] p-4 rounded shadow">
+  <div v-if="book" class="flex items-center gap-6 bg-[#181c20] p-4 rounded shadow">
     <router-link :to="'/bookdetails/' + readingProgress.bookId">
       <CloudinaryImage
         :publicId="book?.coverImage || ''"
@@ -52,6 +52,7 @@ import CloudinaryImage from './CloudinaryImage.vue';
 import { useBookStore } from '@/stores/bookStore';
 import { useUserStore } from '@/stores/userStore';
 import RatingStars from './RatingStars.vue';
+import type { IBook } from '@/types/interfaces/IBook';
 
 const props = defineProps<{
   readingProgress: IReadingProgress;
@@ -62,8 +63,11 @@ const bookStore = useBookStore();
 const userStore = useUserStore();
 const readingProgress = ref(props.readingProgress);
 
-const book = computed(() => bookStore.books.find(b => b.id === props.readingProgress.bookId));
+const book = ref<IBook | undefined>(undefined)
 
+onMounted(async () => {
+  book.value = await bookStore.getBookById(props.readingProgress.bookId);
+})
 const emit = defineEmits<{
   (e: 'reviewRequested', clickedStar: number, progress: IReadingProgress): void;
 }>();

@@ -33,7 +33,7 @@ const defaultTransformations = computed(() => [
 ]);
 
 const imageUrl = computed(() =>
-  `https://res.cloudinary.com/${cloudName}/image/upload/${defaultTransformations.value.join(',')}/${props.isUserImage ? 'users' : ''}/${props.publicId === '' ? "default_book_cover" : props.publicId}`
+  `https://res.cloudinary.com/${cloudName}/image/upload/${defaultTransformations.value.join(',')}${props.isUserImage ? '/users' : ''}/${props.publicId === '' ? "default_book_cover" : props.publicId}`
 );
 
 const onError = (event: Event) => {
