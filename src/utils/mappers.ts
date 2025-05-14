@@ -7,6 +7,7 @@ import type { IActivity } from "@/types/interfaces/IActivity";
 import type { ActivityType } from "@/types/enums/ActiviyType";
 import type { IReadingChallenge } from "@/types/interfaces/IReadingChallenge";
 import type { IBookshelfBook } from "@/types/interfaces/IBookshelfBook";
+import type { IComment } from "@/types/IComment";
 
 
 export const mapToIUser = (user: any): IUser => {
@@ -87,8 +88,19 @@ export const mapToIActivity = (activity: any): IActivity => {
     userId: activity.userId,
     type: activity.type as ActivityType,
     createdAt: activity.createdAt,
-    payload: activity.payload
+    payload: activity.payload,
+    likes: activity.likes,
+    comments: activity.comments.map((comment: any) => mapToIComment(comment)),
   } as IActivity;
+}
+
+export const mapToIComment = (comment: any): IComment => {
+  return {
+    id: comment.id,
+    userId: comment.userId,
+    content: comment.content,
+    createdAt: comment.createdAt,
+  } as IComment;
 }
 
 export const mapToIReadingChallenge = (readingChallenge: any): IReadingChallenge => {

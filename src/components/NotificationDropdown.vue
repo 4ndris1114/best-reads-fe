@@ -42,7 +42,7 @@ onMounted(async () => {
     const userIds = Array.from(new Set(activities.value.map(notification => notification.userId)));
 
     // Fetch users based on the collected userIds
-    users.value = await userStore.getUsersByIds(userIds);
+    if (userIds.length > 0) users.value = await userStore.getUsersByIds(userIds);
 });
 
 const getUserName = (userId: string) => {
