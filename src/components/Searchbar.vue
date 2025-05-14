@@ -70,8 +70,12 @@
                     </li>
                 </template>
 
+                <!-- Start typing -->
+                <li v-if="searchQuery.length === 0" class="text-center text-gray-500 text-sm py-4">
+                    Start typing to search for {{ searchType === 'books' ? 'books' : 'users' }}.
+                </li>
                 <!-- No results -->
-                <li v-if="(searchType === 'books' && bookSearchResults.length === 0) || (searchType === 'users' && userSearchResults.length === 0)"
+                <li v-else-if="(searchType === 'books' && bookSearchResults.length === 0) || (searchType === 'users' && userSearchResults.length === 0)"
                     class="text-center text-gray-500 text-sm py-4">
                     No results found.
                 </li>
@@ -84,106 +88,94 @@
 import { useBookStore } from '@/stores/bookStore';
 import { useUserStore } from '@/stores/userStore';
 import type { IBook } from '@/types/interfaces/IBook';
-import { computed, onMounted, ref, shallowRef, watch, watchEffect } from 'vue';
-import { vOnClickOutside } from '@vueuse/components'
+import { ref, shallowRef, watch, watchEffect } from 'vue';
+import { vOnClickOutside } from '@vueuse/components';
 import CloudinaryImage from './CloudinaryImage.vue';
 import type { IUser } from '@/types/interfaces/IUser';
 import debounce from 'lodash/debounce';
+import type { IBookSearchResult } from '@/types/interfaces/IBookSearchResult';
 
-onMounted(async () => {
-    bookStore.getAllBooks();
-})
-
-//caching
-const imageCache = shallowRef(new Map<string, string>());
-
-//stores
+// Stores
 const bookStore = useBookStore();
 const userStore = useUserStore();
 
-//state
-const books = computed<IBook[]>(() => bookStore.books);
+// State
+const searchQuery = ref<string>('');
+const debouncedQuery = ref<string>('');
+const searchType = ref<string>('books');
+const isRecommendationsOpen = ref<boolean>(false);
+const imageCache = shallowRef(new Map<string, string>());
 
-const searchQuery = ref<string>("");
-const debouncedQuery = ref('');
-const searchType = ref<string>("books");
+const bookSearchResults = ref<IBookSearchResult[]>([]);
+const userSearchResults = ref<Partial<IUser>[]>([]);
+
+// Debounced input handling
 const handleSearchInput = debounce((value: string) => {
-  debouncedQuery.value = value;
-}, 400);
+  debouncedQuery.value = value.trim();
+}, 600);
 
 watch(searchQuery, (newVal) => {
   handleSearchInput(newVal);
 });
 
-const isRecommendationsOpen = ref<boolean>(false);
+// Watch debounced query and search in DB
+watchEffect(async () => {
+  if (!debouncedQuery.value) {
+    bookSearchResults.value = [];
+    userSearchResults.value = [];
+    return;
+  }
 
+  if (searchType.value === 'books') {
+    try {
+      const books = await bookStore.searchBooks(debouncedQuery.value);
+      bookSearchResults.value = books;
+    } catch (error) {
+      console.error('Failed to search books:', error);
+    }
+  }
+
+  if (searchType.value === 'users') {
+    const results = await userStore.searchByUsername(debouncedQuery.value);
+    userSearchResults.value = Array.isArray(results) ? results as Partial<IUser>[] : [];
+  }
+});
+
+// Image preloading
 const resizeImage = (url: string, width = 100, height = 150, quality = 0.7) => {
-    return new Promise<string>((resolve) => {
-        const img = new Image();
-        img.crossOrigin = "Anonymous";
-        img.src = url;
-        img.onload = () => {
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d")!;
-            canvas.width = width;
-            canvas.height = height;
-            ctx.drawImage(img, 0, 0, width, height);
-            resolve(canvas.toDataURL("image/jpeg", quality));
-        };
-    });
+  return new Promise<string>((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.src = url;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d")!;
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL("image/jpeg", quality));
+    };
+  });
 };
 
 const preloadImage = async (url: string) => {
-    if (!imageCache.value.has(url)) {
-        const compressedImage = await resizeImage(url, 100, 150, 0.6);
-        imageCache.value.set(url, compressedImage);
-        imageCache.value = new Map(imageCache.value); // Trigger reactivity
-    }
+  if (!imageCache.value.has(url)) {
+    const compressedImage = await resizeImage(url, 100, 150, 0.6);
+    imageCache.value.set(url, compressedImage);
+    imageCache.value = new Map(imageCache.value); // Trigger reactivity
+  }
 };
 
-const bookSearchResults = computed<IBook[]>(() => {
-    if (searchType.value === "books") {
-        if (!searchQuery.value) {
-            return books.value;
-        }
-        return books.value.filter(book =>
-            book.title.toLowerCase().includes(searchQuery.value.toLowerCase().trim()) ||
-            book.author.toLowerCase().includes(searchQuery.value.toLowerCase().trim()) ||
-            book.isbn.trim().includes(searchQuery.value.toLowerCase().trim().split("-").join("")) ||
-            book.genres.some(genre => genre.toLowerCase().includes(searchQuery.value.toLowerCase().trim()))
-        )
-    } else {
-        return [];
-    }
+// Preload images when book results change
+watch(bookSearchResults, (books) => {
+  books.forEach(book => preloadImage(book.coverImage));
 });
 
-const userSearchResults = ref<Partial<IUser>[]>([]);
-
-watchEffect(async () => {
-    if (searchType.value !== "users" || !debouncedQuery.value.trim()) {
-        userSearchResults.value = [];
-        return;
-    }
-
-    const results = await userStore.searchByUsername(debouncedQuery.value.trim());
-
-    userSearchResults.value = Array.isArray(results) ? results as Partial<IUser>[] : [];
-});
-
-
-
+// Helpers
 const toggleRecommendations = () => {
-    isRecommendationsOpen.value = !isRecommendationsOpen.value;
+  isRecommendationsOpen.value = !isRecommendationsOpen.value;
 };
-
-const toggleSearchType = () => {
-    searchType.value = searchType.value === "books" ? "users" : "books";
-};
-
-// Start preloading whenever search results change
-watchEffect(() => {
-    bookSearchResults.value.forEach(book => preloadImage(book.coverImage));
-});
 </script>
+
 
 <style scoped></style>

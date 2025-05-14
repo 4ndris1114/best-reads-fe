@@ -1,8 +1,9 @@
 import httpClient from "@/services/httpClient";
 //todo: add missing imports for interfaces, types
 import type { IBook } from "@/types/interfaces/IBook";
+import type { IBookSearchResult } from "@/types/interfaces/IBookSearchResult";
 import type { IReview } from "@/types/interfaces/IReview";
-import { mapToIBook, mapToIReview } from "@/utils/mappers";
+import { mapToIBook, mapToIBookSearchResult, mapToIReview } from "@/utils/mappers";
 
 export class BookService {
     async getAll() {
@@ -35,6 +36,20 @@ export class BookService {
             console.error('Error fetching book:', error);
             throw error;
         }
+    }
+
+    async searchBooks(query: string): Promise<IBookSearchResult[]> {
+        console.log('request sent');
+        
+        try {
+        const response = await httpClient.get(`/book/search`, {
+            params: { query }
+            });
+            return response.data.map((bsr: any) => mapToIBookSearchResult(bsr));
+        } catch (error) {
+            console.error('Error searching books:', error);
+            throw error;
+        } 
     }
 
     async postReview(bookId: string, review: IReview) {
