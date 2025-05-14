@@ -11,7 +11,7 @@
             class="mb-10 shelf-label flex justify-center  items-center gap-2 drop-shadow-3xl py-2 px-4 rounded-3xl text-3xl font-extrabold">
             <!-- Bookshelf Title + Dropdown -->
             <button @click="toggleDropdown"
-              class="relative flex items-center justify-center mr-2 w-auto text-[#3a281d] gap-2 bg-[#C67B2F] drop-shadow-3xl py-2 px-4 rounded-xl text-3xl font-extrabold hover:bg-[#825221] transition w-[250px] cursor-pointer">
+              class="relative flex items-center justify-center mr-2 w-auto text-[#3a281d] gap-2 bg-[#C67B2F] drop-shadow-3xl py-2 px-4 rounded-xl text-3xl font-extrabold hover:bg-[#825221] transition cursor-pointer">
               {{ selectedBookshelf.name }}
               <fa :icon="dropdownOpen ? 'chevron-up' : 'chevron-down'" class="ml-auto" />
               <!-- Dropdown List -->
@@ -59,7 +59,7 @@
         <div class="flex justify-center items-center mt-4 gap-4">
           <!-- Left Arrow -->
           <button v-if="bookshelves.length > 1" @click="swipeToNextBookshelf(-1)"
-            class="text-white bg-[#9F6932] mr-auto p-2 rounded-lg hover:bg-[#825221] cursor-pointer">
+            class="scale-175 text-white bg-[#9F6932] mr-auto p-1 rounded-lg hover:bg-[#825221] cursor-pointer">
             <fa icon="chevron-left" />
           </button>
 
@@ -71,7 +71,7 @@
 
           <!-- Right Arrow -->
           <button v-if="bookshelves.length > 1" @click="swipeToNextBookshelf(1)"
-            class="text-white bg-[#9F6932] p-2 ml-auto rounded-lg hover:bg-[#825221] cursor-pointer">
+            class="scale-175 text-white bg-[#9F6932] p-1 ml-auto rounded-lg hover:bg-[#825221] cursor-pointer">
             <fa icon="chevron-right" />
           </button>
         </div>
