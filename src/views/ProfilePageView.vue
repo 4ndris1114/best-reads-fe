@@ -265,7 +265,6 @@ const handleImageUpload = async (file: File) => {
     formData.append("api_key", import.meta.env.VITE_CLOUDINARY_API_KEY);
     formData.append("timestamp", signature.timestamp);
     formData.append("signature", signature.signature);
-    formData.append("folder", "users");
     formData.append("overwrite", "true");
     formData.append("public_id", loggedInUser.id);
     
@@ -276,7 +275,7 @@ const handleImageUpload = async (file: File) => {
       body: formData,
     });
 
-    loggedInUser.profilePicture = loggedInUser.id + "." +file.type.split("/")[1];
+    loggedInUser.profilePicture = loggedInUser.id;
     await userStore.editUserById(loggedInUser.id, loggedInUser)
 
     toastStore.triggerToast("Your profile picture has been updated successfully. It might take a minute to see it updated.", 'success')

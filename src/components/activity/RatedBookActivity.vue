@@ -6,6 +6,7 @@
         <CloudinaryImage
           v-if="user.profilePicture !== 'default_profile_picture.jpg'"
           :publicId="user.profilePicture"
+          :isUserImage="true"
           alt="User profile image"
           :width="50"
           :height="50"

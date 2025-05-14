@@ -4,7 +4,7 @@
         <div class="flex-shrink-0">
             <div class="cursor-pointer" @click="$router.push({ name: 'profilepage', params: { id: user.id } })">
                 <CloudinaryImage v-if="user.profilePicture !== 'default_profile_picture.jpg'"
-                    :publicId="user?.profilePicture" alt="User profile image" :width="50" :height="50" />
+                    :publicId="user?.profilePicture" :isUserImage="true" alt="User profile image" :width="50" :height="50" />
                 <img v-else src="@/assets/default_profile_picture.jpg" alt="User profile image"
                     class="w-20 h-20 rounded-full text-inherit object-cover" />
             </div>
