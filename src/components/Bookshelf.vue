@@ -2,7 +2,7 @@
 <div class="flex flex-col w-full flex-grow max-w-5xl mx-auto px-4">
   <!-- Empty state -->
   <div
-    v-if="styledBooks.length === 0"
+    v-if="books.length === 0"
     class="flex flex-col items-center justify-center text-center flex-grow h-full py-12 space-y-4 text-white"
   >
     <div class="text-6xl">📚</div>
@@ -78,10 +78,6 @@ const colorUsage = ref<Record<string, number>>({
 
 const totalBooks = ref(0);
 
-watch(() => props.shelf.books, async () => {
-  await getBooksAndStyles();
-});
-
 // Store color and height for each book
 const styledBooks = ref<{ book: IBook, color: string, height: number }[]>([]);
 
@@ -93,12 +89,19 @@ const getBooksAndStyles = async () => {
       try {
         book = await bookStore.getBookById(bb.id);
         if (book) bookStore.books.push(book);
+        console.log(`Fetched book ${bb.id}`);
       } catch (error) {
         console.error(`Error fetching book ${bb.id}`, error);
       }
     }
     return book;
   });
+
+
+watch(() => props.shelf.books, async () => {
+  await getBooksAndStyles();
+}, { deep: true, immediate: true });
+
 
   books.value = (await Promise.all(bookPromises)).filter((b): b is IBook => b !== null);
 

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="book" class="flex items-center gap-6 bg-[#181c20] p-4 rounded shadow">
+  <div class="flex items-center gap-6 bg-[#181c20] p-4 rounded shadow">
     <router-link :to="'/bookdetails/' + readingProgress.bookId">
       <CloudinaryImage
         :publicId="book?.coverImage || ''"
