@@ -10,7 +10,6 @@
 import { useUserStore } from '@/stores/userStore';
 import { computed, onMounted } from 'vue';
 import ReadingProgressItem from './ReadingProgressItem.vue';
-import type { IReadingProgress } from '@/types/interfaces/IReadingProgress';
 
 const userStore = useUserStore();
 const userId = computed(() => userStore.loggedInUser!.id);

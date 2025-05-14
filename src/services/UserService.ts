@@ -58,7 +58,7 @@ export class UserService {
       throw error;
     }
   }
-  
+
 
   async getAllReadingProgress(userId: string) {
     try {
