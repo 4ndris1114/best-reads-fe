@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col mx-auto  h-[76vh] mt-[2vh] rounded-lg overflow-hidden">
+    <div class="flex flex-col mx-auto h-[75vh] mt-[2vh] rounded-lg overflow-hidden">
       <div class="h-3 bg-primary -mb-0.5" />
 
       <!-- Scrollable content area -->
@@ -28,7 +28,7 @@
         </div>
       </div>
       <!-- Bottom accent line -->
-      <div class="h-3 bg-highlight -mt-0.5" />
+      <div class="h-3 bg-primary -mt-0.5" />
     </div>
   </template>
 
