@@ -12,7 +12,7 @@
         />
         <div v-else class="text-center">
           <p class="text-gray-500">No activities to show. Are you following anyone?</p>
-          <button 
+          <button
             @click="() => activityStore.fetchUserFeed()"
             class="bg-accent text-white px-4 py-2 mt-4 rounded-lg">
             {{ activityStore.loading ? 'Loading...' : 'Refresh' }}
@@ -21,7 +21,7 @@
         <div v-if="hasMore" class="text-center">
           <button
             @click="() => activityStore.fetchUserFeed()"
-            class="bg-accent text-white px-4 py-2 rounded-lg"
+            class="bg-newYellow text-white px-4 py-2 hover:bg-newYellow/80 rounded-lg"
           >
             Load more
           </button>

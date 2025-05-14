@@ -4,7 +4,7 @@
         <div class="flex space-x-2">
             <input v-model="newComment" type="text" placeholder="Write a comment..."
                 class="border rounded p-1 flex-1 outline-slate-500" />
-            <button @click="submitComment" class="bg-accent text-white px-3 py-1 rounded cursor-pointer">
+            <button @click="submitComment" class="bg-newYellow hover:bg-newYellow/80 text-white px-3 py-1 rounded-md  cursor-pointer">
                 Post
             </button>
         </div>
@@ -19,9 +19,10 @@
                     :height="40" class="w-10 h-10 rounded-full object-cover" />
 
                 <!-- Comment Content -->
-                <div class="flex flex-col text-sm text-gray-800">
-                    <span class="font-bold">{{ getUserName(comment.userId) }}</span>
-                    <span class="">{{ comment.content }}</span>
+                <div class="flex flex-col text-gray-800">
+                        <span class="font-extrabold text-md">{{ getUserName(comment.userId) }}</span>
+                        <span class="text-[12px] text-gray-600">{{ new Date(comment.createdAt).toLocaleString() }}</span>
+                    <span class="text-md font-semibold mt-1">{{ comment.content }}</span>
                 </div>
             </div>
 

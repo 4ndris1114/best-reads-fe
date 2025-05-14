@@ -15,7 +15,7 @@
       <div class="flex justify-end scale-50">
         <RatingStars @reviewRequested="(clickedStar) => emit('reviewRequested', clickedStar, readingProgress)"></RatingStars>
       </div>
-      <p class="text-sm text-white">
+      <div class="text-sm text-white">
         <div class="w-full h-3 bg-[#3D4D69] rounded mt-2 overflow-hidden">
         <div
           class="h-full bg-lime-500 transition-all rounded duration-300"
@@ -23,7 +23,7 @@
         ></div>
       </div>
         {{ readingProgress.currentPage }} / {{ readingProgress.totalPages }} pages <b class="ml-1 text-[#547786] ">({{ Math.floor(readingProgress.currentPage / readingProgress.totalPages * 100) }}%)</b>
-      </p>
+    </div>
       <button
         @click="isEditProgressModalOpen = true"
         class="mt-5 text-gray-300 font-semibold cursor-pointer text-sm mt-1 bg-[#3D4D69] px-2 py-1 rounded hover:bg-[#3D4D69]/50 transition"

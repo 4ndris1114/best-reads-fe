@@ -20,27 +20,27 @@
         {{ new Date(activity.createdAt).toLocaleDateString() }} at
         {{ new Date(activity.createdAt).toLocaleTimeString() }}
       </p>
-      <p class="mt-1 space-y-6">
+      <div class="mt-1 space-y-6">
         <span @click="$router.push({ name: 'profilepage', params: { id: user.id } })" class="font-bold text-black cursor-pointer">{{ user.username }}</span>
         <span class="text-gray-700"> {{ activity.payload.isUpdate ? ' updated their rating of ' : ' rated ' }} </span>
         <span class="font-semibold text-accent">"{{ activity.payload.bookTitle }}"</span>
         <br />
         <div class="lg:space-x-4 md:space-x-2.5 sm:space-x-2 mt-1.5">
-          <fa 
+          <fa
             v-for="n in Math.floor(activity.payload.rating)"
             :key="n"
-            :icon="['fas', 'star']" 
+            :icon="['fas', 'star']"
             class="lg:scale-175 md:scale-150 sm:scale-150 cursor-pointer transition-colors duration-200"
             :class="n <= Math.floor(activity.payload.rating) ? 'text-yellow-500' : 'text-slate-300'"
           />
         </div>
         <span class="text-gray-700">
-          {{ isShowingMore ? activity.payload.reviewText : activity.payload.reviewText.length > 100 
-             ? activity.payload.reviewText.substring(0, 100) + '...' 
+          {{ isShowingMore ? activity.payload.reviewText : activity.payload.reviewText.length > 100
+             ? activity.payload.reviewText.substring(0, 100) + '...'
              : activity.payload.reviewText }}
         </span>
         <span @click="isShowingMore = !isShowingMore" class="text-slate-900 font-semibold cursor-pointer" v-if="activity.payload.reviewText.length > 100"> Read {{ isShowingMore ? 'less' : 'more' }}</span>
-      </p>
+      </div>
     </div>
 
     <!-- Book Cover (Justified Right) -->
