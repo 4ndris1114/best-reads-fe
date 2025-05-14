@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center gap-6 bg-[#181c20] p-4 rounded shadow">
+  <div v-if="book" class="flex items-center gap-6 bg-[#181c20] p-4 rounded shadow">
     <router-link :to="'/bookdetails/' + readingProgress.bookId">
       <CloudinaryImage
         :publicId="book?.coverImage || ''"
@@ -8,8 +8,9 @@
       />
     </router-link>
 
-      <div class=" items-center justify-between">
-      <h2 :class="`font-semibold text-white ${book!.title?.length > 20 ? 'text-sm' : 'text-md'}`">
+    <div class="flex-1">
+      <div class="flex items-center justify-between">
+      <h2 :class="`font-semibold text-white ${book!.title?.length > 20 ? 'text-md' : 'text-xl'}`">
         {{ book?.title || 'Untitled' }}
       </h2>
       <div class="flex justify-end scale-50">
@@ -21,6 +22,7 @@
           class="h-full bg-lime-500 transition-all rounded duration-300"
           :style="{ width: readingProgress.currentPage / readingProgress.totalPages * 100 + '%' }"
         ></div>
+        </div>
       </div>
         {{ readingProgress.currentPage }} / {{ readingProgress.totalPages }} pages <b class="ml-1 text-[#547786] ">({{ Math.floor(readingProgress.currentPage / readingProgress.totalPages * 100) }}%)</b>
     </div>
@@ -43,7 +45,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import type { IReadingProgress } from '@/types/interfaces/IReadingProgress';
 import EditProgressModal from './EditProgressModal.vue';
 import CloudinaryImage from './CloudinaryImage.vue';
@@ -61,7 +63,7 @@ const bookStore = useBookStore();
 const userStore = useUserStore();
 const readingProgress = ref(props.readingProgress);
 
-const book = computed(() => bookStore.books.find(b => b.id === props.readingProgress.bookId));
+const book = ref<IBook | undefined>(undefined)
 
 onMounted(async () => {
   book.value = await bookStore.getBookById(props.readingProgress.bookId);
