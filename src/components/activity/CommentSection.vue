@@ -15,7 +15,7 @@
             <div v-for="comment in stubbedComments" :key="comment.id"
                 class="flex items-start space-x-3 py-2 border-b border-gray-200">
                 <!-- Profile Picture -->
-                <CloudinaryImage :publicId="getUserProfilePicture(comment.userId)" :is-user-image="true" :width="40"
+                <CloudinaryImage :publicId="getUserProfilePicture(comment.userId)" :isUserImage="true" :width="40"
                     :height="40" class="w-10 h-10 rounded-full object-cover" />
 
                 <!-- Comment Content -->
@@ -97,6 +97,7 @@ const submitComment = async () => {
     if (newComment.value.trim() !== '') {
         const addedComment = await activityStore.addComment(props.activityId, newComment.value.trim());
         comments.value.unshift(addedComment);
+        commentUsers.value.push(await userStore.getUserById(addedComment.userId));
         toastStore.triggerToast('Comment posted successfully', 'success');
         newComment.value = '';
         areCommentsVisible.value = true;
