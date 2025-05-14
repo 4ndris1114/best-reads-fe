@@ -111,9 +111,13 @@
                     <a href="#" class="pl-2 text-highlight underline"
                     @click="isShowingMore = false">Show less</a>
                     <br />
-                    <div v-if="book.publishedDate" class="pt-[3vh] text-sm text-gray-500">Published: {{ book.publishedDate.toString().split('T')[0] }}</div>
-                </div>
 
+                </div>
+                  <div class="text-md  mt-2 text-gray-500">
+                      <span v-if="book.numberOfPages"> {{ book.numberOfPages }} pages • </span>
+                      <span v-if="book.publishedDate" class="pt-[3vh] text-sm text-gray-500">Published {{ book.publishedDate.toString().split('T')[0] }}</span>
+                      <span v-if="book.isbn"> • ISBN: {{ book.isbn }}</span>
+                    </div>
                 <!-- Reviews -->
                 <h2 v-if="filteredReviews!.length > 0" class="mt-[5vh] text-3xl text-black pb-2">Reviews</h2>
                 <h2 v-else class="mt-[5vh] text-xl text-black pb-2 italic">This book hasn't been reviewed by any user yet.</h2>
