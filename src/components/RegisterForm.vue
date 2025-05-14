@@ -1,6 +1,12 @@
 <template>
     <div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
-        <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-lg shadow-lg">
+   <img src="../assets/loginImage.jpg" alt="Login Image" class="absolute inset-0 object-cover w-full h-full" />
+    <div class="max-w-md w-full space-y-8 bg-white bg-opacity-90 p-10 rounded-lg shadow-lg">
+
+
+            <!-- Register Form -->
+            <form class="mt-8 rounded-lg drop-shadow-lg inset-0 bg-gray-900/[var(--bg-opacity)] [--bg-opacity:60%] px-10 py-4 space-y-6" @submit.prevent="handleRegister">
+
             <!-- Logo -->
             <div class="flex justify-center">
                 <fa icon="book-open" class="text-4xl text-blue-600" />
@@ -8,12 +14,9 @@
 
             <!-- Welcome Text -->
             <div class="text-center">
-                <h2 class="mt-6 text-3xl font-extrabold text-gray-900">Create an Account</h2>
-                <p class="mt-2 text-sm text-gray-600">Sign up to start using BestReads</p>
+                <h2 class="mt-6 text-3xl font-extrabold text-white">Create an Account</h2>
+                <p class="mt-2 text-sm text-[#e0d6bb]">Sign up to start using BestReads</p>
             </div>
-
-            <!-- Register Form -->
-            <form class="mt-8 space-y-6" @submit.prevent="handleRegister">
                 <div class="space-y-4">
                     <!-- Name Input -->
                     <div>
@@ -77,8 +80,16 @@
                     <span v-if="isLoading" class="absolute left-1/2 transform -translate-x-1/2">
                         <fa icon="spinner" class="animate-spin" />
                     </span>
-                    <span :class="{ invisible: isLoading }">Sign Up</span>
+                    <span :class="{ invisible: isLoading }">Register</span>
                 </button>
+
+                <p class="mt-8 text-center text-sm text-[#e0d6bb]">
+                Already have an account?
+                <!-- TODO : Add sign up page -->
+                <a href="#" class="font-medium text-blue-600 hover:text-blue-500" @click="handleSignIn">
+                    Sign up
+                </a>
+            </p>
             </form>
 
             <!-- Sign In Link -->
@@ -93,7 +104,7 @@
         <!-- Toast Notification -->
         <div v-if="showToast" class="fixed top-4 right-4 bg-white shadow-lg rounded-lg p-4 flex items-center space-x-3"
             :class="toastType === 'error' ? 'border-l-4 border-red-500' : 'border-l-4 border-green-500'">
-            <fa :icon="toastType === 'error' ? 'exclamation-circle' : 'check-circle'" 
+            <fa :icon="toastType === 'error' ? 'exclamation-circle' : 'check-circle'"
                 :class="toastType === 'error' ? 'text-red-500' : 'text-green-500'"></fa>
             <p class="text-sm text-gray-600">{{ toastMessage }}</p>
         </div>
@@ -181,7 +192,7 @@ const handleRegister = async () => {
         usernameError.value = 'Username must be between 3 and 16 characters and can only contain letters, numbers, and underscores';
         return;
     }
-    
+
     emailError.value = '';
     isLoading.value = true;
 
@@ -246,7 +257,7 @@ input[type="number"]::-webkit-outer-spin-button {
 
 input:-webkit-autofill {
     background-color: transparent !important;
-    -webkit-text-fill-color: #000 !important;
+    -webkit-text-fill-color: #fff !important;
     transition: background-color 5000s ease-in-out 0s;
 }
 </style>

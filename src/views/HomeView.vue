@@ -11,14 +11,14 @@
           <!-- Main Content (Feed) -->
           <div class="lg:col-span-6 py-8 space-y-4">
             <div>
-              <h1 class="text-4xl font-bold text-[#1D1D23]">{{ timeGreeting }}, {{ loggedInUser }}!</h1>
-              <p class="font-semibold text-xl text-gray-400">See what’s new:</p>
+              <h1 class="text-4xl mt-6 mb-2 font-bold text-[#1D1D23]">{{ timeGreeting }}, {{ loggedInUser }}!</h1>
+              <p class="mb-10 text-2xl text-gray-400">See what’s new:</p>
             </div>
             <ActivityFeed />
           </div>
 
           <!-- Currently reading and progress tracking -->
-          <div class="space-y-6 py-8 px-8 bg-gray-100 lg:col-span-3">
+<div class="space-y-6 py-8 px-8 bg-gray-100 lg:col-span-3 overflow-y-auto max-h-screen">
             <div>
               <h2 class="text-2xl font-bold mb-2">You're currently reading:</h2>
               <div class="bg-darkBlueBackground border-t-7 border-primary rounded-xl p-4">
@@ -193,4 +193,8 @@ onMounted(async () => {
   }
 });
 </script>
-<style scoped></style>
+<style scoped>
+::-webkit-scrollbar {
+  display: none;
+}</style>
+

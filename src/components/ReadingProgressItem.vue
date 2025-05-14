@@ -10,7 +10,9 @@
 
     <div class="flex-1">
       <div class="flex items-center justify-between">
-      <h2 class="text-xl font-semibold text-white">{{ book?.title || 'Untitled' }}</h2>
+      <h2 :class="`font-semibold text-white ${book!.title?.length > 20 ? 'text-md' : 'text-xl'}`">
+        {{ book?.title || 'Untitled' }}
+      </h2>
       <div class="flex justify-end scale-50">
         <RatingStars @reviewRequested="(clickedStar) => emit('reviewRequested', clickedStar, readingProgress)"></RatingStars>
       </div>

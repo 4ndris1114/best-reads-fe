@@ -4,7 +4,7 @@
       <p class="text-center text-gray-500">No related books found.</p>
     </div>
     <div v-else class="w-full">
-      <h1 class="text-3xl text-center my-4 text-highlight font-extrabold">Readers also liked</h1>
+      <h1 class="text-3xl text-center my-5 text-primary font-bold">Readers also liked</h1>
       <div class="flex flex-wrap justify-center gap-6">
         <div
           v-for="book in relatedBooks"
@@ -20,7 +20,12 @@
             <fa :icon="['fas', 'star']" class="text-yellow-500"></fa>
             {{ book.averageRating.toFixed(1) }}
           </p>
-          <button @click="shelfStore.addBookToBookshelf (loggedInUser!.id,'Want to read', book.id,)" class="mt-4 cursor-pointer flex items-center bg-highlight text-white py-2 px-4 rounded-md"><fa icon="circle-plus" class="mr-2" />Want to read</button>
+<button
+  @click="addToBookshelf('Want to Read', book.id)"
+  class="mt-4 cursor-pointer flex items-center bg-highlight text-white py-2 px-4 rounded-md"
+>
+  <fa icon="circle-plus" class="mr-2" />Want to read
+</button>
         </div>
       </div>
     </div>
@@ -34,7 +39,10 @@ import { useShelfStore } from '@/stores/shelfStore';
 import { useUserStore } from '@/stores/userStore';
 import CloudinaryImage from '@/components/CloudinaryImage.vue';
 import type { IBook } from '@/types/interfaces/IBook';
+import ToastNotification from './ToastNotification.vue';
+import { useToastStore } from '@/stores/toastStore'
 
+const toastStore = useToastStore();
 const bookStore = useBookStore();
 const shelfStore = useShelfStore();
 const userStore = useUserStore();
@@ -61,6 +69,36 @@ const relatedBooks = computed<IBook[]>(() => {
     )
   );
 });
+const addToBookshelf = async (shelfName: string, bookId: string) => {
+  // Find the shelf by its name
+  const shelf = shelfStore.bookshelves.find(b => b.name === shelfName);
+
+  if (!shelf) {
+    console.error(`Bookshelf "${shelfName}" not found.`);
+    toastStore.triggerToast("Bookshelf not found.", "error");
+    return;
+  }
+
+  // Check if the book is already in the bookshelf
+  const isBookAlreadyInShelf = shelf.books.some(book => book.id === bookId);
+
+  if (isBookAlreadyInShelf) {
+    console.error(`Book with ID "${bookId}" is already in the bookshelf "${shelfName}".`);
+    toastStore.triggerToast("This book is already added to this bookshelf", "error");
+    return;
+  }
+
+  // Proceed with adding the book to the bookshelf
+  try {
+    await shelfStore.addBookToBookshelf(loggedInUser.value!.id, shelf.id, bookId);
+    toastStore.triggerToast("Book added to shelf successfully!", "success");
+  } catch (error) {
+    console.error("Error adding book to bookshelf:", error);
+    toastStore.triggerToast("Failed to add book to shelf. Please try again.", "error");
+  }
+};
+
+
 </script>
 
 <style scoped>

@@ -1,21 +1,24 @@
 <!-- The exported code uses Tailwind CSS. Install Tailwind CSS in your dev environment to ensure all styles work. -->
 
 <template>
-    <div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
-        <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-lg shadow-lg">
-            <!-- Logo -->
+  <div
+    class="min-h-screen bg-cover bg-center flex items-center justify-center py-12 px-4">
+   <img src="../assets/loginImage.jpg" alt="Login Image" class="absolute inset-0 object-cover w-full h-full" />
+    <div class="max-w-md w-full space-y-8 bg-white bg-opacity-90 p-10 rounded-lg shadow-lg">
+
+
+            <!-- Login Form -->
+            <form class="mt-8 rounded-lg drop-shadow-lg inset-0 bg-gray-900/[var(--bg-opacity)] [--bg-opacity:60%] px-10 py-4 space-y-6" @submit.prevent="handleLogin">
+               <!-- Logo -->
             <div class="flex justify-center">
-                <fa icon="book-open" class="text-4xl text-blue-600" />
+   <img src="../assets/logo.png" alt="Logo" class="h-18 w-auto" />
             </div>
 
             <!-- Welcome Text -->
             <div class="text-center">
-                <h2 class="mt-6 text-3xl font-extrabold text-gray-900">Welcome back</h2>
-                <p class="mt-2 text-sm text-gray-600">Sign in to continue to BestReads</p>
+                <h2 class="mt-2 text-3xl font-extrabold text-white">Welcome back</h2>
+                <p class="mt-1 text-sm text-[#e0d6bb]">Sign in to continue to BestReads</p>
             </div>
-
-            <!-- Login Form -->
-            <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
                 <div class="space-y-4">
                     <!-- Email Input -->
                     <div>
@@ -24,7 +27,7 @@
                             <fa icon="envelope"
                                 class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></fa>
                             <input id="email" v-model="email" type="email" required
-                                class="peer appearance-none rounded-lg relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                class="peer appearance-none rounded-lg relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                                 placeholder="Email address" />
                         </div>
                         <p v-if="emailError" class="mt-1 text-xs text-red-500">{{ emailError }}</p>
@@ -37,7 +40,7 @@
                             <fa icon="lock" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
                             </fa>
                             <input id="password" v-model="password" :type="showPassword ? 'text' : 'password'" required
-                                class="appearance-none rounded-lg relative block w-full pl-10 pr-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                class="appearance-none rounded-lg relative block w-full pl-10 pr-10 py-3 border border-gray-300 placeholder-gray-500 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                                 placeholder="Password" />
                             <button type="button"
                                 class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
@@ -53,7 +56,7 @@
                         <div class="flex items-center">
                             <input id="remember-me" v-model="rememberMe" type="checkbox"
                                 class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer" />
-                            <label for="remember-me" class="ml-2 block text-sm text-gray-900 cursor-pointer">
+                            <label for="remember-me" class="ml-2 block text-sm text-[#e0d6bb] cursor-pointer">
                                 Remember me
                             </label>
                         </div>
@@ -68,7 +71,7 @@
 
                 <!-- Login Button -->
                 <button type="submit"
-                    class="!rounded-button group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 whitespace-nowrap cursor-pointer"
+                    class="!rounded-button group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium text-white bg-blue-700 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 whitespace-nowrap cursor-pointer"
                     :disabled="isLoading">
                     <span v-if="isLoading" class="absolute left-1/2 transform -translate-x-1/2">
                         <fa icon="spinner" class="animate-spin" />
@@ -87,22 +90,24 @@
                         </div>
                     </div>
                 </div>
-            </form>
 
             <!-- Sign Up Link -->
-            <p class="mt-8 text-center text-sm text-gray-600">
+            <p class="mt-8 text-center text-sm text-[#e0d6bb]">
                 Don't have an account?
                 <!-- TODO : Add sign up page -->
                 <a href="#" class="font-medium text-blue-600 hover:text-blue-500" @click="handleSignUp">
                     Sign up
                 </a>
             </p>
+
+            </form>
         </div>
+
 
         <!-- Toast Notification -->
         <div v-if="showToast" class="fixed top-4 right-4 bg-white shadow-lg rounded-lg p-4 flex items-center space-x-3"
             :class="toastType === 'error' ? 'border-l-4 border-red-500' : 'border-l-4 border-green-500'">
-            <fa :icon="toastType === 'error' ? 'exclamation-circle' : 'check-circle'" 
+            <fa :icon="toastType === 'error' ? 'exclamation-circle' : 'check-circle'"
                 :class="toastType === 'error' ? 'text-red-500' : 'text-green-500'"></fa>
             <p class="text-sm text-gray-600">{{ toastMessage }}</p>
         </div>
@@ -214,7 +219,7 @@ input[type="number"]::-webkit-outer-spin-button {
 
 input:-webkit-autofill {
     background-color: transparent !important;
-    -webkit-text-fill-color: #000 !important;
+    -webkit-text-fill-color: #fff !important;
     transition: background-color 5000s ease-in-out 0s;
 }
 </style>
