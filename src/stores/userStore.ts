@@ -116,9 +116,13 @@ export const useUserStore = defineStore('userStore', {
       try {
         const response = await this.userService.editReadingProgressById(userId, progressId, readingProgress);
         if (response) {
+          this.getAllReadingProgress(userId);
+          setTimeout(async () => {
+            this.loggedInUser = await this.getUserById(userId);
+          }, 2000);
+          
           return response;
         }
-        this.getAllReadingProgress(userId);
         throw new Error("Error");
       } catch (e: any) {
         console.error("Error editing reading progress:", e);

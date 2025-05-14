@@ -11,7 +11,7 @@
         </div>
         <div class="mt-4 w-full bg-darkBlueBackground h-3 rounded-full">
           <div
-            class="bg-white h-3 rounded-full"
+            class="bg-white h-3 rounded-full max-w-full"
             :style="{ width: readingChallenge.progress / readingChallenge.goal * 100 + '%' }"
           ></div>
         </div>
@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useUserStore } from '@/stores/userStore';
 import { useToastStore } from '@/stores/toastStore';
 
@@ -79,6 +79,12 @@ const isDeleteChallengeModalVisible = ref(false);
 
 const readingChallenge = ref<IReadingChallenge | null>(userStore.loggedInUser!.readingChallenges.filter((challenge: IReadingChallenge) => challenge.year === new Date().getFullYear())[0] || null);
 
+watch(
+  () => userStore.loggedInUser,
+  () => {
+    readingChallenge.value = userStore.loggedInUser!.readingChallenges.filter((challenge: IReadingChallenge) => challenge.year === new Date().getFullYear())[0] || null;
+  }
+)
 const handleChallengeUpdate = async (updatedChallenge: IReadingChallenge) => {
   try {
     const result = await userStore.updateReadingChallenge(updatedChallenge);
