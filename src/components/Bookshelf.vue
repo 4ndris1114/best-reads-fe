@@ -13,7 +13,6 @@
     <div class="w-full max-w-3xl h-48 border-b-8 border-accent rounded-md"></div>
   </div>
 
-
     <!-- Books on shelf -->
     <div v-else v-for="(shelfBooks, index) in chunkedBooks" :key="index"
       class="shelf flex w-full justify-center items-end mb-2 border-b-9 border-[#5b3826]">
@@ -66,6 +65,20 @@ const emits = defineEmits<{
   (e: 'openModal', book: IBook): void
 }>();
 
+// Add this to watch for shelf changes
+watch(() => props.shelf, (newVal) => {
+  if (newVal) {
+    getBooksAndStyles();
+  }
+});
+
+// And/or add this to load on mount
+onMounted(() => {
+  if (props.shelf) {
+    getBooksAndStyles();
+  }
+});
+
 const bookColors = ['#2A374D', '#444A41', '#9F6932', '#522623'];
 
 // Color usage tracker
@@ -96,12 +109,6 @@ const getBooksAndStyles = async () => {
     }
     return book;
   });
-
-
-watch(() => props.shelf.books, async () => {
-  await getBooksAndStyles();
-}, { deep: true, immediate: true });
-
 
   books.value = (await Promise.all(bookPromises)).filter((b): b is IBook => b !== null);
 
