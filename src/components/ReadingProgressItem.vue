@@ -8,14 +8,12 @@
       />
     </router-link>
 
-    <div class="flex-1">
-      <div class="flex items-center justify-between">
-      <h2 :class="`font-semibold text-white ${book!.title?.length > 20 ? 'text-md' : 'text-xl'}`">
+      <div class=" items-center justify-between">
+      <h2 :class="`font-semibold text-white ${book!.title?.length > 20 ? 'text-sm' : 'text-md'}`">
         {{ book?.title || 'Untitled' }}
       </h2>
       <div class="flex justify-end scale-50">
         <RatingStars @reviewRequested="(clickedStar) => emit('reviewRequested', clickedStar, readingProgress)"></RatingStars>
-      </div>
       </div>
       <p class="text-sm text-white">
         <div class="w-full h-3 bg-[#3D4D69] rounded mt-2 overflow-hidden">

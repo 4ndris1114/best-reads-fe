@@ -2,7 +2,7 @@
 <div class="flex flex-col w-full flex-grow max-w-5xl mx-auto px-4">
   <!-- Empty state -->
   <div
-    v-if="chunkedBooks.length === 0"
+    v-if="styledBooks.length === 0"
     class="flex flex-col items-center justify-center text-center flex-grow h-full py-12 space-y-4 text-white"
   >
     <div class="text-6xl">📚</div>

@@ -18,7 +18,7 @@
           </div>
 
           <!-- Currently reading and progress tracking -->
-          <div class="space-y-6 py-8 px-8 bg-gray-100 lg:col-span-3 overflow-y-auto max-h-screen">
+          <div class="space-y-6 py-8 px-8 bg-gray-100 lg:col-span-3 overflow-y-auto max-h-screen justify-center">
             <div>
               <h2 class="text-2xl font-bold mb-2">You're currently reading:</h2>
               <div class="bg-darkBlueBackground border-t-7 border-primary rounded-xl p-4">

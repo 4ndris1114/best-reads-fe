@@ -36,7 +36,7 @@
                         <div class="relative">
                             <fa icon="envelope" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></fa>
                             <input id="email" v-model="email" type="email" required
-                                class="peer appearance-none rounded-lg relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                class="peer appearance-none rounded-lg relative block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                                 placeholder="Email address" />
                         </div>
                         <p v-if="emailError" class="mt-1 text-xs text-red-500">{{ emailError }}</p>
@@ -48,7 +48,7 @@
                         <div class="relative">
                             <fa icon="lock" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></fa>
                             <input id="password" v-model="password" :type="showPassword ? 'text' : 'password'" required
-                                class="appearance-none rounded-lg relative block w-full pl-10 pr-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                class="appearance-none rounded-lg relative block w-full pl-10 pr-10 py-3 border border-gray-300 placeholder-gray-500 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                                 placeholder="Password" />
                             <button type="button" class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
                                 @click="togglePassword">

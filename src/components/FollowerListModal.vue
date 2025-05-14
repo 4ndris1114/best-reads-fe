@@ -1,5 +1,6 @@
 <template>
-  <div v-if="show && users.length === 0" class="fixed inset-0 bg-black/[var(--bg-opacity)] [--bg-opacity:50%] flex justify-center items-center z-50">
+  <div v-if="show && users.length === 0"
+    class="fixed inset-0 bg-black/[var(--bg-opacity)] [--bg-opacity:50%] flex justify-center items-center z-50">
     <div class="bg-white rounded-lg w-full max-w-md p-6 overflow-y-auto max-h-[80vh]">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-bold">{{ title }}</h2>
@@ -9,7 +10,8 @@
       <p class="text-gray-700">No one to find here.</p>
     </div>
   </div>
-  <div v-else-if="show" class="fixed inset-0 bg-black/[var(--bg-opacity)] [--bg-opacity:50%] flex justify-center items-center z-50">
+  <div v-else-if="show"
+    class="fixed inset-0 bg-black/[var(--bg-opacity)] [--bg-opacity:50%] flex justify-center items-center z-50">
     <div class="bg-white rounded-lg w-full max-w-md p-6 overflow-y-auto max-h-[80vh]">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-bold">{{ title }}</h2>
@@ -22,17 +24,17 @@
 
       <ul v-else>
         <li v-for="user in users" :key="user.id" class="flex items-center space-x-4 py-2">
-          <img @click="$router.push({ name: 'profilepage', params: { id: user.id } })" :src="'../src/assets/' + user.profilePicture" alt="Profile" class="w-10 h-10 rounded-full object-cover border" />
-          <span @click="$router.push({ name: 'profilepage', params: { id: user.id } })" class="font-semibold">{{ user.username }}</span>
+          <CloudinaryImage @click="$router.push({ name: 'profilepage', params: { id: user.id } })"
+            :publicId="user.profilePicture" alt="Profile" class="w-10 h-10 rounded-full object-cover border" /> <span
+            @click="$router.push({ name: 'profilepage', params: { id: user.id } })" class="font-semibold">{{
+              user.username }}</span>
         </li>
       </ul>
 
       <div v-if="hasMore" class="flex justify-center mt-4">
-        <button 
-          @click="loadMore" 
+        <button @click="loadMore"
           class="px-4 py-2 bg-blue-700 text-white font-semibold rounded hover:bg-blue-800 transition"
-          :disabled="loadingMore"
-        >
+          :disabled="loadingMore">
           {{ loadingMore ? 'Loading...' : 'Load More' }}
         </button>
       </div>
@@ -43,6 +45,7 @@
 <script lang="ts" setup>
 import { ref, watch, computed } from 'vue';
 import { useUserStore } from '@/stores/userStore'; // we'll create this next
+import CloudinaryImage from './CloudinaryImage.vue';
 
 interface UserSummary {
   id: string;

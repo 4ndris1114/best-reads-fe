@@ -118,6 +118,7 @@ export const useUserStore = defineStore('userStore', {
         if (response) {
           return response;
         }
+        this.getAllReadingProgress(userId);
         throw new Error("Error");
       } catch (e: any) {
         console.error("Error editing reading progress:", e);

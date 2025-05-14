@@ -41,10 +41,11 @@
                   <!-- Username -->
                   <template v-if="isEditing">
                     <input v-model="usernameInput" type="text"
-                      class="text-3xl font-bold text-gray-900 border border-gray-300 rounded px-2" />
+                      class="text-3xl font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-2 border-gray-300 rounded-md p-1" />
                   </template>
+
                   <template v-else>
-                    <h1 class="text-4xl font-bold text-gray-900">{{ user.username }}</h1>
+                    <h1 class="text-4xl font-bold text-gray-900 ">{{ user.username }}</h1>
                   </template>
                   <UserBadges :readingStats="user.readingStats" />
                 </div>
@@ -79,17 +80,17 @@
                 </p>
               </div>
 
-              <FollowerListModal 
-                :show="showFollowerModal" 
-                title="Followers" 
-                :userIds="user.followers" 
+              <FollowerListModal
+                :show="showFollowerModal"
+                title="Followers"
+                :userIds="user.followers"
                 @close="showFollowerModal = false"
               />
 
-              <FollowerListModal 
-                :show="showFollowingModal" 
-                title="Following" 
-                :userIds="user.following" 
+              <FollowerListModal
+                :show="showFollowingModal"
+                title="Following"
+                :userIds="user.following"
                 @close="showFollowingModal = false"
               />
 
@@ -99,7 +100,8 @@
                 <div class="rounded-lg bg-white text-m" @dblclick="isEditing = true">
                   <template v-if="isEditing">
                     <textarea v-model="bioInput"
-                      class="w-full h-full text-black mt-1 text-m border border-gray-300 rounded px-2 py-1"
+                      class="text-xl font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-2 border-gray-300 rounded-md p-1"
+
                       ></textarea>
                   </template>
                   <template v-else>
@@ -259,7 +261,7 @@ const handleImageUpload = async (file: File) => {
   try {
     // get cloduinary signature from BE
     const signature: { timestamp: string; signature: string } = await userStore.getCloudinarySignature(loggedInUser.id);
-    
+
     const formData = new FormData();
     formData.append("file", file);
     formData.append("api_key", import.meta.env.VITE_CLOUDINARY_API_KEY);
@@ -267,9 +269,9 @@ const handleImageUpload = async (file: File) => {
     formData.append("signature", signature.signature);
     formData.append("overwrite", "true");
     formData.append("public_id", loggedInUser.id);
-    
+
     const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-    
+
     const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
       method: "POST",
       body: formData,
