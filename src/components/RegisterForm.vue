@@ -1,15 +1,15 @@
 <template>
-    <div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
+    <div class="min-h-screen overflow-hidden bg-gray-50 flex items-center justify-center py-12 px-4">
    <img src="../assets/loginImage.jpg" alt="Login Image" class="absolute inset-0 object-cover w-full h-full" />
     <div class="max-w-md w-full space-y-8 bg-white bg-opacity-90 p-10 rounded-lg shadow-lg">
 
 
             <!-- Register Form -->
-            <form class="mt-8 rounded-lg drop-shadow-lg inset-0 bg-gray-900/[var(--bg-opacity)] [--bg-opacity:60%] px-10 py-4 space-y-6" @submit.prevent="handleRegister">
+            <form class="mt-8 rounded-lg drop-shadow-lg inset-0 bg-gray-900/[var(--bg-opacity)] [--bg-opacity:60%] px-10 py-4  space-y-6" @submit.prevent="handleRegister">
 
             <!-- Logo -->
             <div class="flex justify-center">
-                <fa icon="book-open" class="text-4xl text-blue-600" />
+   <img src="../assets/logo.png" alt="Logo" class="h-18 w-auto" />
             </div>
 
             <!-- Welcome Text -->
@@ -83,22 +83,14 @@
                     <span :class="{ invisible: isLoading }">Register</span>
                 </button>
 
-                <p class="mt-8 text-center text-sm text-[#e0d6bb]">
-                Already have an account?
-                <!-- TODO : Add sign up page -->
-                <a href="#" class="font-medium text-blue-600 hover:text-blue-500" @click="handleSignIn">
-                    Sign up
-                </a>
-            </p>
-            </form>
-
-            <!-- Sign In Link -->
-            <p class="mt-8 text-center text-sm text-gray-600">
+               <!-- Sign In Link -->
+            <p class="mt-8 text-center text-sm text-[#e0d6bb]">
                 Already have an account?
                 <a href="#" class="font-medium text-blue-600 hover:text-blue-500" @click="handleSignIn">
                     Sign in
                 </a>
             </p>
+            </form>
         </div>
 
         <!-- Toast Notification -->
@@ -200,7 +192,7 @@ const handleRegister = async () => {
         await userStore.register(username.value, email.value, password.value);
         showNotification('Successfully registered!', 'success');
         emit('signin');
-    } catch (error) {
+    } catch (error: any) {
         if (error.response.data === "Email already exists") {
             emailError.value = error.response.data;
         } else if (error.response.data === "Username already exists") {
