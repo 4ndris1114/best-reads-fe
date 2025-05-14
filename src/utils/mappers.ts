@@ -8,6 +8,7 @@ import type { ActivityType } from "@/types/enums/ActiviyType";
 import type { IReadingChallenge } from "@/types/interfaces/IReadingChallenge";
 import type { IBookshelfBook } from "@/types/interfaces/IBookshelfBook";
 import type { IComment } from "@/types/IComment";
+import type { IBookSearchResult } from "@/types/interfaces/IBookSearchResult";
 
 
 export const mapToIUser = (user: any): IUser => {
@@ -58,6 +59,17 @@ export const mapToIBook = (book: any): IBook => {
     reviews: book.reviews.map((review: any) => mapToIReview(review)),
     averageRating: book.averageRating
   } as IBook;
+}
+
+export const mapToIBookSearchResult = (book: any): IBookSearchResult => {
+  return {
+    id: book.id,
+    title: book.title,
+    author: book.author,
+    genres: book.genres,
+    coverImage: book.coverImage,
+    averageRating: book.averageRating
+  } as IBookSearchResult
 }
 
 export const mapToIReview = (review: any): IReview => {

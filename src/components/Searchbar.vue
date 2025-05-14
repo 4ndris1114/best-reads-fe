@@ -56,11 +56,7 @@
                         :key="user.id"
                         class="flex items-center gap-4 px-4 py-3 hover:bg-gray-100 cursor-pointer"
                     >
-                        <img
-                            :src="'../src/assets/' + user?.profilePicture"
-                            alt="Profile Picture"
-                            class="w-10 h-10 rounded-full object-cover border"
-                        />
+                        <CloudinaryImage class="w-10 h-10 rounded-full object-cover" :publicId="user.profilePicture ? user.profilePicture : 'default_profile_picture.jpg'" :isUserImage="true" :alt="user.username" :width="45" :height="45" />
                         <div class="flex-1">
                             <h3 class="font-semibold text-sm text-gray-900">{{ user.username }}</h3>
                             <p v-if="user.bio" class="text-xs text-gray-600">
@@ -70,10 +66,58 @@
                     </li>
                 </template>
 
+                <!-- Start typing -->
+                <li v-if="searchQuery.length === 0" class="text-center text-gray-500 text-sm py-4">
+                    Start typing to search for {{ searchType === 'books' ? 'books' : 'users' }}.
+                </li>
                 <!-- No results -->
-                <li v-if="(searchType === 'books' && bookSearchResults.length === 0) || (searchType === 'users' && userSearchResults.length === 0)"
-                    class="text-center text-gray-500 text-sm py-4">
-                    No results found.
+                <li
+                v-else-if="(searchType === 'books' && bookSearchResults.length === 0) || (searchType === 'users' && userSearchResults.length === 0)"
+                class="text-center text-gray-500 text-sm py-4 flex flex-col items-center gap-2"
+                >
+                <span v-if="searchType === 'books' && !isExternalLoading && openLibrarySearchResults.length === 0 && !couldntFind">
+                No results found in our database. Search externally?
+                </span>
+                <span v-if="searchType === 'users' && userSearchResults.length === 0">
+                No user found with username: {{ debouncedQuery }}
+                </span>
+
+                <div class="flex flex-wrap gap-2 justify-center mt-2" v-if="searchType === 'books' && !isExternalLoading && openLibrarySearchResults.length === 0 && !couldntFind">
+                <button @click="handleOpenLibrarySearch('title')" class="bg-accent text-white px-4 py-1 rounded hover:opacity-90 text-sm cursor-pointer">
+                    Search by Title
+                </button>
+                <button @click="handleOpenLibrarySearch('author')" class="bg-accent text-white px-4 py-1 rounded hover:opacity-90 text-sm cursor-pointer">
+                    Search by Author
+                </button>
+                </div>
+                <div v-else-if="couldntFind" class="flex flex-wrap gap-2 justify-center mt-2 text-red-500">
+                    We can't find this book.
+                </div>
+
+                <div v-if="isExternalLoading" class="py-4 text-sm text-gray-500 flex justify-center items-center gap-2">
+                <span>Searching for {{ debouncedQuery }}...</span>
+                <svg class="animate-spin h-4 w-4 text-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                </svg>
+                </div>
+
+                <!-- External Results -->
+                <template v-if="openLibrarySearchResults.length > 0">
+                <li v-for="book in openLibrarySearchResults" :key="book.id"
+                    @click="$router.push({ name: 'bookdetails', params: { id: book.id } })"
+                    class="flex w-full items-center text-left gap-4 px-4 py-3 hover:bg-gray-100 cursor-pointer">
+                    <CloudinaryImage :publicId="imageCache.get(book.coverImage) ?? book.coverImage" :alt="book.title" :width="45" :height="70" />
+                    <div class="flex-1">
+                    <h3 class="font-semibold text-sm text-gray-900">{{ book.title }}</h3>
+                    <p class="text-xs text-gray-600">by {{ book.author }}</p>
+                    <div class="flex items-center gap-1 mt-1">
+                        <fa icon="star" v-for="n in Math.floor(book.averageRating || 0)" :key="n" class="text-yellow-400 text-xs" />
+                        <span class="text-xs text-gray-500">({{ book.averageRating ?? 'N/A' }})</span>
+                    </div>
+                    </div>
+                </li>
+                </template>
                 </li>
             </ul>
         </div>
@@ -84,106 +128,141 @@
 import { useBookStore } from '@/stores/bookStore';
 import { useUserStore } from '@/stores/userStore';
 import type { IBook } from '@/types/interfaces/IBook';
-import { computed, onMounted, ref, shallowRef, watch, watchEffect } from 'vue';
-import { vOnClickOutside } from '@vueuse/components'
+import { ref, shallowRef, watch, watchEffect } from 'vue';
+import { vOnClickOutside } from '@vueuse/components';
 import CloudinaryImage from './CloudinaryImage.vue';
 import type { IUser } from '@/types/interfaces/IUser';
 import debounce from 'lodash/debounce';
+import type { IBookSearchResult } from '@/types/interfaces/IBookSearchResult';
 
-onMounted(async () => {
-    bookStore.getAllBooks();
-})
-
-//caching
-const imageCache = shallowRef(new Map<string, string>());
-
-//stores
+// Stores
 const bookStore = useBookStore();
 const userStore = useUserStore();
 
-//state
-const books = computed<IBook[]>(() => bookStore.books);
+// State
+const searchQuery = ref<string>('');
+const debouncedQuery = ref<string>('');
+const searchType = ref<string>('books');
+const isRecommendationsOpen = ref<boolean>(false);
+const imageCache = shallowRef(new Map<string, string>());
+const isExternalLoading = ref(false);
+const couldntFind = ref(false);
 
-const searchQuery = ref<string>("");
-const debouncedQuery = ref('');
-const searchType = ref<string>("books");
+const bookSearchResults = ref<IBookSearchResult[]>([]);
+const openLibrarySearchResults = ref<IBook[]>([]);
+const userSearchResults = ref<Partial<IUser>[]>([]);
+
+// Debounced input handling
 const handleSearchInput = debounce((value: string) => {
-  debouncedQuery.value = value;
-}, 400);
+openLibrarySearchResults.value = [];
+userSearchResults.value = [];
+  debouncedQuery.value = value.trim();
+}, 600);
 
 watch(searchQuery, (newVal) => {
   handleSearchInput(newVal);
 });
 
-const isRecommendationsOpen = ref<boolean>(false);
+watch(couldntFind, (newVal) => {
+  if (newVal) {
+    setTimeout(() => {
+      couldntFind.value = false;
+    }, 3000);
+  }
+});
 
+// Watch debounced query and search in DB
+watchEffect(async () => {
+  if (!debouncedQuery.value) {
+    bookSearchResults.value = [];
+    userSearchResults.value = [];
+    return;
+  }
+
+  if (searchType.value === 'books') {
+    try {
+      const books = await bookStore.searchBooks(debouncedQuery.value);
+      bookSearchResults.value = books;
+    } catch (error) {
+      console.error('Failed to search books:', error);
+    }
+  }
+
+  if (searchType.value === 'users') {
+    const results = await userStore.searchByUsername(debouncedQuery.value);
+    userSearchResults.value = Array.isArray(results) ? results as Partial<IUser>[] : [];
+  }
+});
+
+// Image preloading
 const resizeImage = (url: string, width = 100, height = 150, quality = 0.7) => {
-    return new Promise<string>((resolve) => {
-        const img = new Image();
-        img.crossOrigin = "Anonymous";
-        img.src = url;
-        img.onload = () => {
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d")!;
-            canvas.width = width;
-            canvas.height = height;
-            ctx.drawImage(img, 0, 0, width, height);
-            resolve(canvas.toDataURL("image/jpeg", quality));
-        };
-    });
+  return new Promise<string>((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.src = url;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d")!;
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL("image/jpeg", quality));
+    };
+  });
 };
 
 const preloadImage = async (url: string) => {
-    if (!imageCache.value.has(url)) {
-        const compressedImage = await resizeImage(url, 100, 150, 0.6);
-        imageCache.value.set(url, compressedImage);
-        imageCache.value = new Map(imageCache.value); // Trigger reactivity
-    }
+  if (!imageCache.value.has(url)) {
+    const compressedImage = await resizeImage(url, 100, 150, 0.6);
+    imageCache.value.set(url, compressedImage);
+    imageCache.value = new Map(imageCache.value); // Trigger reactivity
+  }
 };
 
-const bookSearchResults = computed<IBook[]>(() => {
-    if (searchType.value === "books") {
-        if (!searchQuery.value) {
-            return books.value;
+// Preload images when book results change
+watch(bookSearchResults, (books) => {
+  books.forEach(book => preloadImage(book.coverImage));
+});
+
+const handleOpenLibrarySearch = async (type: string) => {
+  isExternalLoading.value = true;
+  openLibrarySearchResults.value = [];
+
+  try {
+    switch (type) {
+      case 'title':
+        try {
+            const foundByTitle = await bookStore.searchAndAddFromOpenLibrary(debouncedQuery.value, 'title');
+            if (foundByTitle) {
+            openLibrarySearchResults.value = foundByTitle;
+            }
+        } catch (error) {
+            couldntFind.value = true;
         }
-        return books.value.filter(book =>
-            book.title.toLowerCase().includes(searchQuery.value.toLowerCase().trim()) ||
-            book.author.toLowerCase().includes(searchQuery.value.toLowerCase().trim()) ||
-            book.isbn.trim().includes(searchQuery.value.toLowerCase().trim().split("-").join("")) ||
-            book.genres.some(genre => genre.toLowerCase().includes(searchQuery.value.toLowerCase().trim()))
-        )
-    } else {
-        return [];
+        break;
+      case 'author':
+        try {
+            const foundByAuthor = await bookStore.searchAndAddFromOpenLibrary(debouncedQuery.value, 'author');
+            if (foundByAuthor) {
+            openLibrarySearchResults.value = foundByAuthor;
+            }
+        } catch (error) {
+            couldntFind.value = true;
+        }
+        break;
     }
-});
+  } catch (error) {
+    console.error('External search failed:', error);
+  } finally {
+    isExternalLoading.value = false;
+  }
+};
 
-const userSearchResults = ref<Partial<IUser>[]>([]);
-
-watchEffect(async () => {
-    if (searchType.value !== "users" || !debouncedQuery.value.trim()) {
-        userSearchResults.value = [];
-        return;
-    }
-
-    const results = await userStore.searchByUsername(debouncedQuery.value.trim());
-
-    userSearchResults.value = Array.isArray(results) ? results as Partial<IUser>[] : [];
-});
-
-
-
+// Helpers
 const toggleRecommendations = () => {
-    isRecommendationsOpen.value = !isRecommendationsOpen.value;
+  isRecommendationsOpen.value = !isRecommendationsOpen.value;
 };
-
-const toggleSearchType = () => {
-    searchType.value = searchType.value === "books" ? "users" : "books";
-};
-
-// Start preloading whenever search results change
-watchEffect(() => {
-    bookSearchResults.value.forEach(book => preloadImage(book.coverImage));
-});
 </script>
+
 
 <style scoped></style>

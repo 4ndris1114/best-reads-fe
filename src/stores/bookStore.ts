@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { BookService } from '@/services/BookService';
 import type { IBook } from '@/types/interfaces/IBook';
 import type { IReview } from '@/types/interfaces/IReview';
+import type { IBookSearchResult } from '@/types/interfaces/IBookSearchResult';
 
 export const useBookStore = defineStore('bookStore', {
     state: () => ({
@@ -44,6 +45,33 @@ export const useBookStore = defineStore('bookStore', {
             this.loading = false;
           }
         },
+
+        async searchBooks(query: string): Promise<IBookSearchResult[]> {
+          try {
+            this.loading = true;
+            const books = await this.service.searchBooks(query);
+            return books;
+          } catch (error) {
+            console.error('Error searching books:', error);
+            throw error;
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        async searchAndAddFromOpenLibrary(query: string, type: 'title' | 'author'): Promise<IBook[]> {
+          try {
+            this.loading = true;
+            const book = await this.service.searchAndAddFromOpenLibrary(query, type);
+            return book;
+          } catch (error) {
+            console.error('Error searching and adding from Open Library:', error);
+            throw error;
+          } finally {
+            this.loading = false;
+          }
+        },
+
         async selectBook(bookId: string) {
           const bookToBeSelected = this.books.find(book => book.id === bookId);
           if (!bookToBeSelected) {
