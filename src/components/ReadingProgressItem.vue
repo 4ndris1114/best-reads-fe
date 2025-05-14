@@ -63,7 +63,7 @@ const bookStore = useBookStore();
 const userStore = useUserStore();
 const readingProgress = ref(props.readingProgress);
 
-const book = ref<IBook | undefined>(undefined)
+const book = computed(() => bookStore.books.find(b => b.id === props.readingProgress.bookId));
 
 onMounted(async () => {
   book.value = await bookStore.getBookById(props.readingProgress.bookId);
