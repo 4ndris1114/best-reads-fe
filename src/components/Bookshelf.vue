@@ -1,40 +1,32 @@
 <template>
-<div class="flex flex-col w-full flex-grow max-w-5xl mx-auto px-4">
-  <!-- Empty state -->
-  <div
-    v-if="books.length === 0"
-    class="flex flex-col items-center justify-center text-center flex-grow h-full py-12 space-y-4 text-white"
-  >
-    <div class="text-6xl">📚</div>
-    <p class="text-xl font-semibold">No books on your bookshelf</p>
-    <p class="text-sm text-gray-400 max-w-xs">
-      Add your first book to get started!
-    </p>
-    <div class="w-full max-w-3xl h-48 border-b-8 border-accent rounded-md"></div>
-  </div>
+  <div class="flex flex-col w-[60vw] h-[60vh] mx-auto px-4">
+    <!-- Empty state -->
+    <div v-if="books.length === 0"
+      class="flex flex-col items-center justify-center text-center flex-grow py-12 space-y-4 text-white">
+      <div class="text-8xl">📚</div>
+      <p class="text-3xl font-semibold">No books on this bookshelf</p>
+      <p class="text-lg text-gray-400 max-w-xs">Add your first book to get started!</p>
+      <div class="w-full max-w-3xl h-48 border-b-8 border-accent rounded-md"></div>
+    </div>
 
-    <!-- Books on shelf -->
+    <!-- Bookshelf rows -->
     <div v-else v-for="(shelfBooks, index) in chunkedBooks" :key="index"
-      class="shelf flex w-full justify-center items-end mb-2 border-b-9 border-[#5b3826]">
+      class="flex justify-center items-end w-full mb-2 border-b-8 border-[#5b3826]">
       <div v-for="{ book, color, height } in shelfBooks" :key="book.id"
-        class="book flex items-center justify-center text-s font-bold transform rotate-180 p-1 m-1 rounded-sm cursor-pointer"
+        class="flex items-center justify-center rotate-180 p-1 m-1 rounded-sm cursor-pointer font-bold text-xs text-center leading-none uppercase writing-vertical"
         :style="{
-          width: getBookWidth(book.title),
           height: `${height}px`,
+          width: getBookWidth(book.title),
           backgroundColor: color,
-          color:
-            color === '#9F6932' ? '#2A1A14' :
-              color === '#2A374D' ? '#547786' :
-                color === '#522623' ? '#d6a688' :
-                  color === '#444A41' ? '#b59a6f' :
-                    'white',
+          color: getContrastingTextColor(color),
         }"
         @click="emits('openModal', book)">
-        <span class="book-title">{{ book.title }}</span>
+        <span class="overflow-hidden max-h-full break-words px-1" style="writing-mode: vertical-rl">{{ book.title }}</span>
       </div>
     </div>
   </div>
 </template>
+
 
 <script setup lang="ts">
 import { ref, onMounted, computed, nextTick, watch } from 'vue';
@@ -102,7 +94,6 @@ const getBooksAndStyles = async () => {
       try {
         book = await bookStore.getBookById(bb.id);
         if (book) bookStore.books.push(book);
-        console.log(`Fetched book ${bb.id}`);
       } catch (error) {
         console.error(`Error fetching book ${bb.id}`, error);
       }
@@ -172,40 +163,20 @@ const assignColorsAndHeights = () => {
 const getBookWidth = (title: string) => {
   const charCount = title.length;
   const width = Math.min(2.5 + charCount * 2.5, 90);
+  if (width < 20) return '20px';
   return `${width}px`;
+};
+
+const getContrastingTextColor = (color: string): string => {
+  switch (color) {
+    case '#9F6932': return '#2A1A14';
+    case '#2A374D': return '#547786';
+    case '#522623': return '#d6a688';
+    case '#444A41': return '#b59a6f';
+    default: return 'white';
+  }
 };
 </script>
 
 <style scoped>
-.shelf {
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  border-radius: 3px 3px;
-}
-
-.book {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-weight: bold;
-  writing-mode: vertical-rl;
-  padding: 3px;
-  margin: 2px;
-  border-radius: 0 0 3px 3px;
-  cursor: pointer;
-  text-transform: uppercase;
-}
-
-.book-title {
-  writing-mode: vertical-rl;
-  text-align: center;
-  overflow: hidden;
-  display: -webkit-box;
-  line-height: 1;
-  font-size: 0.75rem; /* start with base size */
-  max-height: 100%;
-  word-break: break-word;
-}
 </style>
