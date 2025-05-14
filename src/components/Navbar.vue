@@ -38,7 +38,7 @@
 <!-- User actions -->
 <div class="flex items-center gap-6 relative">
   <!-- Message Button -->
-  <button class="relative !rounded-button cursor-pointer">
+  <button @click="showMessagesDropdown = true" class="relative !rounded-button cursor-pointer">
     <fa icon="message" class="scale-140" />
     <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
   </button>
@@ -83,6 +83,14 @@
     />
   </div>
 
+  <!-- Messages dropdown -->
+  <div v-if="showMessagesDropdown" class="absolute right-22 top-7 z-50">
+    <MessagesDropdown
+      @close="showMessagesDropdown = false"
+      v-on-click-outside="() => showMessagesDropdown = false"
+    />
+  </div>
+
   <!-- Notification Dropdown -->
   <div v-if="showNotificationDropdown" class="absolute right-12 top-7 z-50">
     <NotificationDropdown @close="showNotificationDropdown = false" />
@@ -104,6 +112,7 @@ import { unreadCount } from '@/utils/notifications';
 import CloudinaryImage from './CloudinaryImage.vue';
 import type { IUser } from '@/types/interfaces/IUser';
 import { useUserStore } from '@/stores/userStore';
+import MessagesDropdown from '@/components/MessagesDropdown.vue';
 
 const userStore = useUserStore();
 const loggedInUser: IUser = userStore.loggedInUser!; //logged in user
@@ -111,6 +120,7 @@ const loggedInUser: IUser = userStore.loggedInUser!; //logged in user
 
 const showProfileDropdown = ref(false);
 const showNotificationDropdown = ref(false);
+const showMessagesDropdown = ref(false);
 const unreadNotifications = unreadCount;
 
 const toggleProfileDropdown = () => {
