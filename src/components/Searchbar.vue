@@ -56,11 +56,7 @@
                         :key="user.id"
                         class="flex items-center gap-4 px-4 py-3 hover:bg-gray-100 cursor-pointer"
                     >
-                        <img
-                            :src="'../src/assets/' + user?.profilePicture"
-                            alt="Profile Picture"
-                            class="w-10 h-10 rounded-full object-cover border"
-                        />
+                        <CloudinaryImage class="w-10 h-10 rounded-full object-cover" :publicId="user.profilePicture ? user.profilePicture : 'default_profile_picture.jpg'" :isUserImage="true" :alt="user.username" :width="45" :height="45" />
                         <div class="flex-1">
                             <h3 class="font-semibold text-sm text-gray-900">{{ user.username }}</h3>
                             <p v-if="user.bio" class="text-xs text-gray-600">
@@ -79,11 +75,14 @@
                 v-else-if="(searchType === 'books' && bookSearchResults.length === 0) || (searchType === 'users' && userSearchResults.length === 0)"
                 class="text-center text-gray-500 text-sm py-4 flex flex-col items-center gap-2"
                 >
-                <span v-if="!isExternalLoading && openLibrarySearchResults.length === 0 && !couldntFind">
+                <span v-if="searchType === 'books' && !isExternalLoading && openLibrarySearchResults.length === 0 && !couldntFind">
                 No results found in our database. Search externally?
                 </span>
+                <span v-if="searchType === 'users' && userSearchResults.length === 0">
+                No user found with username: {{ debouncedQuery }}
+                </span>
 
-                <div class="flex flex-wrap gap-2 justify-center mt-2" v-if="!isExternalLoading && openLibrarySearchResults.length === 0 && !couldntFind">
+                <div class="flex flex-wrap gap-2 justify-center mt-2" v-if="searchType === 'books' && !isExternalLoading && openLibrarySearchResults.length === 0 && !couldntFind">
                 <button @click="handleOpenLibrarySearch('title')" class="bg-accent text-white px-4 py-1 rounded hover:opacity-90 text-sm cursor-pointer">
                     Search by Title
                 </button>
@@ -156,6 +155,7 @@ const userSearchResults = ref<Partial<IUser>[]>([]);
 // Debounced input handling
 const handleSearchInput = debounce((value: string) => {
 openLibrarySearchResults.value = [];
+userSearchResults.value = [];
   debouncedQuery.value = value.trim();
 }, 600);
 
