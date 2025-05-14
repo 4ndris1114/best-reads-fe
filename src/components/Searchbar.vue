@@ -96,7 +96,7 @@
                 </div>
 
                 <div v-if="isExternalLoading" class="py-4 text-sm text-gray-500 flex justify-center items-center gap-2">
-                <span>Searching OpenLibrary...</span>
+                <span>Searching for {{ debouncedQuery }}...</span>
                 <svg class="animate-spin h-4 w-4 text-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
@@ -155,6 +155,7 @@ const userSearchResults = ref<Partial<IUser>[]>([]);
 
 // Debounced input handling
 const handleSearchInput = debounce((value: string) => {
+openLibrarySearchResults.value = [];
   debouncedQuery.value = value.trim();
 }, 600);
 
@@ -231,19 +232,23 @@ const handleOpenLibrarySearch = async (type: string) => {
     switch (type) {
       case 'title':
         try {
-            const foundByTitle = await bookStore.searchAndAddFromOpenLibraryByTitle(debouncedQuery.value);
+            const foundByTitle = await bookStore.searchAndAddFromOpenLibrary(debouncedQuery.value, 'title');
             if (foundByTitle) {
-            openLibrarySearchResults.value = [foundByTitle];
+            openLibrarySearchResults.value = foundByTitle;
             }
         } catch (error) {
             couldntFind.value = true;
         }
         break;
       case 'author':
-        // const foundByAuthor = await bookStore.searchAndAddFromOpenLibraryByAuthor(debouncedQuery.value);
-        // if (Array.isArray(foundByAuthor)) {
-        //   openLibrarySearchResults.value = foundByAuthor;
-        // }
+        try {
+            const foundByAuthor = await bookStore.searchAndAddFromOpenLibrary(debouncedQuery.value, 'author');
+            if (foundByAuthor) {
+            openLibrarySearchResults.value = foundByAuthor;
+            }
+        } catch (error) {
+            couldntFind.value = true;
+        }
         break;
     }
   } catch (error) {

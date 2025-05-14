@@ -50,17 +50,18 @@ export class BookService {
         } 
     }
 
-    async searchAndAddFromOpenLibraryByTitle(query: string): Promise<IBook | null> {
+    async searchAndAddFromOpenLibrary(query: string, type: 'title' | 'author'): Promise<IBook[]> {
         try {
             const response = await httpClient.get(`/book/search-external`, {
-                params: { query }
+                params: { query, type }
             });
-            return mapToIBook(response.data);
+            
+            return response.data.map((bsr: any) => mapToIBook(bsr));
         } catch (error) {
             console.error('Error searching and adding from Open Library:', error);
             throw error;
         }
-    }
+    }    
 
     async postReview(bookId: string, review: IReview) {
         try {
