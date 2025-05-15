@@ -282,6 +282,8 @@ const handleReviewDelete = async (reviewId: string) => {
     try {
         await bookStore.deleteReview(book.value!.id, reviewId);
         toastStore.triggerToast("Review deleted successfully!", "success");
+        bookStore.books = bookStore.books.filter((book: IBook) => book.id !== bookStore.selectedBook!.id);
+        bookStore.selectBook(book.value!.id);
     } catch (error) {
         console.error('Error deleting review:', error);
         toastStore.triggerToast("Error deleting review", "error");
