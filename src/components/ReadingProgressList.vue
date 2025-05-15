@@ -1,5 +1,5 @@
 <template>
-<div class="h-screen overflow-y-auto">
+<div class="h-screen ">
     <div v-for="progress in readingProgressList" :key="progress.id" class="mb-4">
       <ReadingProgressItem :readingProgress="progress" @reviewRequested="(clickedStar, progress) => $emit('reviewRequested', clickedStar, progress)"/>
   </div>
