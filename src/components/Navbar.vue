@@ -128,6 +128,8 @@ const toggleProfileDropdown = () => {
 }
 
 const toggleNotificationDropdown = () => {
+  console.log("Notifications");
+  
   showNotificationDropdown.value = !showNotificationDropdown.value;
 }
 
