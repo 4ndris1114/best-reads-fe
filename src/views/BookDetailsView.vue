@@ -269,6 +269,8 @@ const handleReviewSubmit = async (payload: { rating: number; reviewText: string;
             await bookStore.updateReview(book.value!.id, updatedReview);
             toastStore.triggerToast("Review updated successfully!", "success");
         }
+        bookStore.books = bookStore.books.filter((book: IBook) => book.id !== bookStore.selectedBook!.id);
+        bookStore.selectBook(book.value!.id);
     } catch (error) {
         console.error('Error submitting review:', error);
         toastStore.triggerToast("Error submitting review", "error");

@@ -30,6 +30,7 @@ export const useShelfStore = defineStore('shelfStore', {
       try {
         const newBookshelf = { id:"", name: bookshelfName, books: [], isMutable: true } as IBookshelf;
         const createdBookshelf = await this.service.createBookshelf(userId, newBookshelf);
+        this.bookshelves.push(createdBookshelf);
       } catch (error) {
         console.error('Error creating bookshelf:', error);
       }

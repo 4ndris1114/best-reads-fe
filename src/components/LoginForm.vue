@@ -8,7 +8,7 @@
 
 
             <!-- Login Form -->
-            <form class="mt-8 rounded-lg drop-shadow-lg inset-0 bg-gray-900/[var(--bg-opacity)] [--bg-opacity:60%] px-10 py-4 space-y-6" @submit.prevent="handleLogin">
+            <form class="mt-8 rounded-lg drop-shadow-lg inset-0 bg-gray-900/[var(--bg-opacity)] [--bg-opacity:60%] px-12 py-4 space-y-6" @submit.prevent="handleLogin">
                <!-- Logo -->
             <div class="flex justify-center">
    <img src="../assets/logo.png" alt="Logo" class="h-18 w-auto" />

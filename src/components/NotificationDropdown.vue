@@ -1,7 +1,11 @@
 <template>
-    <div v-on-click-outside="() => emit('close')" class="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
+    <div v-if="users && users.length > 0" v-on-click-outside="() => emit('close')" class="absolute right-0 mt-2 w-64 bg-white border rounded-lg shadow-lg z-50">
         <ul class="py-1 text-sm text-gray-700">
-            <li v-if="activities.length > 0" v-for="(activity, index) in activities" :key="index">
+            <li v-if="activities.length > 0" v-for="(activity, index) in activities" :key="index" v-memo="[activity.userId, activity.type]"
+                class="flex flex-row items-center p-1">
+                <div class="ml-2">
+                    <CloudinaryImage :publicId="getUserImage(activity.userId)" alt="user profile image" :width="50" :height="50" />
+                </div>
                 <a @click="removeNotification(activity.id)" href="/" class="block px-4 py-2 hover:bg-gray-100">
                     <!-- I hate typescript -->
                     {{ getUserName(activity.userId) }} {{ getActivityType(activity.type as unknown as number) }}
@@ -24,6 +28,7 @@ import type { IUser } from '@/types/interfaces/IUser';
 import type { IActivity } from '@/types/interfaces/IActivity';
 import { ActivityType, fromNumber } from '@/types/enums/ActiviyType';
 import { vOnClickOutside } from '@vueuse/components';
+import CloudinaryImage from './CloudinaryImage.vue';
 
 const emit = defineEmits(['close']);
 
@@ -49,6 +54,11 @@ const getUserName = (userId: string) => {
     const user = users.value.find((user: IUser) => user.id === userId);
     return user ? user.username : 'Unknown User'; // Return the username or fallback to 'Unknown User'
 };
+
+const getUserImage = (userId: string) => {
+    const user = users.value.find((user: IUser) => user.id === userId);
+    return user ? user.profilePicture : 'default_profile_picture.jpg';
+}
 
 const getActivityType = (type: number) => {
     switch (fromNumber(type)) {

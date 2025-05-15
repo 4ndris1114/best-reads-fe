@@ -116,8 +116,8 @@ export const useUserStore = defineStore('userStore', {
       try {
         const response = await this.userService.editReadingProgressById(userId, progressId, readingProgress);
         if (response) {
-          this.getAllReadingProgress(userId);
           setTimeout(async () => {
+            this.getAllReadingProgress(userId);
             this.loggedInUser = await this.getUserById(userId);
           }, 2000);
           
