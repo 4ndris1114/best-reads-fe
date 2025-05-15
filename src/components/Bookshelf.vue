@@ -6,14 +6,13 @@
     <!-- Empty state -->
     <div
       v-if="books.length === 0"
-      class="flex flex-col items-center justify-center text-center flex-grow py-12 space-y-4 text-white"
+      class="flex flex-col items-center justify-center text-center flex-grow py-2 space-y-4 text-white"
     >
-      <div class="text-8xl">📚</div>
+      <div class="text-6xl">📚</div>
       <p class="text-3xl font-semibold">No books on this bookshelf</p>
       <p class="text-lg text-gray-400 max-w-xs">
         Add your first book to get started!
       </p>
-      <div class="w-full max-w-3xl h-48 border-b-8 border-accent rounded-md"></div>
     </div>
 
     <!-- Bookshelf rows -->
