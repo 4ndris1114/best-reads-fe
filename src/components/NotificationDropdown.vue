@@ -1,10 +1,10 @@
 <template>
-    <div v-on-click-outside="() => emit('close')" class="absolute right-0 mt-2 w-64 bg-white border rounded-lg shadow-lg z-50">
+    <div v-if="users && users.length > 0" v-on-click-outside="() => emit('close')" class="absolute right-0 mt-2 w-64 bg-white border rounded-lg shadow-lg z-50">
         <ul class="py-1 text-sm text-gray-700">
             <li v-if="activities.length > 0" v-for="(activity, index) in activities" :key="index" v-memo="[activity.userId, activity.type]"
                 class="flex flex-row items-center p-1">
                 <div class="ml-2">
-                    <CloudinaryImage :publicId="getUserImage(activity.userId)" alt="user profile image" :width="15" :height="30" />
+                    <CloudinaryImage :publicId="getUserImage(activity.userId)" alt="user profile image" :width="50" :height="50" />
                 </div>
                 <a @click="removeNotification(activity.id)" href="/" class="block px-4 py-2 hover:bg-gray-100">
                     <!-- I hate typescript -->
