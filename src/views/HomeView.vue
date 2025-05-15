@@ -8,6 +8,7 @@
             <ReadingChallenge />
           </div>
 
+
           <!-- Main Content (Feed) -->
           <div class="lg:col-span-6 py-1 space-y-2">
             <div>
@@ -22,7 +23,7 @@
             <div>
               <h2 class="text-2xl font-bold mb-2">You're currently reading:</h2>
               <div class="bg-darkBlueBackground border-t-7 border-primary rounded-xl p-4">
-                <Bookshelf :isAtHome="true" v-if="currentlyReadingShelf" :shelf="currentlyReadingShelf" />
+                <Bookshelf v-if="currentlyReadingShelf" :shelf="currentlyReadingShelf" />
               </div>
             </div>
 
@@ -75,6 +76,7 @@ import { useToastStore } from '@/stores/toastStore';
 import type { IBookshelf } from '@/types/interfaces/IBookshelf';
 import LeaveReviewModal from '@/components/LeaveReviewModal.vue';
 import type { IReview } from '@/types/interfaces/IReview';
+import CloudinaryImage from '@/components/CloudinaryImage.vue';
 
 const shelfStore = useShelfStore();
 const bookStore = useBookStore();

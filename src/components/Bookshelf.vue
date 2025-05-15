@@ -1,7 +1,7 @@
 <template>
   <div
     class="flex flex-col w-[60vw] mx-auto px-4"
-    :class="{ 'h-[40vh]': isAtHome, 'h-[60vh]': !isAtHome }"
+    :class="{ 'h-[30vh]': isAtHome, 'h-[60vh]': !isAtHome }"
   >
     <!-- Empty state -->
     <div
@@ -21,8 +21,8 @@
       v-else
       v-for="(shelfBooks, index) in chunkedBooks"
       :key="index"
-      class="flex justify-center items-end mb-2 border-b-8 border-[#5b3826]"
-      :class="{ 'h-1/4': isAtHome, 'h-1/3': !isAtHome }"
+      class="flex justify-center items-end mb-2 border-b-8 border-[#5b3826] w-full mb-5"
+      :class="{ 'h-1/2': isAtHome, 'h-1/3': !isAtHome}"
     >
       <div
         v-for="{ book, color, height } in shelfBooks"
@@ -167,7 +167,7 @@ const adjustBookTitleSizes = () => {
 
 const chunkedBooks = computed(() => {
   const chunks = [];
-  const chunkSize = props.isAtHome ? 4 : 10;
+  const chunkSize = 10;
   for (let i = 0; i < styledBooks.value.length; i += chunkSize) {
     chunks.push(styledBooks.value.slice(i, i + chunkSize));
   }
