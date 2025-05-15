@@ -23,7 +23,7 @@
             <div>
               <h2 class="text-2xl font-bold mb-2">You're currently reading:</h2>
               <div class="bg-darkBlueBackground border-t-7 border-primary rounded-xl p-4">
-                <Bookshelf v-if="currentlyReadingShelf" :shelf="currentlyReadingShelf" />
+                <Bookshelf :isAtHome="true" v-if="currentlyReadingShelf" :shelf="currentlyReadingShelf" />
               </div>
             </div>
 

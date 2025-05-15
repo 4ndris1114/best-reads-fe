@@ -1,7 +1,7 @@
 <template>
   <div
-    class="flex flex-col w-[60vw] mx-auto px-4"
-    :class="{ 'h-[30vh]': isAtHome, 'h-[60vh]': !isAtHome }"
+    class="flex flex-col mx-auto px-4"
+    :class="{ 'h-[30vh] w-full': isAtHome, 'h-[60vh] w-[60vw]': !isAtHome }"
   >
     <!-- Empty state -->
     <div
@@ -22,7 +22,7 @@
       v-for="(shelfBooks, index) in chunkedBooks"
       :key="index"
       class="flex justify-center items-end mb-2 border-b-8 border-[#5b3826] w-full mb-5"
-      :class="{ 'h-1/2': isAtHome, 'h-1/3': !isAtHome}"
+      :class="{ 'w-fit': isAtHome, 'h-1/3': !isAtHome}"
     >
       <div
         v-for="{ book, color, height } in shelfBooks"
