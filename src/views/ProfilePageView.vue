@@ -128,13 +128,13 @@
                   <h5 class="text-2xl font-bold mt-10 mb-4"><fa icon="shield" class="text-black mr-1" />
                     Privacy and security</h5>
                   <div class="flex flex-col items-start">
-                  <button
-                    class="bg-red-700 px-4 mb-4 py-2 font-semibold rounded hover:bg-red-850 drop-shadow-xl text-sm transition duration-300 text-white">
+                  <button @click="toastStore.triggerToast('Not implemented yet!', 'error')"
+                    class="bg-red-700 px-4 mb-4 py-2 font-semibold rounded hover:bg-red-850 drop-shadow-xl text-sm transition duration-300 text-white cursor-pointer">
                     <fa icon="envelope" class="mr-1" />
                     Change e-mail
                   </button>
-                  <button
-                    class="bg-red-700 px-4 mb-20 py-2 font-semibold rounded hover:bg-red-850 drop-shadow-xl text-sm transition duration-300 text-white">
+                  <button @click="toastStore.triggerToast('Not implemented yet!', 'error')"
+                    class="bg-red-700 px-4 mb-20 py-2 font-semibold rounded hover:bg-red-850 drop-shadow-xl text-sm transition duration-300 text-white cursor-pointer">
                     <fa icon="key" class="mr-1" />
                     Change password
                   </button>
